@@ -1,0 +1,194 @@
+# Copyright (c) JD, Inc. and its affiliates.
+from .config import CfgNode as CN
+
+# -----------------------------------------------------------------------------
+# Config definition
+# -----------------------------------------------------------------------------
+
+_C = CN()
+
+# The version number, to upgrade from old configs to new ones if any
+# changes happen. It's recommended to keep a VERSION in your config file.
+_C.VERSION = 1
+
+# -----------------------------------------------------------------------------
+# Dataset
+# -----------------------------------------------------------------------------
+_C.DATASETS = CN()
+
+_C.DATASETS.TRAIN = ''
+
+_C.DATASETS.TEST = ''
+
+# -----------------------------------------------------------------------------
+# DataLoader
+# -----------------------------------------------------------------------------
+_C.DATALOADER = CN()
+
+_C.DATALOADER.TRAIN_BATCH_SIZE = 64
+
+_C.DATALOADER.TEST_BATCH_SIZE = 64
+
+_C.DATALOADER.NUM_WORKERS = 4
+
+_C.DATALOADER.FEATS_FOLDER = ''
+
+_C.DATALOADER.ANNO_FILE = ''
+
+_C.DATALOADER.SEQ_PER_IMG = 5
+
+_C.DATALOADER.MAX_FEAT_NUM = -1
+
+# -----------------------------------------------------------------------------
+# Model
+# -----------------------------------------------------------------------------
+_C.MODEL = CN()
+
+_C.MODEL.DEVICE = "cuda"
+
+_C.MODEL.VOCAB_SIZE = 1000 # include <BOS>/<EOS>
+
+_C.MODEL.META_ARCHITECTURE = ''
+
+_C.MODEL.ENCODER = ''
+
+_C.MODEL.ENCODER_DIM = 1024
+
+_C.MODEL.DECODER = ''
+
+_C.MODEL.DECODER_DIM = 1024
+
+_C.MODEL.PREDICTOR = ''
+
+_C.MODEL.MAX_SEQ_LEN = 17
+
+# ----------------------------------------------------------------------------
+# Token embedding
+# ----------------------------------------------------------------------------
+_C.MODEL.TOKEN_EMBED = CN()
+
+_C.MODEL.TOKEN_EMBED.NAME = ''
+
+_C.MODEL.TOKEN_EMBED.DIM = 1024
+
+_C.MODEL.TOKEN_EMBED.ACTIVATION = 'none'
+
+_C.MODEL.TOKEN_EMBED.ELU_ALPHA = 0.5
+
+_C.MODEL.TOKEN_EMBED.USE_NORM = False
+
+_C.MODEL.TOKEN_EMBED.DROPOUT = 0.0
+
+_C.MODEL.TOKEN_EMBED.POSITION = 'none'
+
+_C.MODEL.TOKEN_EMBED.POSITION_MAX_LEN = 5000
+
+# ----------------------------------------------------------------------------
+# Visual embedding
+# ----------------------------------------------------------------------------
+_C.MODEL.VISUAL_EMBED = CN()
+
+_C.MODEL.VISUAL_EMBED.NAME = ''
+
+_C.MODEL.VISUAL_EMBED.IN_DIM = 2048
+
+_C.MODEL.VISUAL_EMBED.OUT_DIM = 1024
+
+_C.MODEL.VISUAL_EMBED.ACTIVATION = 'none'
+
+_C.MODEL.VISUAL_EMBED.ELU_ALPHA = 0.5
+
+_C.MODEL.VISUAL_EMBED.USE_NORM = False
+
+_C.MODEL.VISUAL_EMBED.DROPOUT = 0.0
+
+_C.MODEL.WEIGHTS = ''
+
+# ----------------------------------------------------------------------------
+# Solver
+# ----------------------------------------------------------------------------
+_C.SOLVER = CN()
+
+_C.SOLVER.NAME = 'Adam'
+
+_C.SOLVER.EPOCH = 10
+
+_C.SOLVER.CHECKPOINT_PERIOD = 1
+
+_C.SOLVER.EVAL_PERIOD = 1
+
+_C.SOLVER.BASE_LR = 0.0005
+
+_C.SOLVER.BIAS_LR_FACTOR = 1.0
+
+_C.SOLVER.WEIGHT_DECAY = 0.0
+
+_C.SOLVER.WEIGHT_DECAY_NORM = 0.0
+
+_C.SOLVER.WEIGHT_DECAY_BIAS = 0.0
+
+_C.SOLVER.MOMENTUM = 0.0
+
+_C.SOLVER.DAMPENING = 0.0
+
+_C.SOLVER.NESTEROV = 0.0
+
+_C.SOLVER.BETAS = [0.9, 0.999]
+
+_C.SOLVER.EPS = 1e-8
+
+_C.SOLVER.AMSGRAD = False
+
+_C.SOLVER.GRAD_CLIP_TYPE = 'norm' # norm, value
+
+_C.SOLVER.GRAD_CLIP = 0.1
+
+_C.SOLVER.NORM_TYPE = 2.0
+
+# ----------------------------------------------------------------------------
+# lr scheduler
+# ----------------------------------------------------------------------------
+_C.LR_SCHEDULER = CN()
+
+_C.LR_SCHEDULER.NAME = 'StepLR'
+
+_C.LR_SCHEDULER.STEP_SIZE = 3
+
+_C.LR_SCHEDULER.GAMMA = 0.1
+
+# ---------------------------------------------------------------------------- #
+# Losses
+# ---------------------------------------------------------------------------- #
+_C.LOSSES = CN()
+
+_C.LOSSES.NAME = ''
+
+
+# ---------------------------------------------------------------------------- #
+# INFERENCE options
+# ---------------------------------------------------------------------------- #
+_C.INFERENCE = CN()
+
+_C.INFERENCE.NAME = ''
+
+_C.INFERENCE.VOCAB = 'coco_vocabulary.txt'
+
+_C.INFERENCE.ID_KEY = 'image_id'
+
+_C.INFERENCE.CAP_KEY = 'caption'
+
+_C.INFERENCE.VAL_ANNFILE = 'captions_val5k.json'
+
+_C.INFERENCE.TEST_ANNFILE = 'captions_test5k.json'
+
+_C.INFERENCE.BEAM_SIZE = 1
+
+# ---------------------------------------------------------------------------- #
+# Misc options
+# ---------------------------------------------------------------------------- #
+_C.OUTPUT_DIR = "./output"
+
+_C.SEED = -1
+
+_C.CUDNN_BENCHMARK = True
+

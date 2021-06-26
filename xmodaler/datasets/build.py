@@ -1,0 +1,113 @@
+import itertools
+import logging
+import numpy as np
+import operator
+import pickle
+from tabulate import tabulate
+from termcolor import colored
+import torch.utils.data
+from torch.utils.data import RandomSampler
+from torch.utils.data.distributed import DistributedSampler
+
+from xmodaler.config import configurable
+from xmodaler.utils.comm import get_world_size
+from xmodaler.utils.env import seed_all_rng
+from xmodaler.utils.file_io import PathManager
+from xmodaler.utils.logger import log_first_n
+from xmodaler.utils.registry import Registry
+from .common import DatasetFromList, MapDataset
+from .samplers import InferenceSampler
+
+DATASETS_REGISTRY = Registry("DATASETS")  # noqa F401 isort:skip
+DATASETS_REGISTRY.__doc__ = """
+Registry for datasets, i.e. the whole model
+"""
+
+def build_dataset_mapper(cfg, name, is_train):
+    dataset_mapper = DATASETS_REGISTRY.get(name)(cfg, is_train)
+    return dataset_mapper
+
+def trivial_batch_collator(batch):
+    return batch
+
+def worker_init_reset_seed(worker_id):
+    seed_all_rng(np.random.randint(2 ** 31) + worker_id)
+
+def _train_loader_from_config(cfg, dataset_mapper=None, *, datalist=None, sampler=None):
+    if dataset_mapper is None:
+        dataset_mapper = build_dataset_mapper(cfg, cfg.DATASETS.TRAIN, True)
+
+    if datalist is None:
+        datalist = dataset_mapper.load_data(cfg, "train")
+
+    return {
+        "datalist": datalist,
+        "dataset_mapper": dataset_mapper,
+        "num_workers": cfg.DATALOADER.NUM_WORKERS,
+        "batch_size": cfg.DATALOADER.TRAIN_BATCH_SIZE
+    }
+
+@configurable(from_config=_train_loader_from_config)
+def build_xmodaler_train_loader(datalist, *, dataset_mapper, batch_size, num_workers):
+    if isinstance(datalist, list):
+        dataset = DatasetFromList(datalist, copy=False)
+    if dataset_mapper is not None:
+        dataset = MapDataset(dataset, dataset_mapper)
+    
+    world_size = get_world_size()
+    if world_size > 1:
+        sampler = DistributedSampler(dataset)
+    else:
+        sampler = RandomSampler(dataset)
+
+    data_loader = torch.utils.data.DataLoader(
+        dataset,
+        sampler = sampler,
+        batch_size = batch_size,
+        num_workers=num_workers,
+        collate_fn=trivial_batch_collator,
+        worker_init_fn=worker_init_reset_seed,
+        drop_last = True
+    )
+    return data_loader
+
+
+def _test_loader_from_config(cfg, dataset_mapper=None, *, datalist=None, sampler=None):
+    if dataset_mapper is None:
+        dataset_mapper = build_dataset_mapper(cfg, cfg.DATASETS.TEST, False)
+
+    if datalist is None:
+        datalist = dataset_mapper.load_data(cfg, "test")
+
+    return {
+        "datalist": datalist,
+        "dataset_mapper": dataset_mapper,
+        "num_workers": cfg.DATALOADER.NUM_WORKERS,
+        "batch_size": cfg.DATALOADER.TEST_BATCH_SIZE
+    }
+
+@configurable(from_config=_test_loader_from_config)
+def build_xmodaler_test_loader(datalist, *, dataset_mapper, batch_size, num_workers):
+    if isinstance(datalist, list):
+        dataset = DatasetFromList(datalist, copy=False)
+    if dataset_mapper is not None:
+        dataset = MapDataset(dataset, dataset_mapper)
+    sampler = InferenceSampler(len(dataset))
+
+    batch_sampler = torch.utils.data.sampler.BatchSampler(sampler, batch_size, drop_last=False)
+    data_loader = torch.utils.data.DataLoader(
+        dataset,
+        num_workers=num_workers,
+        batch_sampler=batch_sampler,
+        collate_fn=trivial_batch_collator,
+    )
+    return data_loader
+    
+    
+    
+    
+
+    
+        
+
+   
