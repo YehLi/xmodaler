@@ -12,7 +12,7 @@ This document provides a brief intro of the usage of builtin command-line tools 
 
 We provide a script in "train_net.py", that is made to train all the configs provided in XModaler. You may want to use it as a reference to write your own training script.
 
-To train a model with "train_net.py", first setup the corresponding datasets following [datasets/README.md](./datasets/README.md), then run:
+To train a model with "train_net.py", first setup the corresponding datasets following [xmodaler/datasets/README.md](./xmodaler/datasets/README.md), then run:
 ```
 python train_net.py --num-gpus 4 \
  	--config-file configs/COCO/updown.yaml
