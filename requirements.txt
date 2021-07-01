@@ -1,0 +1,7 @@
+torch
+fvcore
+pycocotools
+omegaconf
+cloudpickle
+torchvision
+tensorboard

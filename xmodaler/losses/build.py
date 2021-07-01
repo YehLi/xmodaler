@@ -8,5 +8,8 @@ Registry for losses
 """
 
 def build_losses(cfg):
-    losses = LOSSES_REGISTRY.get(cfg.LOSSES.NAME)(cfg)
+    losses = []
+    for name in cfg.LOSSES.NAMES:
+       loss = LOSSES_REGISTRY.get(name)(cfg)
+       losses.append(loss)
     return losses

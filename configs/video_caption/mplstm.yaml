@@ -1,0 +1,12 @@
+_BASE_: "base_att_msvd_caption.yaml"
+
+OUTPUT_DIR: "snapshots/mplstm_baseline"
+
+MODEL:
+  DECODER: 'MPLSTMDecoder'
+  PREDICTOR: 'BasicPredictor'
+
+  MPLSTM:
+    LSTM_INPUT_DROPOUT: 0.5
+  
+

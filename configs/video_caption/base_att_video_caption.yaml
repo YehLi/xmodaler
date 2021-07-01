@@ -1,0 +1,83 @@
+####################################### DATASETS #######################################
+DATASETS:
+  TRAIN: 'MSVDDatasetMapper'
+  TEST: 'MSVDDatasetMapper'
+
+###################################### DATALOADER ######################################
+DATALOADER:
+  TRAIN_BATCH_SIZE: 64
+  TEST_BATCH_SIZE: 32
+  NUM_WORKERS: 0
+  FEATS_FOLDER: '/media/winne/DATA2/video_caption_data/msvd/feat_resnet152_imagenet_pytorch'
+  ANNO_FILE:  '/media/winne/DATA2/new_code/msvd_datasets/msvd_caption_anno'
+  SEQ_PER_IMG:  1
+  MAX_FEAT_NUM: 25
+
+######################################### MODEL #########################################
+MODEL:
+  VOCAB_SIZE: 5492 # include <BOS>/<EOS>
+  META_ARCHITECTURE: 'RnnAttEncoderDecoder'
+  ENCODER: 'UpDownEncoder'
+  ENCODER_DIM: 1024
+  DECODER: 'SALSTMDecoder'
+  DECODER_DIM: 1024
+  PREDICTOR: 'SALSTMPredictor'
+  MAX_SEQ_LEN: 17
+
+#################################### Token embedding ####################################
+  TOKEN_EMBED:
+    NAME: 'TokenBasicEmbedding'
+    DIM: 512
+    ACTIVATION: 'none'
+    USE_NORM: False
+    DROPOUT: 0.5
+
+#################################### Visual embedding ####################################
+  VISUAL_EMBED:
+    NAME: 'VisualBasicEmbedding'
+    IN_DIM: 2048
+    OUT_DIM: 1024
+    ACTIVATION: 'none'
+    USE_NORM: False
+    DROPOUT: 0.5
+  
+####################################### Optimizer #######################################
+SOLVER:
+  NAME: 'Adam'
+  EPOCH: 50
+  CHECKPOINT_PERIOD: 1
+  EVAL_PERIOD: 1
+  BASE_LR: 0.0005
+  BIAS_LR_FACTOR: 1.0
+  WEIGHT_DECAY: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+  WEIGHT_DECAY_BIAS: 0.0
+  MOMENTUM: 0.0
+  DAMPENING: 0.0
+  NESTEROV: 0.0
+  BETAS: [0.9, 0.98]
+  EPS: 1e-8
+  GRAD_CLIP: 0.5
+  GRAD_CLIP_TYPE: 'norm'
+  NORM_TYPE: 2.0
+  
+####################################### lr scheduler ####################################### 
+LR_SCHEDULER:
+  NAME: 'StepLR'
+  STEP_SIZE: 3
+  GAMMA: 0.8
+
+####################################### losses ####################################### 
+LOSSES:
+  NAME: 'CrossEntropy'
+
+####################################### evaluation ####################################### 
+INFERENCE:
+  NAME: 'COCOEvaler'
+  VOCAB: '/media/winne/DATA2/new_code/msvd_datasets/msvd_vocabulary.txt'
+  ID_KEY: 'image_id'
+  CAP_KEY: 'caption'
+  VAL_ANNFILE: '/media/winne/DATA2/new_code/msvd_datasets/val_cocostyle.json'
+  TEST_ANNFILE: '/media/winne/DATA2/new_code/msvd_datasets/test_cocostyle.json'
+  BEAM_SIZE: 1
+

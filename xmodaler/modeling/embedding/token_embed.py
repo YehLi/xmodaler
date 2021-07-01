@@ -2,14 +2,14 @@ import torch
 from torch import nn
 
 from xmodaler.config import configurable
-from xmodaler.layers.create_act import get_act_layer
+from ..layers.create_act import get_act_layer
 from .build import EMBEDDING_REGISTRY
 from .position_embedding import build_position_encoding
 
-__all__ = ["TokenBasicEmbedding"]
+__all__ = ["TokenBaseEmbedding"]
 
 @EMBEDDING_REGISTRY.register()
-class TokenBasicEmbedding(nn.Module):
+class TokenBaseEmbedding(nn.Module):
     @configurable
     def __init__(
         self, 
@@ -18,12 +18,13 @@ class TokenBasicEmbedding(nn.Module):
         vocab_size: int, # include <BOS>/<EOS>
         **kwargs
     ):
-        super(TokenBasicEmbedding, self).__init__()
+        super(TokenBaseEmbedding, self).__init__()
         self.embeddings = nn.Embedding(vocab_size, dim)
         self.embeddings_act = kwargs.pop("embeddings_act", None)
         self.embeddings_norm = kwargs.pop("embeddings_norm", None)
         self.embeddings_dropout = kwargs.pop("embeddings_dropout", None)
         self.embeddings_pos = kwargs.pop("embeddings_pos", None)
+        self.embeddings_token_type = kwargs.pop('embeddings_token_type', None)
 
     @classmethod
     def from_config(cls, cfg):
@@ -56,15 +57,24 @@ class TokenBasicEmbedding(nn.Module):
                 cfg.MODEL.TOKEN_EMBED.DIM, cfg.MODEL.TOKEN_EMBED.POSITION_MAX_LEN)
             kwargs['embeddings_pos'] = embeddings_pos
 
+        if cfg.MODEL.TOKEN_EMBED.TYPE_VOCAB_SIZE > 0:
+            embeddings_token_type = nn.Embedding(
+                cfg.MODEL.TOKEN_EMBED.TYPE_VOCAB_SIZE, cfg.MODEL.TOKEN_EMBED.DIM)
+            kwargs['embeddings_token_type'] = embeddings_token_type
+
         return kwargs
             
 
-    def forward(self, input_ids):
+    def forward(self, input_ids, token_type_ids=None):
         embeddings = self.embeddings(input_ids)
         
         if self.embeddings_pos is not None:
             position_embeddings = self.embeddings_pos(input_ids)
             embeddings = embeddings + position_embeddings
+
+        if (self.embeddings_token_type is not None) and (token_type_ids is not None):
+            embeddings_token_type = self.embeddings_token_type(token_type_ids)
+            embeddings = embeddings + embeddings_token_type
 
         if self.embeddings_act is not None:
             embeddings = self.embeddings_act(embeddings)
@@ -72,7 +82,7 @@ class TokenBasicEmbedding(nn.Module):
         if self.embeddings_norm is not None:
             embeddings = self.embeddings_norm(embeddings)
 
-        if (self.embeddings_dropout is not None) and self.training:
+        if self.embeddings_dropout is not None:
             embeddings = self.embeddings_dropout(embeddings)
 
         return embeddings

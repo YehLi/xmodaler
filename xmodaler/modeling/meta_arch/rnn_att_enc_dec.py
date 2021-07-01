@@ -6,21 +6,21 @@ import torch.nn.functional as F
 from xmodaler.config import configurable
 from xmodaler.config import CfgNode as CN
 from xmodaler.config import kfg
-from .basic_enc_dec import BasicEncoderDecoder
+from .base_enc_dec import BaseEncoderDecoder
 from .build import META_ARCH_REGISTRY
 
 __all__ = ["RnnAttEncoderDecoder"]
 
 @META_ARCH_REGISTRY.register()
-class RnnAttEncoderDecoder(BasicEncoderDecoder):
+class RnnAttEncoderDecoder(BaseEncoderDecoder):
 
     def get_extended_attention_mask(self, att_masks):
         if att_masks is not None:
             att_masks = att_masks.to(dtype=next(self.parameters()).dtype)
             ext_att_masks = (1.0 - att_masks) * -10000.0
         else:
-            att_masks = None
             ext_att_masks = None
+            
         return {
             kfg.ATT_MASKS: att_masks,
             kfg.EXT_ATT_MASKS: ext_att_masks

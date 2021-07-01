@@ -4,7 +4,7 @@ from torch import nn
 from xmodaler.config import configurable
 from xmodaler.config import CfgNode as CN
 from xmodaler.config import kfg
-from xmodaler.modeling.core import SoftAttention
+from ..layers.soft_attention import SoftAttention
 from .rnn_decoder import RnnDecoder
 from .build import DECODER_REGISTRY
 

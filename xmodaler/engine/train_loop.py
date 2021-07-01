@@ -273,8 +273,12 @@ class SimpleTrainer(TrainerBase):
         If you want to do something with the losses, you can wrap the model.
         """
         outputs_dict = self.model(data)
-        loss_dict = self.losses(outputs_dict)
-        losses = sum(loss_dict.values())
+
+        losses_dict = {}
+        for loss in self.losses:
+            loss_dict = loss(outputs_dict)
+            losses_dict.update(loss_dict)
+        losses = sum(losses_dict.values())
 
         """
         If you need to accumulate gradients or do something similar, you can

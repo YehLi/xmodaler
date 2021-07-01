@@ -18,7 +18,6 @@ class BasicPredictor(nn.Module):
     ):
         super(BasicPredictor, self).__init__()
         self.logits = nn.Linear(hidden_size, vocab_size)
-        self.vocab_size = vocab_size
         
     @classmethod
     def from_config(cls, cfg):

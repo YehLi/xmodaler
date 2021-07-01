@@ -1,0 +1,95 @@
+####################################### DATASETS #######################################
+DATASETS:
+  TRAIN: 'ConceptualCaptionsDataset'
+  TEST: ''
+
+###################################### DATALOADER ######################################
+DATALOADER:
+  TRAIN_BATCH_SIZE: 8
+  TEST_BATCH_SIZE: 32
+  NUM_WORKERS: 0
+  #FEATS_FOLDER: 'D:/export/dataset/ConceptualCaptions/features_train'
+  #ANNO_FOLDER:  'D:/export/dataset/ConceptualCaptions/features_train'
+  FEATS_FOLDER: '/export1/dataset/ConceptualCaptions_opensource/features_train'
+  ANNO_FOLDER: '/export1/dataset/ConceptualCaptions_opensource'
+  MAX_FEAT_NUM: 51
+
+######################################### MODEL #########################################
+MODEL:
+  VOCAB_SIZE: 30522 # include <BOS>/<EOS>
+  META_ARCHITECTURE: 'VLPBertPreTraining'
+  ENCODER: 'TwoStreamBertEncoder'
+  DECODER: 'DecoupleBertDecoder'
+  PREDICTOR: 'BertPredictionHead'
+  V_PREDICTOR: 'BertVisualPredictionHead'
+  MAX_SEQ_LEN: 36
+
+######################################### BERT #########################################
+  BERT:
+    HIDDEN_SIZE: 768
+    HIDDEN_DROPOUT_PROB: 0.1
+    HIDDEN_ACT: "gelu"
+    NUM_ATTENTION_HEADS: 12
+    INTERMEDIATE_SIZE: 3072
+    INTERMEDIATE_DROP: 0.1
+    FFN_DROPOUT_PROB: 0.1
+    ATTENTION_PROBS_DROPOUT_PROB: 0.1
+    V_TARGET_SIZE: 1601
+    NUM_HIDDEN_LAYERS: 2
+    V_NUM_HIDDEN_LAYERS: 2
+    NUM_UNDERSTANDING_LAYERS: 2
+    NUM_GENERATION_LAYERS: 2
+
+#################################### Token embedding ####################################
+  TOKEN_EMBED:
+    NAME: 'TokenBaseEmbedding'
+    DIM: 768
+    ACTIVATION: 'none'
+    USE_NORM: True
+    DROPOUT: 0.1
+    POSITION: 'NNEmbeddingEncoding'
+    POSITION_MAX_LEN: 512
+    TYPE_VOCAB_SIZE: 3
+
+#################################### Visual embedding ####################################
+  VISUAL_EMBED:
+    NAME: 'VisualBaseEmbedding'
+    IN_DIM: 2048
+    OUT_DIM: 768
+    LOCATION_SIZE: 5
+    ACTIVATION: 'none'
+    USE_NORM: True
+    DROPOUT: 0.1
+  
+####################################### Optimizer #######################################
+SOLVER:
+  NAME: 'Adam'
+  EPOCH: 10
+  CHECKPOINT_PERIOD: 1
+  EVAL_PERIOD: 1
+  BASE_LR: 0.0005
+  BIAS_LR_FACTOR: 1.0
+  WEIGHT_DECAY: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+  WEIGHT_DECAY_BIAS: 0.0
+  MOMENTUM: 0.0
+  DAMPENING: 0.0
+  NESTEROV: 0.0
+  BETAS: [0.9, 0.999]
+  EPS: 1e-8
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: 'value'
+  NORM_TYPE: 2.0
+  
+####################################### lr scheduler ####################################### 
+LR_SCHEDULER:
+  NAME: 'StepLR'
+  STEP_SIZE: 3
+  GAMMA: 0.1
+
+####################################### losses ####################################### 
+LOSSES:
+  NAMES: ['CrossEntropy']
+
+INFERENCE:
+  VOCAB: ''

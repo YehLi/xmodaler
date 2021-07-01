@@ -26,7 +26,7 @@ class SALSTMPredictor(nn.Module):
         self.tanh = nn.Tanh()
         self.lm_drop = nn.Dropout(lm_dropout) if lm_dropout > 0 else None
         self.logits = nn.Linear(hidden_size, vocab_size)
-        self.vocab_size = vocab_size
+        #self.vocab_size = vocab_size
         
     @classmethod
     def from_config(cls, cfg):

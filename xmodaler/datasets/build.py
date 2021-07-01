@@ -23,8 +23,8 @@ DATASETS_REGISTRY.__doc__ = """
 Registry for datasets, i.e. the whole model
 """
 
-def build_dataset_mapper(cfg, name, is_train):
-    dataset_mapper = DATASETS_REGISTRY.get(name)(cfg, is_train)
+def build_dataset_mapper(cfg, name, stage):
+    dataset_mapper = DATASETS_REGISTRY.get(name)(cfg, stage)
     return dataset_mapper
 
 def trivial_batch_collator(batch):
@@ -34,11 +34,14 @@ def worker_init_reset_seed(worker_id):
     seed_all_rng(np.random.randint(2 ** 31) + worker_id)
 
 def _train_loader_from_config(cfg, dataset_mapper=None, *, datalist=None, sampler=None):
-    if dataset_mapper is None:
-        dataset_mapper = build_dataset_mapper(cfg, cfg.DATASETS.TRAIN, True)
-
-    if datalist is None:
-        datalist = dataset_mapper.load_data(cfg, "train")
+    if len(cfg.DATASETS.TRAIN) > 0:
+        if dataset_mapper is None:
+            dataset_mapper = build_dataset_mapper(cfg, name=cfg.DATASETS.TRAIN, stage="train")
+        if datalist is None:
+            datalist = dataset_mapper.load_data(cfg)
+    else:
+        dataset_mapper = None
+        datalist = None
 
     return {
         "datalist": datalist,
@@ -49,6 +52,9 @@ def _train_loader_from_config(cfg, dataset_mapper=None, *, datalist=None, sample
 
 @configurable(from_config=_train_loader_from_config)
 def build_xmodaler_train_loader(datalist, *, dataset_mapper, batch_size, num_workers):
+    if datalist is None or dataset_mapper is None:
+        return None
+
     if isinstance(datalist, list):
         dataset = DatasetFromList(datalist, copy=False)
     if dataset_mapper is not None:
@@ -73,11 +79,14 @@ def build_xmodaler_train_loader(datalist, *, dataset_mapper, batch_size, num_wor
 
 
 def _test_loader_from_config(cfg, dataset_mapper=None, *, datalist=None, sampler=None):
-    if dataset_mapper is None:
-        dataset_mapper = build_dataset_mapper(cfg, cfg.DATASETS.TEST, False)
-
-    if datalist is None:
-        datalist = dataset_mapper.load_data(cfg, "test")
+    if len(cfg.DATASETS.TEST) > 0:
+        if dataset_mapper is None:
+            dataset_mapper = build_dataset_mapper(cfg, cfg.DATASETS.TEST, False)
+        if datalist is None:
+            datalist = dataset_mapper.load_data(cfg, "test")
+    else:
+        dataset_mapper = None
+        datalist = None
 
     return {
         "datalist": datalist,
@@ -88,6 +97,9 @@ def _test_loader_from_config(cfg, dataset_mapper=None, *, datalist=None, sampler
 
 @configurable(from_config=_test_loader_from_config)
 def build_xmodaler_test_loader(datalist, *, dataset_mapper, batch_size, num_workers):
+    if datalist is None or dataset_mapper is None:
+        return None
+
     if isinstance(datalist, list):
         dataset = DatasetFromList(datalist, copy=False)
     if dataset_mapper is not None:

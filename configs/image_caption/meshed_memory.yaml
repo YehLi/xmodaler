@@ -1,0 +1,36 @@
+_BASE_: "base_att_image_caption.yaml"
+
+DATALOADER:
+  FEATS_FOLDER: '/media/winne/DATA2/new_code/dataset/mscoco_torch/feature/up_down_100'
+  ANNO_FILE:  '/media/winne/DATA2/new_code/dataset/mscoco_open_source/mscoco_caption_anno'
+
+INFERENCE:
+  VOCAB: '/media/winne/DATA2/new_code/dataset/mscoco_open_source/coco_vocabulary.txt'
+  VAL_ANNFILE: '/media/winne/DATA2/new_code/dataset/mscoco_open_source/captions_val5k.json'
+  TEST_ANNFILE: '/media/winne/DATA2/new_code/dataset/mscoco_open_source/captions_test5k.json'
+
+MODEL:
+  META_ARCHITECTURE: 'CnnEncoderDecoder'
+  ENCODER: 'MemoryAugmentedEncoder'
+  DECODER: 'MeshedDecoder'
+  DECODER_DIM: 512
+
+  TOKEN_EMBED:
+    POSITION: 'SinusoidEncoding'
+    POSITION_MAX_LEN: 512
+    DIM: 512
+
+  MESHEDMEORY:
+    ENCODER:
+      DIM_MODEL: 512
+      NUM_LAYER: 3
+      NUM_ATT_HEAD: 8
+      NUM_ATT_MEMORY: 40
+      DIM_FEEDFORWARD: 2048
+      DROPOUT: 0.1
+    DECODER:
+      DIM_MODEL: 512
+      NUM_LAYER: 3
+      NUM_ATT_HEAD: 8
+      DIM_FEEDFORWARD: 2048
+      DROPOUT: 0.1

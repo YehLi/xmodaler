@@ -1,0 +1,514 @@
+[07/01 05:46:40] xmodaler INFO: Rank of current process: 0. World size: 1
+[07/01 05:46:41] xmodaler INFO: Environment info:
+----------------------  -----------------------------------------------------------------------------------------
+sys.platform            win32
+Python                  3.8.5 (default, Sep  3 2020, 21:29:08) [MSC v.1916 64 bit (AMD64)]
+numpy                   1.19.2
+detectron2              0.3 @d:\export\net\imagenet\detectron2\detectron2
+Compiler                MSVC 191627045
+CUDA compiler           CUDA 11.1
+detectron2 arch flags   d:\export\net\imagenet\detectron2\detectron2\_C.cp38-win_amd64.pyd; cannot find cuobjdump
+DETECTRON2_ENV_MODULE   <not set>
+PyTorch                 1.9.0 @C:\ProgramData\Anaconda3\lib\site-packages\torch
+PyTorch debug build     False
+GPU available           True
+GPU 0                   GeForce RTX 2060 (arch=7.5)
+CUDA_HOME               C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.1
+Pillow                  8.0.1
+torchvision             0.10.0 @C:\ProgramData\Anaconda3\lib\site-packages\torchvision
+torchvision arch flags  C:\ProgramData\Anaconda3\lib\site-packages\torchvision\_C.pyd; cannot find cuobjdump
+fvcore                  0.1.3.post20210317
+iopath                  0.1.8
+cv2                     Not found
+----------------------  -----------------------------------------------------------------------------------------
+PyTorch built with:
+  - C++ Version: 199711
+  - MSVC 192829337
+  - Intel(R) Math Kernel Library Version 2020.0.2 Product Build 20200624 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.1.2 (Git Hash 98be7e8afa711dc9b66c8ff3504129cb82013cdb)
+  - OpenMP 2019
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.1
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_61,code=sm_61;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86;-gencode;arch=compute_37,code=compute_37
+  - CuDNN 8.0.5
+  - Magma 2.5.4
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.1, CUDNN_VERSION=8.0.5, CXX_COMPILER=C:/cb/pytorch_1000000000000/work/tmp_bin/sccache-cl.exe, CXX_FLAGS=/DWIN32 /D_WINDOWS /GR /EHsc /w /bigobj -DUSE_PTHREADPOOL -openmp:experimental -IC:/cb/pytorch_1000000000000/work/mkl/include -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DUSE_FBGEMM -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.9.0, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=OFF, USE_OPENMP=ON, 
+
+[07/01 05:46:41] xmodaler INFO: Command line arguments: Namespace(config_file='./configs/pretrain/pretrain.yaml', dist_url='tcp://127.0.0.1:49153', eval_only=False, machine_rank=0, num_gpus=1, num_machines=1, opts=[], resume=False)
+[07/01 05:46:41] xmodaler INFO: Contents of args.config_file=./configs/pretrain/pretrain.yaml:
+####################################### DATASETS #######################################
+DATASETS:
+  TRAIN: 'ConceptualCaptionsDataset'
+  TEST: ''
+
+###################################### DATALOADER ######################################
+DATALOADER:
+  TRAIN_BATCH_SIZE: 8
+  TEST_BATCH_SIZE: 32
+  NUM_WORKERS: 0
+  #FEATS_FOLDER: 'D:/export/dataset/ConceptualCaptions/features_train'
+  #ANNO_FOLDER:  'D:/export/dataset/ConceptualCaptions/features_train'
+  FEATS_FOLDER: '/export1/dataset/ConceptualCaptions_opensource/features_train'
+  ANNO_FOLDER: '/export1/dataset/ConceptualCaptions_opensource'
+  MAX_FEAT_NUM: 51
+
+######################################### MODEL #########################################
+MODEL:
+  VOCAB_SIZE: 30522 # include <BOS>/<EOS>
+  META_ARCHITECTURE: 'VLPBertPreTraining'
+  ENCODER: 'TwoStreamBertEncoder'
+  DECODER: 'DecoupleBertDecoder'
+  PREDICTOR: 'BertPredictionHead'
+  V_PREDICTOR: 'BertVisualPredictionHead'
+  MAX_SEQ_LEN: 36
+
+######################################### BERT #########################################
+  BERT:
+    HIDDEN_SIZE: 768
+    HIDDEN_DROPOUT_PROB: 0.1
+    HIDDEN_ACT: "gelu"
+    NUM_ATTENTION_HEADS: 12
+    INTERMEDIATE_SIZE: 3072
+    INTERMEDIATE_DROP: 0.1
+    FFN_DROPOUT_PROB: 0.1
+    ATTENTION_PROBS_DROPOUT_PROB: 0.1
+    V_TARGET_SIZE: 1601
+    NUM_HIDDEN_LAYERS: 2
+    V_NUM_HIDDEN_LAYERS: 2
+    NUM_UNDERSTANDING_LAYERS: 2
+    NUM_GENERATION_LAYERS: 2
+
+#################################### Token embedding ####################################
+  TOKEN_EMBED:
+    NAME: 'TokenBaseEmbedding'
+    DIM: 768
+    ACTIVATION: 'none'
+    USE_NORM: True
+    DROPOUT: 0.1
+    POSITION: 'NNEmbeddingEncoding'
+    POSITION_MAX_LEN: 512
+    TYPE_VOCAB_SIZE: 3
+
+#################################### Visual embedding ####################################
+  VISUAL_EMBED:
+    NAME: 'VisualBaseEmbedding'
+    IN_DIM: 2048
+    OUT_DIM: 768
+    LOCATION_SIZE: 5
+    ACTIVATION: 'none'
+    USE_NORM: True
+    DROPOUT: 0.1
+  
+####################################### Optimizer #######################################
+SOLVER:
+  NAME: 'Adam'
+  EPOCH: 10
+  CHECKPOINT_PERIOD: 1
+  EVAL_PERIOD: 1
+  BASE_LR: 0.0005
+  BIAS_LR_FACTOR: 1.0
+  WEIGHT_DECAY: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+  WEIGHT_DECAY_BIAS: 0.0
+  MOMENTUM: 0.0
+  DAMPENING: 0.0
+  NESTEROV: 0.0
+  BETAS: [0.9, 0.999]
+  EPS: 1e-8
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: 'value'
+  NORM_TYPE: 2.0
+  
+####################################### lr scheduler ####################################### 
+LR_SCHEDULER:
+  NAME: 'StepLR'
+  STEP_SIZE: 3
+  GAMMA: 0.1
+
+####################################### losses ####################################### 
+LOSSES:
+  NAMES: ['CrossEntropy']
+
+INFERENCE:
+  VOCAB: ''
+
+[07/01 05:46:41] xmodaler INFO: Running with full config:
+CUDNN_BENCHMARK: True
+DATALOADER:
+  ANNO_FOLDER: /export1/dataset/ConceptualCaptions_opensource
+  FEATS_FOLDER: /export1/dataset/ConceptualCaptions_opensource/features_train
+  MAX_FEAT_NUM: 51
+  NUM_WORKERS: 0
+  SEQ_PER_IMG: 5
+  TEST_BATCH_SIZE: 32
+  TRAIN_BATCH_SIZE: 8
+DATASETS:
+  TEST: 
+  TRAIN: ConceptualCaptionsDataset
+INFERENCE:
+  BEAM_SIZE: 1
+  CAP_KEY: caption
+  ID_KEY: image_id
+  NAME: 
+  TEST_ANNFILE: captions_test5k.json
+  VAL_ANNFILE: captions_val5k.json
+  VOCAB: 
+LOSSES:
+  NAMES: ['CrossEntropy']
+LR_SCHEDULER:
+  GAMMA: 0.1
+  NAME: StepLR
+  STEP_SIZE: 3
+MODEL:
+  BERT:
+    ATTENTION_PROBS_DROPOUT_PROB: 0.1
+    FFN_DROPOUT_PROB: 0.1
+    HIDDEN_ACT: gelu
+    HIDDEN_DROPOUT_PROB: 0.1
+    HIDDEN_SIZE: 768
+    INTERMEDIATE_DROP: 0.1
+    INTERMEDIATE_SIZE: 3072
+    NUM_ATTENTION_HEADS: 12
+    NUM_GENERATION_LAYERS: 2
+    NUM_HIDDEN_LAYERS: 2
+    NUM_UNDERSTANDING_LAYERS: 2
+    V_NUM_HIDDEN_LAYERS: 2
+    V_TARGET_SIZE: 1601
+  DECODER: DecoupleBertDecoder
+  DECODER_DIM: 1024
+  DEVICE: cuda
+  ENCODER: TwoStreamBertEncoder
+  ENCODER_DIM: 1024
+  MAX_SEQ_LEN: 36
+  META_ARCHITECTURE: VLPBertPreTraining
+  PREDICTOR: BertPredictionHead
+  PRETRAINING:
+    DO_LOWER_CASE: True
+    FROM_PRETRAINED: bert-base-uncased
+    MODEL_NAME: bert-base-uncased
+  TOKEN_EMBED:
+    ACTIVATION: none
+    DIM: 768
+    DROPOUT: 0.1
+    ELU_ALPHA: 0.5
+    NAME: TokenBaseEmbedding
+    POSITION: NNEmbeddingEncoding
+    POSITION_MAX_LEN: 512
+    TYPE_VOCAB_SIZE: 3
+    USE_NORM: True
+  VISUAL_EMBED:
+    ACTIVATION: none
+    DROPOUT: 0.1
+    ELU_ALPHA: 0.5
+    IN_DIM: 2048
+    LOCATION_SIZE: 5
+    NAME: VisualBaseEmbedding
+    OUT_DIM: 768
+    USE_NORM: True
+  VOCAB_SIZE: 30522
+  V_PREDICTOR: BertVisualPredictionHead
+  WEIGHTS: 
+OUTPUT_DIR: ./output
+SEED: -1
+SOLVER:
+  AMSGRAD: False
+  BASE_LR: 0.0005
+  BETAS: [0.9, 0.999]
+  BIAS_LR_FACTOR: 1.0
+  CHECKPOINT_PERIOD: 1
+  DAMPENING: 0.0
+  EPOCH: 10
+  EPS: 1e-08
+  EVAL_PERIOD: 1
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: value
+  MOMENTUM: 0.0
+  NAME: Adam
+  NESTEROV: 0.0
+  NORM_TYPE: 2.0
+  WEIGHT_DECAY: 0.0
+  WEIGHT_DECAY_BIAS: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+VERSION: 1
+[07/01 05:46:41] xmodaler INFO: Full config saved to ./output\config.yaml
+[07/01 05:46:41] xl.utils.env INFO: Using a generated random seed 42023687
+[07/01 05:46:44] xl.engine.defaults INFO: Model:
+VLPBertPreTraining(
+  (token_embed): TokenBaseEmbedding(
+    (embeddings): Embedding(30522, 768)
+    (embeddings_norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+    (embeddings_dropout): Dropout(p=0.1, inplace=False)
+    (embeddings_pos): NNEmbeddingEncoding(
+      (position_embeddings): Embedding(512, 768)
+    )
+    (embeddings_token_type): Embedding(3, 768)
+  )
+  (visual_embed): VisualBaseEmbedding(
+    (embeddings): Linear(in_features=2048, out_features=768, bias=True)
+    (embeddings_norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+    (embeddings_dropout): Dropout(p=0.1, inplace=False)
+    (embeddings_pos): Linear(in_features=5, out_features=768, bias=True)
+  )
+  (encoder): TwoStreamBertEncoder(
+    (layers): ModuleList(
+      (0): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+      (1): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+    (v_layers): ModuleList(
+      (0): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+      (1): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+  )
+  (decoder): DecoupleBertDecoder(
+    (u_layers): ModuleList(
+      (0): BertUnderstandingLayer(
+        (biattention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (v_intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (v_output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (t_intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (t_output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+      (1): BertUnderstandingLayer(
+        (biattention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (v_intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (v_output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (t_intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (t_output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+    (g_layers): ModuleList(
+      (0): BertGenerationLayer(
+        (self_attn): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (x_att): BertCrossAttention(
+          (self): BertXAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+      (1): BertGenerationLayer(
+        (self_attn): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (x_att): BertCrossAttention(
+          (self): BertXAttention(
+            (query): Linear(in_features=768, out_features=768, bias=True)
+            (key): Linear(in_features=768, out_features=768, bias=True)
+            (value): Linear(in_features=768, out_features=768, bias=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=768, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=768, out_features=3072, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=3072, out_features=768, bias=True)
+          (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+  )
+  (predictor): BertPredictionHead(
+    (transform): BertPredictionHeadTransform(
+      (dense): Linear(in_features=768, out_features=768, bias=True)
+      (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+    )
+    (decoder): Linear(in_features=768, out_features=30522, bias=True)
+  )
+  (v_predictor): BertVisualPredictionHead(
+    (transform): BertPredictionHeadTransform(
+      (dense): Linear(in_features=768, out_features=768, bias=True)
+      (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+    )
+    (decoder): Linear(in_features=768, out_features=1601, bias=True)
+  )
+)

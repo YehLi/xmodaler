@@ -33,7 +33,7 @@ _C.DATALOADER.NUM_WORKERS = 4
 
 _C.DATALOADER.FEATS_FOLDER = ''
 
-_C.DATALOADER.ANNO_FILE = ''
+_C.DATALOADER.ANNO_FOLDER = ''
 
 _C.DATALOADER.SEQ_PER_IMG = 5
 
@@ -60,7 +60,11 @@ _C.MODEL.DECODER_DIM = 1024
 
 _C.MODEL.PREDICTOR = ''
 
+_C.MODEL.V_PREDICTOR = ''
+
 _C.MODEL.MAX_SEQ_LEN = 17
+
+_C.MODEL.WEIGHTS = ''
 
 # ----------------------------------------------------------------------------
 # Token embedding
@@ -83,6 +87,8 @@ _C.MODEL.TOKEN_EMBED.POSITION = 'none'
 
 _C.MODEL.TOKEN_EMBED.POSITION_MAX_LEN = 5000
 
+_C.MODEL.TOKEN_EMBED.TYPE_VOCAB_SIZE = 0
+
 # ----------------------------------------------------------------------------
 # Visual embedding
 # ----------------------------------------------------------------------------
@@ -102,7 +108,49 @@ _C.MODEL.VISUAL_EMBED.USE_NORM = False
 
 _C.MODEL.VISUAL_EMBED.DROPOUT = 0.0
 
-_C.MODEL.WEIGHTS = ''
+_C.MODEL.VISUAL_EMBED.LOCATION_SIZE = 0
+
+# ----------------------------------------------------------------------------
+# Pre-training
+# ----------------------------------------------------------------------------
+_C.MODEL.PRETRAINING = CN()
+
+_C.MODEL.PRETRAINING.MODEL_NAME = 'bert-base-uncased'
+
+_C.MODEL.PRETRAINING.FROM_PRETRAINED = 'bert-base-uncased'
+
+_C.MODEL.PRETRAINING.DO_LOWER_CASE = True
+
+# ----------------------------------------------------------------------------
+# BERT
+# ----------------------------------------------------------------------------
+_C.MODEL.BERT = CN()
+
+_C.MODEL.BERT.HIDDEN_SIZE = 512
+
+_C.MODEL.BERT.HIDDEN_DROPOUT_PROB = 0.1
+
+_C.MODEL.BERT.HIDDEN_ACT = "gelu"
+
+_C.MODEL.BERT.NUM_ATTENTION_HEADS = 8
+
+_C.MODEL.BERT.INTERMEDIATE_SIZE = 2048
+
+_C.MODEL.BERT.INTERMEDIATE_DROP = 0.1
+
+_C.MODEL.BERT.FFN_DROPOUT_PROB = 0.1
+
+_C.MODEL.BERT.ATTENTION_PROBS_DROPOUT_PROB = 0.1
+
+_C.MODEL.BERT.V_TARGET_SIZE = 1600
+
+_C.MODEL.BERT.NUM_HIDDEN_LAYERS = 12
+
+_C.MODEL.BERT.V_NUM_HIDDEN_LAYERS = 6
+
+_C.MODEL.BERT.NUM_UNDERSTANDING_LAYERS = 6
+
+_C.MODEL.BERT.NUM_GENERATION_LAYERS = 6
 
 # ----------------------------------------------------------------------------
 # Solver
@@ -161,7 +209,7 @@ _C.LR_SCHEDULER.GAMMA = 0.1
 # ---------------------------------------------------------------------------- #
 _C.LOSSES = CN()
 
-_C.LOSSES.NAME = ''
+_C.LOSSES.NAMES = ['']
 
 
 # ---------------------------------------------------------------------------- #

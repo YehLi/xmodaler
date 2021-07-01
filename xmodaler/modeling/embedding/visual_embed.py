@@ -2,13 +2,13 @@ import torch
 from torch import nn
 
 from xmodaler.config import configurable
-from xmodaler.layers.create_act import get_act_layer
+from ..layers.create_act import get_act_layer
 from .build import EMBEDDING_REGISTRY
 
-__all__ = ["VisualBasicEmbedding"]
+__all__ = ["VisualBaseEmbedding"]
 
 @EMBEDDING_REGISTRY.register()
-class VisualBasicEmbedding(nn.Module):
+class VisualBaseEmbedding(nn.Module):
     @configurable
     def __init__(
         self, 
@@ -17,11 +17,12 @@ class VisualBasicEmbedding(nn.Module):
         out_dim: int,
         **kwargs
     ):
-        super(VisualBasicEmbedding, self).__init__()
+        super(VisualBaseEmbedding, self).__init__()
         self.embeddings = nn.Linear(in_dim, out_dim)
         self.embeddings_act = kwargs.pop("embeddings_act", None)
         self.embeddings_norm = kwargs.pop("embeddings_norm", None)
         self.embeddings_dropout = kwargs.pop("embeddings_dropout", None)
+        self.embeddings_pos = kwargs.pop('embeddings_pos', None)
 
     @classmethod
     def from_config(cls, cfg):
@@ -49,10 +50,18 @@ class VisualBasicEmbedding(nn.Module):
             embeddings_norm = nn.LayerNorm(cfg.MODEL.VISUAL_EMBED.OUT_DIM)
             kwargs['embeddings_norm'] = embeddings_norm
 
+        if cfg.MODEL.VISUAL_EMBED.LOCATION_SIZE > 0:
+            embeddings_pos = nn.Linear(5, cfg.MODEL.VISUAL_EMBED.OUT_DIM)
+            kwargs['embeddings_pos'] = embeddings_pos
+
         return kwargs
 
-    def forward(self, feats):
+    def forward(self, feats, boxes=None):
         embeddings = self.embeddings(feats)
+
+        if (self.embeddings_pos is not None) and (boxes is not None):
+            embeddings_pos = self.embeddings_pos(boxes)
+            embeddings = embeddings + embeddings_pos
 
         if self.embeddings_act is not None:
             embeddings = self.embeddings_act(embeddings)
@@ -60,7 +69,7 @@ class VisualBasicEmbedding(nn.Module):
         if self.embeddings_norm is not None:
             embeddings = self.embeddings_norm(embeddings)
 
-        if (self.embeddings_dropout is not None) and self.training:
+        if self.embeddings_dropout is not None:
             embeddings = self.embeddings_dropout(embeddings)
 
         return embeddings

@@ -35,7 +35,7 @@ from xmodaler.utils.env import TORCH_VERSION, seed_all_rng
 from xmodaler.utils.events import CommonMetricPrinter, JSONWriter, TensorboardXWriter
 from xmodaler.utils.file_io import PathManager
 from xmodaler.utils.logger import setup_logger
-from xmodaler.utils.misc import load_vocab, decode_sequence
+from xmodaler.functional import load_vocab, decode_sequence
 
 from . import hooks
 from .train_loop import SimpleTrainer, TrainerBase
@@ -236,10 +236,10 @@ class DefaultTrainer(TrainerBase):
         optimizer = self.build_optimizer(cfg, model)
         train_data_loader = self.build_train_loader(cfg)
         test_data_loader = self.build_test_loader(cfg)
+        evaluator = self.build_evaluator(cfg) if test_data_loader is not None else None
         losses = self.build_losses(cfg)
-        evaluator = self.build_evaluator(cfg)
-        vocab = load_vocab(cfg.INFERENCE.VOCAB)
-        data_size = len(train_data_loader)
+        vocab = load_vocab(cfg.INFERENCE.VOCAB) 
+        iters_per_epoch = len(train_data_loader)
         
         # For training, wrap with DDP. But don't need this for inference.
         if comm.get_world_size() > 1:
@@ -249,7 +249,7 @@ class DefaultTrainer(TrainerBase):
         
         self._trainer = SimpleTrainer(model, train_data_loader, test_data_loader, optimizer, losses, evaluator, vocab)
 
-        self.scheduler = self.build_lr_scheduler(cfg, optimizer, data_size)
+        self.scheduler = self.build_lr_scheduler(cfg, optimizer, iters_per_epoch)
         self.checkpointer = XmodalerCheckpointer(
             # Assume you want to save checkpoints together with logs/statistics
             model,
@@ -257,10 +257,10 @@ class DefaultTrainer(TrainerBase):
             trainer=weakref.proxy(self),
         )
         self.start_iter = 0
-        self.max_iter = cfg.SOLVER.EPOCH * data_size
+        self.max_iter = cfg.SOLVER.EPOCH * iters_per_epoch
         self.cfg = cfg
 
-        self.register_hooks(self.build_hooks(data_size))
+        self.register_hooks(self.build_hooks(iters_per_epoch))
 
     def resume_or_load(self, resume=True):
         self.checkpointer.resume_or_load(self.cfg.MODEL.WEIGHTS, resume=resume)
@@ -269,7 +269,7 @@ class DefaultTrainer(TrainerBase):
             # at the next iteration
             self.start_iter = self.iter + 1
 
-    def build_hooks(self, data_size):
+    def build_hooks(self, iters_per_epoch):
         cfg = self.cfg.clone()
         cfg.defrost()
         cfg.DATALOADER.NUM_WORKERS = 0  # save some memory and time for PreciseBN
@@ -284,7 +284,7 @@ class DefaultTrainer(TrainerBase):
         # This is not always the best: if checkpointing has a different frequency,
         # some checkpoints may have more precise statistics than others.
         if comm.is_main_process():
-            #ret.append(hooks.PeriodicCheckpointer(self.checkpointer, cfg.SOLVER.CHECKPOINT_PERIOD * data_size))
+            #ret.append(hooks.PeriodicCheckpointer(self.checkpointer, cfg.SOLVER.CHECKPOINT_PERIOD * iters_per_epoch))
             ret.append(hooks.PeriodicCheckpointer(self.checkpointer, cfg.SOLVER.CHECKPOINT_PERIOD)) ################################### for debug ##############################
 
         def test_and_save_results():
@@ -293,8 +293,9 @@ class DefaultTrainer(TrainerBase):
 
         # Do evaluation after checkpointer, because then if it fails,
         # we can use the saved checkpoint to debug.
-        #ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD * data_size, test_and_save_results))
-        ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, test_and_save_results)) ######################################## for debug ########################################
+        if self.test_data_loader is not None:
+            #ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD * iters_per_epoch, test_and_save_results))
+            ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, test_and_save_results)) ######################################## for debug ########################################
 
         if comm.is_main_process():
             # Here the default print/log frequency of each writer is used.
@@ -330,8 +331,8 @@ class DefaultTrainer(TrainerBase):
         return build_optimizer(cfg, model)
 
     @classmethod
-    def build_lr_scheduler(cls, cfg, optimizer, data_size):
-        return build_lr_scheduler(cfg, optimizer, data_size)
+    def build_lr_scheduler(cls, cfg, optimizer, iters_per_epoch):
+        return build_lr_scheduler(cfg, optimizer, iters_per_epoch)
 
     @classmethod
     def build_train_loader(cls, cfg):
