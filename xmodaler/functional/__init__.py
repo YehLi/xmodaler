@@ -11,6 +11,7 @@ from .func_feats import (
     dict_as_tensor,
     dict_to_cuda,
     pad_tensor,
+    expand_tensor
 )
 
 from .func_caption import (

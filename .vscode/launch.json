@@ -12,7 +12,8 @@
             "console": "integratedTerminal",
             "args": [
                 "--num-gpus", "1",
-                "--config-file", "./configs/pretrain/pretrain.yaml", 
+                //"--config-file", "./configs/pretrain/pretrain.yaml", 
+                "--config-file", "./configs/image_caption/updown.yaml", 
             ]
         }
     ]

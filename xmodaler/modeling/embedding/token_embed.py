@@ -2,6 +2,7 @@ import torch
 from torch import nn
 
 from xmodaler.config import configurable
+from xmodaler.config import kfg
 from ..layers.create_act import get_act_layer
 from .build import EMBEDDING_REGISTRY
 from .position_embedding import build_position_encoding
@@ -65,7 +66,22 @@ class TokenBaseEmbedding(nn.Module):
         return kwargs
             
 
-    def forward(self, input_ids, token_type_ids=None):
+    def forward(self, batched_inputs):
+        ret = {}
+        if kfg.U_TOKENS_IDS in batched_inputs: 
+            u_tokens_ids = batched_inputs[kfg.U_TOKENS_IDS]
+            u_tokens_type = batched_inputs.get(kfg.U_TOKENS_TYPE, None)
+            u_token_embed = self._forward(u_tokens_ids, token_type_ids=u_tokens_type)
+            ret.update({ kfg.U_TOKEN_EMBED: u_token_embed })
+
+        if kfg.G_TOKENS_IDS in batched_inputs:
+            g_tokens_ids = batched_inputs[kfg.G_TOKENS_IDS]
+            g_tokens_type = batched_inputs.get(kfg.G_TOKENS_TYPE, None)
+            g_token_embed = self._forward(g_tokens_ids, token_type_ids=g_tokens_type)
+            ret.update({ kfg.G_TOKEN_EMBED: g_token_embed })
+        return ret
+
+    def _forward(self, input_ids, token_type_ids=None):
         embeddings = self.embeddings(input_ids)
         
         if self.embeddings_pos is not None:

@@ -5,13 +5,14 @@ from torch import nn
 from xmodaler.config import configurable
 from xmodaler.config import CfgNode as CN
 from xmodaler.config import kfg
+from .decoder import Decoder
 from ..layers.bert import BertUnderstandingLayer, BertGenerationLayer
 from .build import DECODER_REGISTRY
 
 __all__ = ["DecoupleBertDecoder"]
 
 @DECODER_REGISTRY.register()
-class DecoupleBertDecoder(nn.Module):
+class DecoupleBertDecoder(Decoder):
     @configurable
     def __init__(
         self,

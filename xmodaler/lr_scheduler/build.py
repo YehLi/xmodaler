@@ -1,5 +1,3 @@
-import torch
-
 from xmodaler.utils.registry import Registry
 
 LR_SCHEDULER_REGISTRY = Registry("LR_SCHEDULER")

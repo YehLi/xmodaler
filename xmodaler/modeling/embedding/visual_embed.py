@@ -2,6 +2,7 @@ import torch
 from torch import nn
 
 from xmodaler.config import configurable
+from xmodaler.config import kfg
 from ..layers.create_act import get_act_layer
 from .build import EMBEDDING_REGISTRY
 
@@ -56,9 +57,11 @@ class VisualBaseEmbedding(nn.Module):
 
         return kwargs
 
-    def forward(self, feats, boxes=None):
-        embeddings = self.embeddings(feats)
+    def forward(self, batched_inputs):
+        feats = batched_inputs[kfg.ATT_FEATS]
+        boxes = batched_inputs[kfg.ATT_FEATS_LOC] if kfg.ATT_FEATS_LOC in batched_inputs else None
 
+        embeddings = self.embeddings(feats)
         if (self.embeddings_pos is not None) and (boxes is not None):
             embeddings_pos = self.embeddings_pos(boxes)
             embeddings = embeddings + embeddings_pos
@@ -72,4 +75,4 @@ class VisualBaseEmbedding(nn.Module):
         if self.embeddings_dropout is not None:
             embeddings = self.embeddings_dropout(embeddings)
 
-        return embeddings
+        return { kfg.ATT_FEATS: embeddings }

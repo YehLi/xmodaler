@@ -8,7 +8,7 @@ from ..layers.soft_attention import SoftAttention
 from ..layers.multihead_attention import MultiHeadAttention
 from ..layers.positionwise_feedforward import PositionWiseFeedForward
 
-from .rnn_decoder import RnnDecoder
+from .decoder import Decoder
 from .build import DECODER_REGISTRY
 
 import numpy as np 

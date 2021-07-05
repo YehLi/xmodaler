@@ -9,14 +9,13 @@ import tempfile
 import time
 from collections import Counter
 import torch
-from fvcore.common.checkpoint import PeriodicCheckpointer as _PeriodicCheckpointer
 from fvcore.common.param_scheduler import ParamScheduler
 from fvcore.common.timer import Timer
 from fvcore.nn.precise_bn import get_bn_modules, update_bn_stats
 
 import xmodaler.utils.comm as comm
+from xmodaler.checkpoint import PeriodicEpochCheckpointer as _PeriodicCheckpointer
 from xmodaler.evaluation.testing import flatten_results_dict
-#from xmodaler.solver import LRMultiplier
 from xmodaler.utils.events import EventStorage, EventWriter
 from xmodaler.utils.file_io import PathManager
 
@@ -196,7 +195,7 @@ class PeriodicCheckpointer(_PeriodicCheckpointer, HookBase):
 
     def after_step(self):
         # No way to use **kwargs
-        self.step(self.trainer.iter)
+        self.step(iteration = self.trainer.iter, epoch=self.trainer.iter // self.trainer.iters_per_epoch)
 
 
 class LRScheduler(HookBase):
@@ -333,23 +332,20 @@ class EvalHook(HookBase):
         self._func = eval_function
 
     def _do_eval(self):
-        results = self._func()
-
-        if results:
-            assert isinstance(
-                results, dict
-            ), "Eval function must return a dict. Got {} instead.".format(results)
-
-            flattened_results = flatten_results_dict(results)
-            for k, v in flattened_results.items():
-                try:
-                    v = float(v)
-                except Exception as e:
-                    raise ValueError(
-                        "[EvalHook] eval_function should return a nested dict of float. "
-                        "Got '{}: {}' instead.".format(k, v)
-                    ) from e
-            self.trainer.storage.put_scalars(**flattened_results, smoothing_hint=False)
+        if comm.is_main_process():
+            results = self._func()
+            if results:
+                assert isinstance(results, dict), "Eval function must return a dict. Got {} instead.".format(results)
+                flattened_results = flatten_results_dict(results)
+                for k, v in flattened_results.items():
+                    try:
+                        v = float(v)
+                    except Exception as e:
+                        raise ValueError(
+                            "[EvalHook] eval_function should return a nested dict of float. "
+                            "Got '{}: {}' instead.".format(k, v)
+                        ) from e
+                self.trainer.storage.put_scalars(**flattened_results, smoothing_hint=False)
 
         # Evaluation may take different time among workers.
         # A barrier make them start the next iteration together.

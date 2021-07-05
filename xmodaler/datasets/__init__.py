@@ -1,6 +1,6 @@
 from .build import (
     build_xmodaler_train_loader,
-    build_xmodaler_test_loader
+    build_xmodaler_valtest_loader
 )
 
 from .common import DatasetFromList, MapDataset

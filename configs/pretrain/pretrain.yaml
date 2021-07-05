@@ -89,7 +89,7 @@ LR_SCHEDULER:
 
 ####################################### losses ####################################### 
 LOSSES:
-  NAMES: ['CrossEntropy']
+  NAMES: ['PretrainLosses']
 
 INFERENCE:
   VOCAB: ''

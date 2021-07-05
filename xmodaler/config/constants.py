@@ -58,6 +58,18 @@ _K.G_LOGITS = 'G_LOGITS'
 
 _K.V_LOGITS = 'V_LOGITS'
 
+_K.SEQ_PER_SAMPLE = 'SEQ_PER_SAMPLE'
+
+_K.G_SENTS_IDS = 'G_SENTS_IDS'
+
+_K.G_SENTS = 'G_SENTS'
+
+_K.G_LOGP = 'G_LOGP'
+
+_K.DECODE_BY_SAMPLE = 'DECODE_BY_SAMPLE'
+
+_K.REWARDS = 'REWARDS'
+
 _K.COCO_PATH = '../coco_caption'
 
 _K.TEMP_DIR = './data/temp'

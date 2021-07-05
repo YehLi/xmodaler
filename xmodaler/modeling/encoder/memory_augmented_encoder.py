@@ -119,7 +119,7 @@ class MemoryAugmentedEncoder(nn.Module):
             global_feats = feats_masks.sum(1) / masks_sum.unsqueeze(-1)
         return global_feats
 
-    def forward(self, batched_inputs):
+    def forward(self, batched_inputs, mode=None):
         att_feats = batched_inputs[kfg.ATT_FEATS]
         att_masks = batched_inputs[kfg.ATT_MASKS]
 

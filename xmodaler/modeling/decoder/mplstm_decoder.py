@@ -5,13 +5,13 @@ from xmodaler.config import configurable
 from xmodaler.config import CfgNode as CN
 from xmodaler.config import kfg
 from ..layers.soft_attention import SoftAttention
-from .rnn_decoder import RnnDecoder
+from .decoder import Decoder
 from .build import DECODER_REGISTRY
 
 __all__ = ["MPLSTMDecoder"]
 
 @DECODER_REGISTRY.register()
-class MPLSTMDecoder(RnnDecoder):
+class MPLSTMDecoder(Decoder):
     @configurable
     def __init__(
         self,

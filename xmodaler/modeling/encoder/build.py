@@ -1,5 +1,3 @@
-import torch
-
 from xmodaler.utils.registry import Registry
 
 ENCODER_REGISTRY = Registry("ENCODER")

@@ -16,12 +16,24 @@ class CrossEntropy(nn.Module):
         return {}
 
     def forward(self, outputs_dict):
-        logits = outputs_dict[kfg.LOGITS]
-        targets = outputs_dict[kfg.TARGET_IDS]
+        ret  = {}
+        if kfg.G_LOGITS in outputs_dict:
+            logits = outputs_dict[kfg.G_LOGITS]
+            targets = outputs_dict[kfg.G_TARGET_IDS]
 
-        logits = logits.view(-1, logits.shape[-1])
-        targets = targets.view(-1).long()
-        loss = self.criterion(logits, targets)
-        return {'CrossEntropy Loss': loss}
+            logits = logits.view(-1, logits.shape[-1])
+            targets = targets.view(-1).long()
+            loss = self.criterion(logits, targets)
+            ret.update({ 'CrossEntropy Loss(G)': loss })
 
+        if kfg.U_LOGITS in outputs_dict:
+            logits = outputs_dict[kfg.U_LOGITS]
+            targets = outputs_dict[kfg.U_TARGET_IDS]
+
+            logits = logits.view(-1, logits.shape[-1])
+            targets = targets.view(-1).long()
+            loss = self.criterion(logits, targets)
+            ret.update({'CrossEntropy Loss(U)': loss})
+            
+        return ret
 

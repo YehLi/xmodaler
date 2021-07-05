@@ -1,4 +1,3 @@
-import torch
 from xmodaler.utils.registry import Registry
 
 EMBEDDING_REGISTRY = Registry("EMBEDDING")

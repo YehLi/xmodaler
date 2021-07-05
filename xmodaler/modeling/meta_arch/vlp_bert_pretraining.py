@@ -74,85 +74,84 @@ class VLPBertPreTraining(BaseEncoderDecoder):
             kfg.EXT_ATT_MASKS: ext_vmasks
         }
 
-    def forward(self, batched_inputs):
-        batched_inputs = self.preprocess_batch(batched_inputs)
-        
+    def _forward(self, batched_inputs):        
+        inputs = batched_inputs
         masks = self.get_extended_attention_mask(batched_inputs)
-        inputs = masks
+        inputs.update(masks)
 
-        vfeats = batched_inputs[kfg.ATT_FEATS]
-        vfeats_loc = batched_inputs[kfg.ATT_FEATS_LOC]
-        vfeats = self.visual_embed(vfeats, vfeats_loc)
-        inputs.update({ kfg.ATT_FEATS: vfeats })
+        ve_out = self.visual_embed(batched_inputs)
+        inputs.update(ve_out)
 
-        if kfg.U_TOKENS_TYPE in batched_inputs:
-            u_tokens_ids = batched_inputs[kfg.U_TOKENS_IDS]
-            u_tokens_type = batched_inputs[kfg.U_TOKENS_TYPE]
-            u_token_embed = self.token_embed(u_tokens_ids, token_type_ids=u_tokens_type)
-            inputs.update({ kfg.U_TOKEN_EMBED: u_token_embed })
+        encoder_out_v = self.encoder(inputs, mode='v')
+        inputs.update(encoder_out_v)
+        inputs = self.decoder.preprocess(inputs)
 
-        if kfg.G_TOKENS_TYPE in batched_inputs:
-            g_tokens_ids = batched_inputs[kfg.G_TOKENS_IDS]
-            g_tokens_type = batched_inputs[kfg.G_TOKENS_TYPE]
-            g_token_embed = self.token_embed(g_tokens_ids, token_type_ids=g_tokens_type)
-            inputs.update({ kfg.G_TOKEN_EMBED: g_token_embed })
+        te_out = self.token_embed(batched_inputs)
+        inputs.update(te_out)
         
-        encoder_out = self.encoder(inputs)
-        inputs.update(encoder_out)
-
+        encoder_out_t = self.encoder(inputs, mode='t')
+        inputs.update(encoder_out_t)
+        
         decoder_out = self.decoder(inputs)
         inputs.update(decoder_out)
 
+        tlogits = self.predictor(inputs)
+        inputs.update(tlogits)
 
-    def preprocess_batch(self, batched_inputs):
-        vfeats = [x[kfg.ATT_FEATS] for x in batched_inputs]
-        vfeats, vmasks = pad_tensor(vfeats, padding_value=0, use_mask=True)
-        ret = { kfg.ATT_FEATS: vfeats, kfg.ATT_MASKS: vmasks }
+        vlogits = self.v_predictor(inputs)
+        inputs.update(vlogits)
+        return inputs
 
-        if kfg.U_TOKENS_IDS in batched_inputs[0]:
-            u_tokens_ids = [x[kfg.U_TOKENS_IDS] for x in batched_inputs]
-            u_tokens_ids, tmasks = pad_tensor(u_tokens_ids, padding_value=0, use_mask=True)
-            ret.update( { kfg.U_TOKENS_IDS: u_tokens_ids, kfg.TOKENS_MASKS: tmasks} )
 
-        if kfg.G_TOKENS_IDS in batched_inputs[0]:
-            g_tokens_ids = [x[kfg.G_TOKENS_IDS] for x in batched_inputs]
-            g_tokens_ids, tmasks = pad_tensor(g_tokens_ids, padding_value=0, use_mask=True)
-            ret.update( { kfg.G_TOKENS_IDS: g_tokens_ids, kfg.TOKENS_MASKS: tmasks} )
-
-        if kfg.U_TARGET_IDS in batched_inputs[0]:
-            u_target_ids = [x[kfg.U_TARGET_IDS] for x in batched_inputs]
-            u_target_ids = pad_tensor(u_target_ids, padding_value=-1, use_mask=False)
-            ret.update({ kfg.U_TARGET_IDS: u_target_ids })
-
-        if kfg.G_TARGET_IDS in batched_inputs[0]:
-            g_target_ids = [x[kfg.G_TARGET_IDS] for x in batched_inputs]
-            g_target_ids = pad_tensor(g_target_ids, padding_value=-1, use_mask=False)
-            ret.update({ kfg.G_TARGET_IDS: g_target_ids })
-
-        if kfg.ATT_FEATS_LOC in batched_inputs[0]:
-            vfeats_loc = [x[kfg.ATT_FEATS_LOC] for x in batched_inputs]
-            vfeats_loc = pad_tensor(vfeats_loc, padding_value=0, use_mask=False)
-            ret.update({ kfg.ATT_FEATS_LOC: vfeats_loc })
-
-        if kfg.U_TOKENS_TYPE in batched_inputs[0]:
-            u_tokens_type = [x[kfg.U_TOKENS_TYPE] for x in batched_inputs]
-            u_tokens_type = pad_tensor(u_tokens_type, padding_value=0, use_mask=False)
-            ret.update({ kfg.U_TOKENS_TYPE: u_tokens_type })
-
-        if kfg.G_TOKENS_TYPE in batched_inputs[0]:
-            g_tokens_type = [x[kfg.G_TOKENS_TYPE] for x in batched_inputs]
-            g_tokens_type = pad_tensor(g_tokens_type, padding_value=1, use_mask=False)
-            ret.update({ kfg.G_TOKENS_TYPE: g_tokens_type })
-
-        if kfg.V_TARGET in batched_inputs[0]:
-            v_target = [x[kfg.V_TARGET] for x in batched_inputs]
-            v_target = pad_tensor(v_target, padding_value=0, use_mask=False)
-            ret.update({ kfg.V_TARGET: v_target })
-
-        if kfg.V_TARGET_LABELS in batched_inputs[0]:
-            v_target_labels = [x[kfg.V_TARGET_LABELS] for x in batched_inputs]
-            v_target_labels = pad_tensor(v_target_labels, padding_value=-1, use_mask=False)
-            ret.update({ kfg.V_TARGET_LABELS: v_target_labels })
-
-        dict_to_cuda(ret)
-        return ret
+#    def preprocess_batch(self, batched_inputs):
+#        vfeats = [x[kfg.ATT_FEATS] for x in batched_inputs]
+#        vfeats, vmasks = pad_tensor(vfeats, padding_value=0, use_mask=True)
+#        ret = { kfg.ATT_FEATS: vfeats, kfg.ATT_MASKS: vmasks }
+#
+#        if kfg.U_TOKENS_IDS in batched_inputs[0]:
+#            u_tokens_ids = [x[kfg.U_TOKENS_IDS] for x in batched_inputs]
+#            u_tokens_ids, tmasks = pad_tensor(u_tokens_ids, padding_value=0, use_mask=True)
+#            ret.update( { kfg.U_TOKENS_IDS: u_tokens_ids, kfg.TOKENS_MASKS: tmasks} )
+#
+#        if kfg.G_TOKENS_IDS in batched_inputs[0]:
+#            g_tokens_ids = [x[kfg.G_TOKENS_IDS] for x in batched_inputs]
+#            g_tokens_ids, tmasks = pad_tensor(g_tokens_ids, padding_value=0, use_mask=True)
+#            ret.update( { kfg.G_TOKENS_IDS: g_tokens_ids, kfg.TOKENS_MASKS: tmasks} )
+#
+#        if kfg.U_TARGET_IDS in batched_inputs[0]:
+#            u_target_ids = [x[kfg.U_TARGET_IDS] for x in batched_inputs]
+#            u_target_ids = pad_tensor(u_target_ids, padding_value=-1, use_mask=False)
+#            ret.update({ kfg.U_TARGET_IDS: u_target_ids })
+#
+#        if kfg.G_TARGET_IDS in batched_inputs[0]:
+#            g_target_ids = [x[kfg.G_TARGET_IDS] for x in batched_inputs]
+#            g_target_ids = pad_tensor(g_target_ids, padding_value=-1, use_mask=False)
+#            ret.update({ kfg.G_TARGET_IDS: g_target_ids })
+#
+#        if kfg.ATT_FEATS_LOC in batched_inputs[0]:
+#            vfeats_loc = [x[kfg.ATT_FEATS_LOC] for x in batched_inputs]
+#            vfeats_loc = pad_tensor(vfeats_loc, padding_value=0, use_mask=False)
+#            ret.update({ kfg.ATT_FEATS_LOC: vfeats_loc })
+#
+#        if kfg.U_TOKENS_TYPE in batched_inputs[0]:
+#            u_tokens_type = [x[kfg.U_TOKENS_TYPE] for x in batched_inputs]
+#            u_tokens_type = pad_tensor(u_tokens_type, padding_value=0, use_mask=False)
+#            ret.update({ kfg.U_TOKENS_TYPE: u_tokens_type })
+#
+#        if kfg.G_TOKENS_TYPE in batched_inputs[0]:
+#            g_tokens_type = [x[kfg.G_TOKENS_TYPE] for x in batched_inputs]
+#            g_tokens_type = pad_tensor(g_tokens_type, padding_value=1, use_mask=False)
+#            ret.update({ kfg.G_TOKENS_TYPE: g_tokens_type })
+#
+#        if kfg.V_TARGET in batched_inputs[0]:
+#            v_target = [x[kfg.V_TARGET] for x in batched_inputs]
+#            v_target = pad_tensor(v_target, padding_value=0, use_mask=False)
+#            ret.update({ kfg.V_TARGET: v_target })
+#
+#        if kfg.V_TARGET_LABELS in batched_inputs[0]:
+#            v_target_labels = [x[kfg.V_TARGET_LABELS] for x in batched_inputs]
+#            v_target_labels = pad_tensor(v_target_labels, padding_value=-1, use_mask=False)
+#            ret.update({ kfg.V_TARGET_LABELS: v_target_labels })
+#
+#        dict_to_cuda(ret)
+#        return ret

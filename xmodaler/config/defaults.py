@@ -18,6 +18,8 @@ _C.DATASETS = CN()
 
 _C.DATASETS.TRAIN = ''
 
+_C.DATASETS.VAL = ''
+
 _C.DATASETS.TEST = ''
 
 # -----------------------------------------------------------------------------
@@ -35,9 +37,17 @@ _C.DATALOADER.FEATS_FOLDER = ''
 
 _C.DATALOADER.ANNO_FOLDER = ''
 
-_C.DATALOADER.SEQ_PER_IMG = 5
+_C.DATALOADER.SEQ_PER_SAMPLE = 5
 
 _C.DATALOADER.MAX_FEAT_NUM = -1
+
+# -----------------------------------------------------------------------------
+# Engine
+# -----------------------------------------------------------------------------
+_C.ENGINE = CN()
+
+_C.ENGINE.NAME = 'DefaultTrainer'
+
 
 # -----------------------------------------------------------------------------
 # Model
@@ -211,6 +221,33 @@ _C.LOSSES = CN()
 
 _C.LOSSES.NAMES = ['']
 
+_C.LOSSES.LABELSMOOTHING = 0.1
+
+# ---------------------------------------------------------------------------- #
+# SCORER options
+# ---------------------------------------------------------------------------- #
+_C.SCORER = CN()
+
+_C.SCORER.NAME = ''
+
+_C.SCORER.TYPES = ['']
+
+_C.SCORER.WEIGHTS = [1.0]
+
+_C.SCORER.GT_PATH = 'coco_train_gts.pkl'
+
+_C.SCORER.CIDER_CACHED = 'coco_train_cider.pkl'
+
+_C.SCORER.EOS_ID = 0
+
+# ---------------------------------------------------------------------------- #
+# Decode strategy
+# ---------------------------------------------------------------------------- #
+_C.DECODE_STRATEGY = CN()
+
+_C.DECODE_STRATEGY.NAME = ''
+
+_C.DECODE_STRATEGY.BEAM_SIZE = 1
 
 # ---------------------------------------------------------------------------- #
 # INFERENCE options
@@ -228,8 +265,6 @@ _C.INFERENCE.CAP_KEY = 'caption'
 _C.INFERENCE.VAL_ANNFILE = 'captions_val5k.json'
 
 _C.INFERENCE.TEST_ANNFILE = 'captions_test5k.json'
-
-_C.INFERENCE.BEAM_SIZE = 1
 
 # ---------------------------------------------------------------------------- #
 # Misc options

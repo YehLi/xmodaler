@@ -14,7 +14,8 @@ __all__ = ["RnnAttEncoderDecoder"]
 @META_ARCH_REGISTRY.register()
 class RnnAttEncoderDecoder(BaseEncoderDecoder):
 
-    def get_extended_attention_mask(self, att_masks):
+    def get_extended_attention_mask(self, batched_inputs):
+        att_masks = batched_inputs[kfg.ATT_MASKS]
         if att_masks is not None:
             att_masks = att_masks.to(dtype=next(self.parameters()).dtype)
             ext_att_masks = (1.0 - att_masks) * -10000.0
@@ -26,85 +27,40 @@ class RnnAttEncoderDecoder(BaseEncoderDecoder):
             kfg.EXT_ATT_MASKS: ext_att_masks
         }
 
-    def forward(self, batched_inputs):
-        batched_inputs = self.preprocess_batch(batched_inputs)
-        tokens_ids = batched_inputs[kfg.TOKENS_IDS]
-        att_feats = batched_inputs[kfg.ATT_FEATS]
-        att_masks = batched_inputs[kfg.ATT_MASKS]
+    def _forward(self, batched_inputs):
+        inputs = batched_inputs
+        masks = self.get_extended_attention_mask(batched_inputs)
+        inputs.update(masks)
 
-        att_feats = self.visual_embed(att_feats)
-        inputs = self.get_extended_attention_mask(att_masks)
-        inputs.update( { kfg.ATT_FEATS: att_feats } )
-        
-        encoder_out = self.encoder(inputs)
-        inputs.update(encoder_out)
+        ve_out = self.visual_embed(batched_inputs)
+        inputs.update(ve_out)
+
+        encoder_out_v = self.encoder(inputs, mode='v')
+        inputs.update(encoder_out_v)
         inputs = self.decoder.preprocess(inputs)
-        
+
+        tokens_ids = batched_inputs[kfg.G_TOKENS_IDS]
         batch_size, seq_len = tokens_ids.shape
-        outputs = Variable(torch.zeros(batch_size, seq_len, self.predictor.vocab_size).cuda())
+        outputs = Variable(torch.zeros(batch_size, seq_len, self.vocab_size).cuda())
         
         for t in range(seq_len):
             if t >= 1 and tokens_ids[:, t].max() == 0:
                 break
             
             wt = tokens_ids[:, t].clone()
-            token_embed = self.token_embed(wt)
-            inputs.update({ kfg.TOKEN_EMBED: token_embed })
-            decoder_out = self.decoder(inputs)
-            inputs.update(decoder_out)
-
-            logit = self.predictor(inputs)
-            outputs[:, t] = logit
+            inputs.update({ kfg.G_TOKENS_IDS: wt })
             
-        return { 
-            kfg.LOGITS: outputs,
-            kfg.TARGET_IDS: batched_inputs[kfg.TARGET_IDS]
-        }
+            te_out = self.token_embed(inputs)
+            inputs.update(te_out)
 
-    def decode(self, cfg, batched_inputs):
-        batched_inputs = self.preprocess_batch_test(batched_inputs)
-        att_feats = batched_inputs[kfg.ATT_FEATS]
-        att_masks = batched_inputs[kfg.ATT_MASKS]
+            encoder_out_t = self.encoder(inputs, mode='t')
+            inputs.update(encoder_out_t)
 
-        att_feats = self.visual_embed(att_feats)
-        inputs = self.get_extended_attention_mask(att_masks)
-        inputs.update( { kfg.ATT_FEATS: att_feats } )
-
-        encoder_out = self.encoder(inputs)
-        inputs.update(encoder_out)
-        inputs = self.decoder.preprocess(inputs)
-
-        batch_size = att_feats.size(0)
-        sents = Variable(torch.zeros((batch_size, cfg.MODEL.MAX_SEQ_LEN), dtype=torch.long).cuda())
-        logprobs = Variable(torch.zeros(batch_size, cfg.MODEL.MAX_SEQ_LEN).cuda())
-        wt = Variable(torch.zeros(batch_size, dtype=torch.long).cuda())
-        unfinished = wt.eq(wt)
-
-        for t in range(cfg.MODEL.MAX_SEQ_LEN):
-            token_embed = self.token_embed(wt)
-            inputs.update({ kfg.TOKEN_EMBED: token_embed })
             decoder_out = self.decoder(inputs)
             inputs.update(decoder_out)
 
-            logit = self.predictor(inputs)
-            logprobs_t = F.log_softmax(logit, dim=1)
-            logP_t, wt = torch.max(logprobs_t, 1)
+            logit = self.predictor(inputs)[kfg.G_LOGITS]
+            outputs[:, t] = logit
 
-            wt = wt.view(-1).long()
-            unfinished = unfinished * (wt > 0)
-            wt = wt * unfinished.type_as(wt)
-            sents[:,t] = wt
-            logprobs[:,t] = logP_t.view(-1)
-
-            if unfinished.sum() == 0:
-                break
-        return sents, logprobs
-
-
-
-
-
-
-
-
-
+        inputs.update({kfg.G_LOGITS: outputs})
+        return inputs

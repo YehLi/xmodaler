@@ -8,21 +8,23 @@ in training / testing. They will not work for everyone, but many users may find 
 The behavior of functions/classes in this file is subject to change,
 since they are meant to represent the "common default behavior" people need in their projects.
 """
-
+import time
 import argparse
 import logging
 import tqdm
 import os
 import sys
+import numpy as np
 import weakref
 from collections import OrderedDict
-from typing import Optional
-import torch
+from typing import Dict, List, Optional
 from omegaconf import OmegaConf
+
+import torch
 from torch.nn.parallel import DistributedDataParallel
 
 from xmodaler.checkpoint import XmodalerCheckpointer
-from xmodaler.datasets import build_xmodaler_train_loader, build_xmodaler_test_loader
+from xmodaler.datasets import build_xmodaler_train_loader, build_xmodaler_valtest_loader
 from xmodaler.modeling import build_model
 from xmodaler.optim import build_optimizer
 from xmodaler.lr_scheduler import build_lr_scheduler
@@ -32,19 +34,18 @@ from xmodaler.config import kfg
 from xmodaler.utils import comm
 from xmodaler.utils.collect_env import collect_env_info
 from xmodaler.utils.env import TORCH_VERSION, seed_all_rng
-from xmodaler.utils.events import CommonMetricPrinter, JSONWriter, TensorboardXWriter
+from xmodaler.utils.events import CommonMetricPrinter, JSONWriter, TensorboardXWriter, get_event_storage
 from xmodaler.utils.file_io import PathManager
 from xmodaler.utils.logger import setup_logger
-from xmodaler.functional import load_vocab, decode_sequence
 
 from . import hooks
-from .train_loop import SimpleTrainer, TrainerBase
+from .train_loop import TrainerBase
+from .build import ENGINE_REGISTRY
 
 __all__ = [
     "default_argument_parser",
     "default_setup",
     "default_writers",
-    #"DefaultPredictor",
     "DefaultTrainer",
 ]
 
@@ -177,6 +178,7 @@ def default_writers(output_dir: str, max_iter: Optional[int] = None):
         TensorboardXWriter(output_dir),
     ]
 
+@ENGINE_REGISTRY.register()
 class DefaultTrainer(TrainerBase):
     """
     A trainer with default training logic. It does the following:
@@ -233,34 +235,35 @@ class DefaultTrainer(TrainerBase):
 
         # Assume these objects must be constructed in this order.
         model = self.build_model(cfg)
-        optimizer = self.build_optimizer(cfg, model)
-        train_data_loader = self.build_train_loader(cfg)
-        test_data_loader = self.build_test_loader(cfg)
-        evaluator = self.build_evaluator(cfg) if test_data_loader is not None else None
-        losses = self.build_losses(cfg)
-        vocab = load_vocab(cfg.INFERENCE.VOCAB) 
-        iters_per_epoch = len(train_data_loader)
+        self.optimizer = self.build_optimizer(cfg, model)
+        self.train_data_loader = self.build_train_loader(cfg)
+        self.iters_per_epoch = len(self.train_data_loader)
+        self._train_data_loader_iter = iter(self.train_data_loader)
+        self.val_data_loader = self.build_val_loader(cfg)
+        self.test_data_loader = self.build_test_loader(cfg)
+        self.evaluator = self.build_evaluator(cfg) if self.test_data_loader is not None else None
+        self.losses = self.build_losses(cfg)
+        self.scheduler = self.build_lr_scheduler(cfg, self.optimizer, self.iters_per_epoch)
         
         # For training, wrap with DDP. But don't need this for inference.
         if comm.get_world_size() > 1:
             model = DistributedDataParallel(
                 model, device_ids=[comm.get_local_rank()], broadcast_buffers=False
             )
-        
-        self._trainer = SimpleTrainer(model, train_data_loader, test_data_loader, optimizer, losses, evaluator, vocab)
+        self.model = model
+        self.model.train()
 
-        self.scheduler = self.build_lr_scheduler(cfg, optimizer, iters_per_epoch)
         self.checkpointer = XmodalerCheckpointer(
             # Assume you want to save checkpoints together with logs/statistics
-            model,
+            self.model,
             cfg.OUTPUT_DIR,
             trainer=weakref.proxy(self),
         )
-        self.start_iter = 0
-        self.max_iter = cfg.SOLVER.EPOCH * iters_per_epoch
-        self.cfg = cfg
 
-        self.register_hooks(self.build_hooks(iters_per_epoch))
+        self.cfg = cfg
+        self.start_iter = 0
+        self.max_iter = cfg.SOLVER.EPOCH * self.iters_per_epoch
+        self.register_hooks(self.build_hooks())
 
     def resume_or_load(self, resume=True):
         self.checkpointer.resume_or_load(self.cfg.MODEL.WEIGHTS, resume=resume)
@@ -269,7 +272,7 @@ class DefaultTrainer(TrainerBase):
             # at the next iteration
             self.start_iter = self.iter + 1
 
-    def build_hooks(self, iters_per_epoch):
+    def build_hooks(self):
         cfg = self.cfg.clone()
         cfg.defrost()
         cfg.DATALOADER.NUM_WORKERS = 0  # save some memory and time for PreciseBN
@@ -284,17 +287,16 @@ class DefaultTrainer(TrainerBase):
         # This is not always the best: if checkpointing has a different frequency,
         # some checkpoints may have more precise statistics than others.
         if comm.is_main_process():
-            #ret.append(hooks.PeriodicCheckpointer(self.checkpointer, cfg.SOLVER.CHECKPOINT_PERIOD * iters_per_epoch))
-            ret.append(hooks.PeriodicCheckpointer(self.checkpointer, cfg.SOLVER.CHECKPOINT_PERIOD)) ################################### for debug ##############################
+            ret.append(hooks.PeriodicCheckpointer(self.checkpointer, cfg.SOLVER.CHECKPOINT_PERIOD * self.iters_per_epoch))
 
         def test_and_save_results():
-            self._last_eval_results = self.test(self.cfg, self.model, self.test_data_loader, self.evaluator, self.vocab)
+            self._last_eval_results = self.test(self.cfg, self.model, self.test_data_loader, self.evaluator)
             return self._last_eval_results
 
         # Do evaluation after checkpointer, because then if it fails,
         # we can use the saved checkpoint to debug.
         if self.test_data_loader is not None:
-            #ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD * iters_per_epoch, test_and_save_results))
+            #ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD * self.iters_per_epoch, test_and_save_results))
             ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, test_and_save_results)) ######################################## for debug ########################################
 
         if comm.is_main_process():
@@ -314,10 +316,6 @@ class DefaultTrainer(TrainerBase):
         #    ), "No evaluation results obtained during training!"
         #    verify_results(self.cfg, self._last_eval_results)
         #    return self._last_eval_results
-
-    def run_step(self):
-        self._trainer.iter = self.iter
-        self._trainer.run_step()
 
     @classmethod
     def build_model(cls, cfg):
@@ -340,7 +338,11 @@ class DefaultTrainer(TrainerBase):
 
     @classmethod
     def build_test_loader(cls, cfg):
-        return build_xmodaler_test_loader(cfg)
+        return build_xmodaler_valtest_loader(cfg, stage='test')
+
+    @classmethod
+    def build_val_loader(cls, cfg):
+        return build_xmodaler_valtest_loader(cfg, stage='val')
 
     @classmethod
     def build_losses(cls, cfg):
@@ -350,35 +352,118 @@ class DefaultTrainer(TrainerBase):
     def build_evaluator(cls, cfg):
         return build_evaluation(cfg, cfg.INFERENCE.TEST_ANNFILE)
 
+    @staticmethod
+    def auto_scale_workers(cfg, num_workers: int):
+        pass
+
+    def state_dict(self):
+        ret = super().state_dict()
+        ret["optimizer"] = self.optimizer.state_dict()
+        return ret
+
+    def load_state_dict(self, state_dict):
+        super().load_state_dict(state_dict)
+        self.optimizer.load_state_dict(state_dict["optimizer"])
+
+    def _write_metrics(
+        self,
+        loss_dict: Dict[str, torch.Tensor],
+        data_time: float,
+        prefix: str = "",
+    ):
+        """
+        Args:
+            loss_dict (dict): dict of scalar losses
+            data_time (float): time taken by the dataloader iteration
+        """
+        metrics_dict = {}
+        for k, v in loss_dict.items():
+            if isinstance(v, torch.Tensor):
+                metrics_dict.update({ k: v.detach().cpu().item() })
+            else:
+                metrics_dict.update({ k: v })
+        #metrics_dict = {k: v.detach().cpu().item() for k, v in loss_dict.items()}
+        metrics_dict["data_time"] = data_time
+
+        # Gather metrics among all workers for logging
+        # This assumes we do DDP-style training, which is currently the only
+        # supported method in detectron2.
+        all_metrics_dict = comm.gather(metrics_dict)
+
+        if comm.is_main_process():
+            storage = get_event_storage()
+
+            # data_time among workers can have high variance. The actual latency
+            # caused by data_time is the maximum among workers.
+            data_time = np.max([x.pop("data_time") for x in all_metrics_dict])
+            storage.put_scalar("data_time", data_time)
+
+            # average the rest metrics
+            metrics_dict = {
+                k: np.mean([x[k] for x in all_metrics_dict]) for k in all_metrics_dict[0].keys()
+            }
+            total_losses_reduced = sum(metrics_dict.values())
+            if not np.isfinite(total_losses_reduced):
+                raise FloatingPointError(
+                    f"Loss became infinite or NaN at iteration={self.iter}!\n"
+                    f"loss_dict = {metrics_dict}"
+                )
+
+            storage.put_scalar("{}total_loss".format(prefix), total_losses_reduced)
+            if len(metrics_dict) > 1:
+                storage.put_scalars(**metrics_dict)
+
     @classmethod
-    def test(cls, cfg, model, test_data_loader, evaluator, vocab):
+    def test(cls, cfg, model, test_data_loader, evaluator):
         model.eval()
         results = []
         with torch.no_grad():
             for batched_inputs in tqdm.tqdm(test_data_loader):
                 ids = [ x[kfg.IDS] for x in batched_inputs ]
-                seq, _ = model.decode(cfg, batched_inputs)
-                sents = decode_sequence(vocab, seq.data)
-
+                res = model(batched_inputs, use_beam_search=True, output_sents=True)
+                sents = res[kfg.G_SENTS]
+                
                 for id, sent in zip(ids, sents):
                     results.append({cfg.INFERENCE.ID_KEY: int(id), cfg.INFERENCE.CAP_KEY: sent})
         eval_res = evaluator.eval(results)
         model.train()
         return eval_res
 
-    @staticmethod
-    def auto_scale_workers(cfg, num_workers: int):
-        pass
+    def run_step(self):
+        """
+        Implement the standard training logic described above.
+        """
+        assert self.model.training, "[SimpleTrainer] model was changed to eval mode!"
+        start = time.perf_counter()
+        """
+        If you want to do something with the data, you can wrap the dataloader.
+        """
+        data = next(self._train_data_loader_iter)
+        data_time = time.perf_counter() - start
 
-# Access basic attributes from the underlying trainer
-for _attr in ["model", "train_data_loader", "test_data_loader", "optimizer", "losses", "evaluator", "vocab"]:
-    setattr(
-        DefaultTrainer,
-        _attr,
-        property(
-            # getter
-            lambda self, x=_attr: getattr(self._trainer, x),
-            # setter
-            lambda self, value, x=_attr: setattr(self._trainer, x, value),
-        ),
-    )    
+        """
+        If you want to do something with the losses, you can wrap the model.
+        """
+        outputs_dict = self.model(data)
+
+        losses_dict = {}
+        for loss in self.losses:
+            loss_dict = loss(outputs_dict)
+            losses_dict.update(loss_dict)
+        losses = sum(losses_dict.values())
+
+        """
+        If you need to accumulate gradients or do something similar, you can
+        wrap the optimizer with your custom `zero_grad()` method.
+        """
+        self.optimizer.zero_grad()
+        losses.backward()
+
+        self._write_metrics(loss_dict, data_time)
+
+        """
+        If you need gradient clipping/scaling or other processing, you can
+        wrap the optimizer with your custom `step()` method. But it is
+        suboptimal as explained in https://arxiv.org/abs/2006.15704 Sec 3.2.4
+        """
+        self.optimizer.step()

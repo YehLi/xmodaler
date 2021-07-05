@@ -3,7 +3,8 @@ import logging
 import os
 import pickle
 import torch
-from fvcore.common.checkpoint import Checkpointer
+from typing import Any
+from fvcore.common.checkpoint import Checkpointer, PeriodicCheckpointer
 from torch.nn.parallel import DistributedDataParallel
 
 import xmodaler.utils.comm as comm
@@ -11,6 +12,43 @@ from xmodaler.utils.env import TORCH_VERSION
 from xmodaler.utils.file_io import PathManager
 
 from .c2_model_loading import align_and_update_state_dicts
+
+class PeriodicEpochCheckpointer(PeriodicCheckpointer):
+    def step(self, iteration: int, epoch: int, **kwargs: Any) -> None:
+        """
+        Perform the appropriate action at the given iteration.
+
+        Args:
+            iteration (int): the current iteration, ranged in [0, max_iter-1].
+            kwargs (Any): extra data to save, same as in
+                :meth:`Checkpointer.save`.
+        """
+        iteration = int(iteration)
+        epoch = int(epoch)
+        additional_state = {"iteration": iteration}
+        additional_state.update(kwargs)
+
+        if (iteration + 1) % self.period == 0:
+            self.checkpointer.save(
+                "{}_Epoch_{:05d}_Iter_{:07d}".format(self.file_prefix, epoch, iteration), **additional_state
+            )
+
+            if self.max_to_keep is not None:
+                self.recent_checkpoints.append(self.checkpointer.get_checkpoint_file())
+                # pyre-fixme[58]: `>` is not supported for operand types `int` and
+                #  `Optional[int]`.
+                if len(self.recent_checkpoints) > self.max_to_keep:
+                    file_to_delete = self.recent_checkpoints.pop(0)
+                    if self.path_manager.exists(
+                        file_to_delete
+                    ) and not file_to_delete.endswith(f"{self.file_prefix}_final.pth"):
+                        self.path_manager.rm(file_to_delete)
+
+        if self.max_iter is not None:
+            # pyre-fixme[58]
+            if iteration >= self.max_iter - 1:
+                self.checkpointer.save(f"{self.file_prefix}_final", **additional_state)
+
 
 class XmodalerCheckpointer(Checkpointer):
     """

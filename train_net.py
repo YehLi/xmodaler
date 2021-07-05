@@ -5,7 +5,7 @@ import torch
 import xmodaler.utils.comm as comm
 from xmodaler.checkpoint import XmodalerCheckpointer
 from xmodaler.config import get_cfg
-from xmodaler.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch
+from xmodaler.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch, build_engine
 from xmodaler.modeling import add_config
 
 def setup(args):
@@ -31,7 +31,8 @@ def main(args):
     consider writing your own training loop (see plain_train_net.py) or
     subclassing the trainer.
     """
-    trainer = DefaultTrainer(cfg)
+    #trainer = DefaultTrainer(cfg)
+    trainer = build_engine(cfg)
     trainer.resume_or_load(resume=args.resume)
     return trainer.train()
 

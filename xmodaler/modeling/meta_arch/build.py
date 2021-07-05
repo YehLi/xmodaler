@@ -1,5 +1,4 @@
 import torch
-
 from xmodaler.utils.registry import Registry
 
 META_ARCH_REGISTRY = Registry("META_ARCH")  # noqa F401 isort:skip

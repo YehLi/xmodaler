@@ -22,17 +22,17 @@ class UpDownEncoder(nn.Module):
     def add_config(cls, cfg):
         pass
 
-    def forward(self, batched_inputs):
-        att_feats = batched_inputs[kfg.ATT_FEATS]
-        att_masks = batched_inputs[kfg.ATT_MASKS]
-        if att_masks is None:
-            global_feats = torch.mean(att_feats, 1)
-        else:
-            att_feats_masks = att_feats * att_masks.unsqueeze(-1)
-            att_masks_sum = att_masks.sum(-1)
-            global_feats = att_feats_masks.sum(1) / att_masks_sum.unsqueeze(-1)
+    def forward(self, batched_inputs, mode=None):
+        ret = {}
+        if mode == None or mode == 'v':
+            att_feats = batched_inputs[kfg.ATT_FEATS]
+            att_masks = batched_inputs[kfg.ATT_MASKS]
+            if att_masks is None:
+                global_feats = torch.mean(att_feats, 1)
+            else:
+                att_feats_masks = att_feats * att_masks.unsqueeze(-1)
+                att_masks_sum = att_masks.sum(-1)
+                global_feats = att_feats_masks.sum(1) / att_masks_sum.unsqueeze(-1)
+            ret.update({ kfg.ATT_FEATS: att_feats, kfg.GLOBAL_FEATS: global_feats })
         
-        return {
-            kfg.ATT_FEATS: att_feats,
-            kfg.GLOBAL_FEATS: global_feats
-        }
+        return ret

@@ -16,7 +16,7 @@ def read_np(image_path):
     content = np.load(image_path)
     keys = content.keys()
     if len(keys) == 1:
-        return content[list(keys)[0]]
+        return { "features": content[list(keys)[0]] }
     return content
 
 def load_vocab(path):

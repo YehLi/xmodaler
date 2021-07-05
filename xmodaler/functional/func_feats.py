@@ -1,8 +1,12 @@
+import itertools
 import numpy as np
 import torch
 from torch.nn.utils.rnn import pad_sequence
 
 def pad_tensor(tensor, padding_value, use_mask):
+    if isinstance(tensor[0], list):
+        tensor = list(itertools.chain.from_iterable(tensor))
+
     out = pad_sequence(tensor, batch_first=True, padding_value=padding_value)
     if use_mask:
         lengths = [t.size(0) for t in tensor]
@@ -20,7 +24,11 @@ def dict_to_cuda(input_dict):
 
 def dict_as_tensor(input_dict):
     for key in input_dict:
-        if not isinstance(input_dict[key], str):
+        if isinstance(input_dict[key], str):
+            continue
+        elif isinstance(input_dict[key], list):
+            input_dict[key] = [torch.as_tensor(x) for x in input_dict[key]]
+        else:
             input_dict[key] = torch.as_tensor(input_dict[key])
 
 def boxes_to_locfeats(boxes, image_w, image_h):
@@ -37,6 +45,14 @@ def boxes_to_locfeats(boxes, image_w, image_h):
     image_location[:, 2] = image_location[:, 2] / float(image_w)
     image_location[:, 3] = image_location[:, 3] / float(image_h)
     return image_location
+
+def expand_tensor(tensor, size, dim=1):
+    if size == 1 or tensor is None:
+        return tensor
+    tensor = tensor.unsqueeze(dim)
+    tensor = tensor.expand(list(tensor.shape[:dim]) + [size] + list(tensor.shape[dim+1:]))
+    tensor = tensor.reshape(list(tensor.shape[:dim-1]) + [-1] + list(tensor.shape[dim+1:]))
+    return tensor
 
 def iou(anchors, gt_boxes):
     """

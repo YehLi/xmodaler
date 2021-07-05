@@ -5,13 +5,13 @@ from xmodaler.config import configurable
 from xmodaler.config import CfgNode as CN
 from xmodaler.config import kfg
 from ..layers.base_attention import BaseAttention
-from .rnn_decoder import RnnDecoder
+from .decoder import Decoder
 from .build import DECODER_REGISTRY
 
 __all__ = ["UpDownDecoder"]
 
 @DECODER_REGISTRY.register()
-class UpDownDecoder(RnnDecoder):
+class UpDownDecoder(Decoder):
     @configurable
     def __init__(
         self,
@@ -36,7 +36,7 @@ class UpDownDecoder(RnnDecoder):
         self.lstm2 = nn.LSTMCell(in_dim, hidden_size)
         self.dropout2 = nn.Dropout(dropout2) if dropout2 > 0 else None
 
-        self.att = BasicAttention(
+        self.att = BaseAttention(
             hidden_size = hidden_size,
             att_embed_size = att_embed_size,
             att_embed_dropout = att_embed_dropout
@@ -73,13 +73,13 @@ class UpDownDecoder(RnnDecoder):
         return batched_inputs
 
     def forward(self, batched_inputs):
-        wt = batched_inputs[kfg.TOKEN_EMBED]
+        wt = batched_inputs[kfg.G_TOKEN_EMBED]
         att_feats = batched_inputs[kfg.ATT_FEATS]
         ext_att_masks = batched_inputs[kfg.EXT_ATT_MASKS]
         p_att_feats = batched_inputs[kfg.P_ATT_FEATS]
         global_feats = batched_inputs[kfg.GLOBAL_FEATS]
-        hidden_states = batched_inputs[kfg.HIDDEN_STATES]
-        cell_states = batched_inputs[kfg.CELL_STATES]
+        hidden_states = batched_inputs[kfg.G_HIDDEN_STATES]
+        cell_states = batched_inputs[kfg.G_CELL_STATES]
 
         # lstm1
         h2_tm1 = hidden_states[-1]
@@ -95,9 +95,9 @@ class UpDownDecoder(RnnDecoder):
             input2 = self.dropout2(input2)
         h2_t, c2_t = self.lstm2(input2, (hidden_states[1], cell_states[1]))
 
-        hidden_states = torch.stack([h1_t, h2_t])
-        cell_states = torch.stack([c1_t, c2_t])
+        hidden_states = [h1_t, h2_t]
+        cell_states = [c1_t, c2_t]
         return { 
-            kfg.HIDDEN_STATES: hidden_states,
-            kfg.CELL_STATES: cell_states
+            kfg.G_HIDDEN_STATES: hidden_states,
+            kfg.G_CELL_STATES: cell_states
         }

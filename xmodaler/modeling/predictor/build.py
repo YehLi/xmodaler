@@ -1,5 +1,3 @@
-import torch
-
 from xmodaler.utils.registry import Registry
 
 PREDICTOR_REGISTRY = Registry("PREDICTOR")
