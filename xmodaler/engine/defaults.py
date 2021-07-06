@@ -244,6 +244,7 @@ class DefaultTrainer(TrainerBase):
         self.evaluator = self.build_evaluator(cfg) if self.test_data_loader is not None else None
         self.losses = self.build_losses(cfg)
         self.scheduler = self.build_lr_scheduler(cfg, self.optimizer, self.iters_per_epoch)
+        self.ss_prob = 0.0
         
         # For training, wrap with DDP. But don't need this for inference.
         if comm.get_world_size() > 1:
@@ -279,7 +280,13 @@ class DefaultTrainer(TrainerBase):
 
         ret = [
             hooks.IterationTimer(),
-            hooks.LRScheduler()
+            hooks.LRScheduler(),
+            hooks.ScheduledSampling(
+                start_iter = cfg.SCHEDULED_SAMPLING.START_EPOCH, #* self.iters_per_epoch, 
+                inc_every_iter = cfg.SCHEDULED_SAMPLING.INC_EVERY_EPOCH, #* self.iters_per_epoch, 
+                inc_prob = cfg.SCHEDULED_SAMPLING.INC_PROB, 
+                max_prob = cfg.SCHEDULED_SAMPLING.MAX_PROB
+            )
         ]
 
         # Do PreciseBN before checkpointer, because it updates the model and need to
@@ -296,8 +303,8 @@ class DefaultTrainer(TrainerBase):
         # Do evaluation after checkpointer, because then if it fails,
         # we can use the saved checkpoint to debug.
         if self.test_data_loader is not None:
-            #ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD * self.iters_per_epoch, test_and_save_results))
-            ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, test_and_save_results)) ######################################## for debug ########################################
+            ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD * self.iters_per_epoch, test_and_save_results))
+            #ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, test_and_save_results)) ######
 
         if comm.is_main_process():
             # Here the default print/log frequency of each writer is used.
@@ -418,9 +425,11 @@ class DefaultTrainer(TrainerBase):
         model.eval()
         results = []
         with torch.no_grad():
-            for batched_inputs in tqdm.tqdm(test_data_loader):
-                ids = [ x[kfg.IDS] for x in batched_inputs ]
-                res = model(batched_inputs, use_beam_search=True, output_sents=True)
+            for data in tqdm.tqdm(test_data_loader):
+                data = comm.unwrap_model(model).preprocess_batch(data)
+                ids = data[kfg.IDS]
+
+                res = model(data, use_beam_search=True, output_sents=True)
                 sents = res[kfg.G_SENTS]
                 
                 for id, sent in zip(ids, sents):
@@ -444,6 +453,8 @@ class DefaultTrainer(TrainerBase):
         """
         If you want to do something with the losses, you can wrap the model.
         """
+        data = comm.unwrap_model(self.model).preprocess_batch(data)
+        data[kfg.SS_PROB] = self.ss_prob
         outputs_dict = self.model(data)
 
         losses_dict = {}

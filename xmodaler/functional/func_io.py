@@ -14,6 +14,9 @@ def read_lines_set(path):
 # "features", "cls_prob", "boxes", "image_h", "image_w"
 def read_np(image_path):
     content = np.load(image_path)
+    if isinstance(content, np.ndarray):
+        return { "features": content } 
+
     keys = content.keys()
     if len(keys) == 1:
         return { "features": content[list(keys)[0]] }

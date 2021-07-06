@@ -1,40 +1,53 @@
 ####################################### DATASETS #######################################
 DATASETS:
-  TRAIN: 'MSRVTTDatasetMapper'
-  TEST: 'MSRVTTDatasetMapper'
+  TRAIN: 'MSRVTTDataset'
+  VAL: 'MSRVTTDataset'
+  TEST: 'MSRVTTDataset'
 
 ###################################### DATALOADER ######################################
 DATALOADER:
-  TRAIN_BATCH_SIZE: 64
+  TRAIN_BATCH_SIZE: 8
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 0
-  FEATS_FOLDER: '/media/winne/DATA2/video_caption_data/msrvtt/feat_resnet152_imagenet_pytorch'
-  ANNO_FILE:  '/media/winne/DATA2/new_code/msrvtt_dataset/msrvtt_caption_anno'
-  SEQ_PER_IMG:  1
+  FEATS_FOLDER: '/export1/dataset/open_source/msrvtt_dataset/feat_resnet152_imagenet_pytorch'
+  ANNO_FOLDER:  '/export1/dataset/open_source/msrvtt_dataset'
+  SEQ_PER_SAMPLE:  1
   MAX_FEAT_NUM: 25
 
+######################################### Engine #########################################
+ENGINE:
+  NAME: 'DefaultTrainer'
+
+######################################### Scheduled sampling #########################################
+SCHEDULED_SAMPLING:
+  START_EPOCH: 0
+  INC_EVERY_EPOCH: 5
+  INC_PROB: 0.05
+  MAX_PROB: 0.25
+  
 ######################################### MODEL #########################################
 MODEL:
-  VOCAB_SIZE: 7002 # include <BOS>/<EOS>
+  VOCAB_SIZE: 7001 # include <BOS>/<EOS>
   META_ARCHITECTURE: 'RnnAttEncoderDecoder'
   ENCODER: 'UpDownEncoder'
   ENCODER_DIM: 1024
   DECODER: 'SALSTMDecoder'
   DECODER_DIM: 1024
-  PREDICTOR: 'SALSTMPredictor'
-  MAX_SEQ_LEN: 17
+  PREDICTOR: 'BasePredictor'
+  PRED_DROPOUT: 0.5
+  MAX_SEQ_LEN: 21
 
 #################################### Token embedding ####################################
   TOKEN_EMBED:
-    NAME: 'TokenBasicEmbedding'
-    DIM: 512
+    NAME: 'TokenBaseEmbedding'
+    DIM: 1024
     ACTIVATION: 'none'
     USE_NORM: False
     DROPOUT: 0.5
 
 #################################### Visual embedding ####################################
   VISUAL_EMBED:
-    NAME: 'VisualBasicEmbedding'
+    NAME: 'VisualBaseEmbedding'
     IN_DIM: 2048
     OUT_DIM: 1024
     ACTIVATION: 'none'
@@ -69,15 +82,19 @@ LR_SCHEDULER:
 
 ####################################### losses ####################################### 
 LOSSES:
-  NAME: 'CrossEntropy'
+  NAMES: ['CrossEntropy']
+  LABELSMOOTHING: 0.1
 
+####################################### decode strategy ####################################### 
+DECODE_STRATEGY:
+  NAME: 'BeamSearcher'
+  BEAM_SIZE: 5
+  
 ####################################### evaluation ####################################### 
 INFERENCE:
   NAME: 'COCOEvaler'
-  VOCAB: '/media/winne/DATA2/new_code/msrvtt_dataset/msrvtt_vocabulary.txt'
+  VOCAB: '/export1/dataset/open_source/msrvtt_dataset/vocabulary.txt'
   ID_KEY: 'image_id'
   CAP_KEY: 'caption'
-  VAL_ANNFILE: '/media/winne/DATA2/new_code/msrvtt_dataset/captions_val_cocostyle.json'
-  TEST_ANNFILE: '/media/winne/DATA2/new_code/msrvtt_dataset/captions_test_cocostyle.json'
-  BEAM_SIZE: 5
-
+  VAL_ANNFILE: '/export1/dataset/open_source/msrvtt_dataset/captions_val.json'
+  TEST_ANNFILE: '/export1/dataset/open_source/msrvtt_dataset/captions_test.json'

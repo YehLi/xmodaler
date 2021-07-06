@@ -11,10 +11,10 @@ from .base_enc_dec import BaseEncoderDecoder
 from .build import META_ARCH_REGISTRY
 
 
-__all__ = ["VLPBertPreTraining"]
+__all__ = ["TransformerEncoderDecoder"]
 
 @META_ARCH_REGISTRY.register()
-class VLPBertPreTraining(BaseEncoderDecoder):
+class TransformerEncoderDecoder(BaseEncoderDecoder):
     @configurable
     def __init__(
         self,

@@ -10,15 +10,22 @@ DATALOADER:
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 0
   FEATS_FOLDER: '/export1/dataset/mscoco_torch/feature/up_down_100'
-  ANNO_FOLDER:  '/export1/dataset/mscoco_open_source'
+  ANNO_FOLDER:  '/export1/dataset/open_source/mscoco'
   #FEATS_FOLDER: 'D:/export/dataset/mscoco_open_source/features/up_down_100'
   #ANNO_FOLDER:  'D:/export/dataset/mscoco_open_source'
-  SEQ_PER_SAMPLE:  5
+  SEQ_PER_SAMPLE:  10
   MAX_FEAT_NUM: 50
 
 ######################################### Engine #########################################
 ENGINE:
-  NAME: 'RLTrainer'
+  NAME: 'DefaultTrainer'
+
+######################################### Scheduled sampling #########################################
+SCHEDULED_SAMPLING:
+  START_EPOCH: 0
+  INC_EVERY_EPOCH: 5
+  INC_PROB: 0.05
+  MAX_PROB: 0.25
 
 ######################################### MODEL #########################################
 MODEL:
@@ -29,6 +36,7 @@ MODEL:
   DECODER: 'UpDownDecoder'
   DECODER_DIM: 1000
   PREDICTOR: 'BasePredictor'
+  PRED_DROPOUT: 0.5
   MAX_SEQ_LEN: 20
 
 #################################### Token embedding ####################################
@@ -96,12 +104,12 @@ DECODE_STRATEGY:
 ####################################### evaluation ####################################### 
 INFERENCE:
   NAME: 'COCOEvaler'
-  VOCAB: '/export1/dataset/mscoco_open_source/coco_vocabulary.txt'
+  VOCAB: '/export1/dataset/open_source/mscoco/coco_vocabulary.txt'
   #VOCAB: 'D:/export/dataset/mscoco_open_source/coco_vocabulary.txt'
   ID_KEY: 'image_id'
   CAP_KEY: 'caption'
-  VAL_ANNFILE: '/export1/dataset/mscoco_open_source/captions_val5k.json'
-  TEST_ANNFILE: '/export1/dataset/mscoco_open_source/captions_test5k.json'
+  VAL_ANNFILE: '/export1/dataset/open_source/mscoco/captions_val5k.json'
+  TEST_ANNFILE: '/export1/dataset/open_source/mscoco/captions_test5k.json'
   #VAL_ANNFILE: 'D:/export/dataset/mscoco_open_source/captions_val5k.json'
   #TEST_ANNFILE: 'D:/export/dataset/mscoco_open_source/captions_test5k.json'
 

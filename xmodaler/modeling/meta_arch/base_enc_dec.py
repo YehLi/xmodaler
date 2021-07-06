@@ -67,17 +67,13 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
     def get_extended_attention_mask(self, batched_inputs):
         pass
 
-    def forward(self, batched_inputs, use_beam_search=None, output_sents=False, use_preprocess=True):
-        if use_preprocess:
-            inputs = self.preprocess_batch(batched_inputs)
-        else:
-            inputs = copy.copy(batched_inputs)
+    def forward(self, batched_inputs, use_beam_search=None, output_sents=False):
         if use_beam_search is None:
-            return self._forward(inputs)
+            return self._forward(batched_inputs)
         elif use_beam_search == False or self.beam_searcher.beam_size == 1:
-            return self.greedy_decode(inputs, output_sents)
+            return self.greedy_decode(batched_inputs, output_sents)
         else:
-            return self.decode_beam_search(inputs, output_sents)
+            return self.decode_beam_search(batched_inputs, output_sents)
 
     @abstractmethod
     def _forward(self, batched_inputs):

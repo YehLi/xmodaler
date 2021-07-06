@@ -70,6 +70,8 @@ _K.DECODE_BY_SAMPLE = 'DECODE_BY_SAMPLE'
 
 _K.REWARDS = 'REWARDS'
 
+_K.SS_PROB = 'SS_PROB'
+
 _K.COCO_PATH = '../coco_caption'
 
 _K.TEMP_DIR = './data/temp'

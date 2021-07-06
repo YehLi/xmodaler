@@ -3,9 +3,6 @@ import copy
 import pickle
 import random
 import numpy as np
-import torch
-from torch._C import dtype
-
 from xmodaler.config import configurable
 from xmodaler.config import kfg
 from xmodaler.functional import read_np, dict_as_tensor, boxes_to_locfeats
@@ -57,9 +54,9 @@ class MSCoCoDataset:
         dataset_dict = copy.deepcopy(dataset_dict)
         image_id = dataset_dict['image_id']
         
-        image_path  = os.path.join(self.feats_folder, '100001.npz')
-        #image_path = os.path.join(self.feats_folder, image_id + '.npz')
-        content = read_np(image_path)
+        #feat_path  = os.path.join(self.feats_folder, '100001.npz')
+        feat_path = os.path.join(self.feats_folder, image_id + '.npz')
+        content = read_np(feat_path)
         att_feats = content['features'][0:self.max_feat_num].astype('float32')
         ret = { kfg.IDS: image_id, kfg.ATT_FEATS: att_feats }
 
@@ -82,8 +79,8 @@ class MSCoCoDataset:
                 kfg.ATT_FEATS_LOC: image_locations.astype('float32'),
             })
             
-        if self.stage != "train":
-            g_tokens_type = np.ones((self.max_seq_len,), dtype='int')
+        if self.stage != 'train':
+            g_tokens_type = np.ones((self.max_seq_len,), dtype=np.int64)
             ret.update({ kfg.G_TOKENS_TYPE: g_tokens_type })
             dict_as_tensor(ret)
             return ret
@@ -92,12 +89,12 @@ class MSCoCoDataset:
         if sent_num >= self.seq_per_img:
             selects = random.sample(range(sent_num), self.seq_per_img)
         else:
-            selects = random.choice(range(sent_num), self.seq_per_img - sent_num)
+            selects = random.choices(range(sent_num), k = (self.seq_per_img - sent_num))
             selects += list(range(sent_num))
 
-        tokens_ids = [ dataset_dict['tokens_ids'][i,:].astype('int') for i in selects ]
-        target_ids = [ dataset_dict['target_ids'][i,:].astype('int') for i in selects ]
-        g_tokens_type = [ np.ones((len(dataset_dict['tokens_ids'][i,:]), ), dtype='int') for i in selects ]
+        tokens_ids = [ dataset_dict['tokens_ids'][i,:].astype(np.int64) for i in selects ]
+        target_ids = [ dataset_dict['target_ids'][i,:].astype(np.int64) for i in selects ]
+        g_tokens_type = [ np.ones((len(dataset_dict['tokens_ids'][i,:]), ), dtype=np.int64) for i in selects ]
 
         ret.update({
             kfg.SEQ_PER_SAMPLE: self.seq_per_img,

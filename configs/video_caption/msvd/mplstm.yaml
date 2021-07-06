@@ -1,0 +1,6 @@
+_BASE_: "base_caption.yaml"
+
+MODEL:
+  DECODER: 'MPLSTMDecoder'
+  
+

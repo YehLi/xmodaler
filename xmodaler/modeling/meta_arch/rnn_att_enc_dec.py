@@ -41,13 +41,25 @@ class RnnAttEncoderDecoder(BaseEncoderDecoder):
 
         tokens_ids = batched_inputs[kfg.G_TOKENS_IDS]
         batch_size, seq_len = tokens_ids.shape
+        ss_prob = batched_inputs[kfg.SS_PROB]
         outputs = Variable(torch.zeros(batch_size, seq_len, self.vocab_size).cuda())
         
         for t in range(seq_len):
             if t >= 1 and tokens_ids[:, t].max() == 0:
                 break
-            
-            wt = tokens_ids[:, t].clone()
+
+            if self.training and t >= 1 and ss_prob > 0:
+                prob = torch.empty(batch_size).cuda().uniform_(0, 1)
+                mask = prob < ss_prob
+                if mask.sum() == 0:
+                    wt = tokens_ids[:, t].clone()
+                else:
+                    ind = mask.nonzero().view(-1)
+                    wt = tokens_ids[:, t].data.clone()
+                    prob_prev = torch.exp(outputs[:, t-1].detach())
+                    wt.index_copy_(0, ind, torch.multinomial(prob_prev, 1).view(-1).index_select(0, ind))
+            else:
+                wt = tokens_ids[:, t].clone()
             inputs.update({ kfg.G_TOKENS_IDS: wt })
             
             te_out = self.token_embed(inputs)

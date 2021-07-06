@@ -1,34 +1,34 @@
 CUDNN_BENCHMARK: true
 DATALOADER:
-  ANNO_FOLDER: /export1/dataset/mscoco_open_source
-  FEATS_FOLDER: /export1/dataset/mscoco_torch/feature/up_down_100
-  MAX_FEAT_NUM: 50
+  ANNO_FOLDER: /export1/dataset/open_source/msrvtt_dataset
+  FEATS_FOLDER: /export1/dataset/open_source/msrvtt_dataset/feat_resnet152_imagenet_pytorch
+  MAX_FEAT_NUM: 25
   NUM_WORKERS: 0
-  SEQ_PER_SAMPLE: 5
+  SEQ_PER_SAMPLE: 1
   TEST_BATCH_SIZE: 32
   TRAIN_BATCH_SIZE: 8
 DATASETS:
-  TEST: MSCoCoDataset
-  TRAIN: MSCoCoDataset
-  VAL: MSCoCoDataset
+  TEST: MSRVTTDataset
+  TRAIN: MSRVTTDataset
+  VAL: MSRVTTDataset
 DECODE_STRATEGY:
-  BEAM_SIZE: 3
+  BEAM_SIZE: 5
   NAME: BeamSearcher
 ENGINE:
-  NAME: RLTrainer
+  NAME: DefaultTrainer
 INFERENCE:
   CAP_KEY: caption
   ID_KEY: image_id
   NAME: COCOEvaler
-  TEST_ANNFILE: /export1/dataset/mscoco_open_source/captions_test5k.json
-  VAL_ANNFILE: /export1/dataset/mscoco_open_source/captions_val5k.json
-  VOCAB: /export1/dataset/mscoco_open_source/coco_vocabulary.txt
+  TEST_ANNFILE: /export1/dataset/open_source/msrvtt_dataset/captions_test.json
+  VAL_ANNFILE: /export1/dataset/open_source/msrvtt_dataset/captions_val.json
+  VOCAB: /export1/dataset/open_source/msrvtt_dataset/vocabulary.txt
 LOSSES:
   LABELSMOOTHING: 0.1
   NAMES:
-  - LabelSmoothing
+  - CrossEntropy
 LR_SCHEDULER:
-  GAMMA: 0.1
+  GAMMA: 0.8
   NAME: StepLR
   STEP_SIZE: 3
 MODEL:
@@ -46,21 +46,25 @@ MODEL:
     NUM_UNDERSTANDING_LAYERS: 6
     V_NUM_HIDDEN_LAYERS: 6
     V_TARGET_SIZE: 1600
-  DECODER: UpDownDecoder
-  DECODER_DIM: 1000
+  DECODER: SALSTMDecoder
+  DECODER_DIM: 1024
   DEVICE: cuda
-  ENCODER: UpDownEncoder
-  ENCODER_DIM: 1000
-  MAX_SEQ_LEN: 20
+  ENCODER: Encoder
+  ENCODER_DIM: 1024
+  MAX_SEQ_LEN: 21
   META_ARCHITECTURE: RnnAttEncoderDecoder
   PREDICTOR: BasePredictor
+  PRED_DROPOUT: 0.5
   PRETRAINING:
     DO_LOWER_CASE: true
     FROM_PRETRAINED: bert-base-uncased
     MODEL_NAME: bert-base-uncased
+  SALSTM:
+    ATT_EMBED_DROPOUT: 0.0
+    ATT_EMBED_SIZE: 512
   TOKEN_EMBED:
-    ACTIVATION: relu
-    DIM: 1000
+    ACTIVATION: none
+    DIM: 1024
     DROPOUT: 0.5
     ELU_ALPHA: 0.5
     NAME: TokenBaseEmbedding
@@ -68,31 +72,31 @@ MODEL:
     POSITION_MAX_LEN: 5000
     TYPE_VOCAB_SIZE: 0
     USE_NORM: false
-  UPDOWN:
-    ATT_EMBED_DROPOUT: 0.1
-    ATT_EMBED_SIZE: 512
-    DROPOUT1: 0.1
-    DROPOUT2: 0.1
   VISUAL_EMBED:
-    ACTIVATION: relu
+    ACTIVATION: none
     DROPOUT: 0.5
     ELU_ALPHA: 0.5
     IN_DIM: 2048
     LOCATION_SIZE: 0
     NAME: VisualBaseEmbedding
-    OUT_DIM: 1000
+    OUT_DIM: 1024
     USE_NORM: false
-  VOCAB_SIZE: 10200
+  VOCAB_SIZE: 7001
   V_PREDICTOR: ''
   WEIGHTS: ''
 OUTPUT_DIR: ./output
+SCHEDULED_SAMPLING:
+  INC_EVERY_EPOCH: 5
+  INC_PROB: 0.05
+  MAX_PROB: 0.25
+  START_EPOCH: 0
 SCORER:
-  CIDER_CACHED: /export1/dataset/mscoco_open_source/mscoco_train_cider.pkl
+  CIDER_CACHED: coco_train_cider.pkl
   EOS_ID: 0
-  GT_PATH: /export1/dataset/mscoco_open_source/mscoco_train_gts.pkl
-  NAME: BaseScorer
+  GT_PATH: coco_train_gts.pkl
+  NAME: ''
   TYPES:
-  - Cider
+  - ''
   WEIGHTS:
   - 1.0
 SEED: -1
@@ -101,15 +105,15 @@ SOLVER:
   BASE_LR: 0.0005
   BETAS:
   - 0.9
-  - 0.999
+  - 0.98
   BIAS_LR_FACTOR: 1.0
   CHECKPOINT_PERIOD: 1
   DAMPENING: 0.0
-  EPOCH: 10
+  EPOCH: 50
   EPS: 1.0e-08
   EVAL_PERIOD: 1
-  GRAD_CLIP: 0.1
-  GRAD_CLIP_TYPE: value
+  GRAD_CLIP: 0.5
+  GRAD_CLIP_TYPE: norm
   MOMENTUM: 0.0
   NAME: Adam
   NESTEROV: 0.0

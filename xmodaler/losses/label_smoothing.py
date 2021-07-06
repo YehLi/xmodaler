@@ -29,7 +29,7 @@ class LabelSmoothing(nn.Module):
         targets = targets.view(-1)
         mask = targets >= 0
 
-        assign_seq = targets.type(torch.cuda.LongTensor)
+        assign_seq = targets  #.type(torch.cuda.LongTensor)
         assign_seq[assign_seq < 0] = 0
 
         size = logP.size(1)

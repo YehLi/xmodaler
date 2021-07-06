@@ -116,14 +116,14 @@ class ConceptualCaptionsDataset:
             kfg.IDS: image_id,
             kfg.ATT_FEATS: imgfeats.astype('float32'),
             kfg.ATT_FEATS_LOC: image_locations.astype('float32'),
-            kfg.U_TOKENS_TYPE: u_tokens_type.astype('int'),
-            kfg.G_TOKENS_TYPE: g_tokens_type.astype('int'),
-            kfg.U_TOKENS_IDS: tokens_ids.astype('int'),
-            kfg.G_TOKENS_IDS: tokens_ids.astype('int'),
-            kfg.U_TARGET_IDS: u_tokens_labels.astype('int'),
-            kfg.G_TARGET_IDS: g_tokens_labels.astype('int'),
+            kfg.U_TOKENS_TYPE: u_tokens_type.astype(np.int64),
+            kfg.G_TOKENS_TYPE: g_tokens_type.astype(np.int64),
+            kfg.U_TOKENS_IDS: tokens_ids.astype(np.int64),
+            kfg.G_TOKENS_IDS: tokens_ids.astype(np.int64),
+            kfg.U_TARGET_IDS: u_tokens_labels.astype(np.int64),
+            kfg.G_TARGET_IDS: g_tokens_labels.astype(np.int64),
             kfg.V_TARGET: cls_probs.astype('float32'),
-            kfg.V_TARGET_LABELS: imgfeats_labels.astype('int')
+            kfg.V_TARGET_LABELS: imgfeats_labels.astype(np.int64)
         }
 
         dict_as_tensor(ret)

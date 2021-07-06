@@ -1,5 +1,6 @@
 
 import time
+import copy
 import torch
 from .defaults import DefaultTrainer
 from xmodaler.scorer import build_scorer
@@ -30,12 +31,13 @@ class RLTrainer(DefaultTrainer):
 
         self.model.eval()
         with torch.no_grad():
-            bs_outputs_dict = self.model(data, use_beam_search=False, output_sents=False, use_preprocess=False)
+            bs_data = copy.copy(data)
+            bs_outputs_dict = self.model(bs_data, use_beam_search=False, output_sents=False)
         bs_rewards = self.scorer(bs_outputs_dict)
 
         self.model.train()
         data[kfg.DECODE_BY_SAMPLE] = True
-        outputs_dict = self.model(data, use_beam_search=False, output_sents=False, use_preprocess=False)
+        outputs_dict = self.model(data, use_beam_search=False, output_sents=False)
         rewards = self.scorer(outputs_dict)
         rewards = torch.from_numpy(rewards[kfg.REWARDS] - bs_rewards[kfg.REWARDS]).float().cuda()
         outputs_dict.update({ kfg.REWARDS: rewards })

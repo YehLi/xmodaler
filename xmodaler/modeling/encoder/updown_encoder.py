@@ -33,6 +33,6 @@ class UpDownEncoder(nn.Module):
                 att_feats_masks = att_feats * att_masks.unsqueeze(-1)
                 att_masks_sum = att_masks.sum(-1)
                 global_feats = att_feats_masks.sum(1) / att_masks_sum.unsqueeze(-1)
-            ret.update({ kfg.ATT_FEATS: att_feats, kfg.GLOBAL_FEATS: global_feats })
+            ret.update({ kfg.GLOBAL_FEATS: global_feats })
         
         return ret

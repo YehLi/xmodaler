@@ -4,7 +4,6 @@ from torch import nn
 from xmodaler.config import configurable
 from xmodaler.config import CfgNode as CN
 from xmodaler.config import kfg
-from ..layers.soft_attention import SoftAttention
 from .decoder import Decoder
 from .build import DECODER_REGISTRY
 
@@ -18,55 +17,44 @@ class MPLSTMDecoder(Decoder):
         *,
         hidden_size: int,
         token_embed_dim: int,
-        visual_embed_dim: int,
-        lstm_input_dropout: float
     ):
         super(MPLSTMDecoder, self).__init__()
-
         self.num_layers = 1
         self.hidden_size = hidden_size
-
-        in_dim = token_embed_dim + visual_embed_dim
-        self.lstm = nn.LSTMCell(in_dim, hidden_size)
-        self.lstm_input_dropout = nn.Dropout(lstm_input_dropout) if lstm_input_dropout > 0 else None
+        self.lstm = nn.LSTMCell(token_embed_dim, hidden_size)
 
     @classmethod
     def from_config(cls, cfg):
         return {
             "hidden_size": cfg.MODEL.DECODER_DIM,
             "token_embed_dim": cfg.MODEL.TOKEN_EMBED.DIM,
-            "visual_embed_dim": cfg.MODEL.VISUAL_EMBED.OUT_DIM,
-            "lstm_input_dropout": cfg.MODEL.MPLSTM.LSTM_INPUT_DROPOUT
         }
 
     @classmethod
     def add_config(cls, cfg):
-        cfg.MODEL.MPLSTM = CN()
-        cfg.MODEL.MPLSTM.LSTM_INPUT_DROPOUT = 0.5 
-        cfg.MODEL.MPLSTM.LM_DROPOUT = 0.5
+        pass
 
     def preprocess(self, batched_inputs):
-        att_feats = batched_inputs[kfg.ATT_FEATS]
-        init_states = self.init_states(att_feats.shape[0])
+        gv_feat = batched_inputs[kfg.GLOBAL_FEATS]
+        init_states = self.init_states(gv_feat.shape[0])
+        hidden_state, cell_state = self.lstm(gv_feat, 
+            (init_states[kfg.G_HIDDEN_STATES][0], init_states[kfg.G_CELL_STATES][0]))
         
-        batched_inputs.update(init_states)
+        batched_inputs.update({
+            kfg.G_HIDDEN_STATES: [hidden_state],
+            kfg.G_CELL_STATES: [cell_state]
+        })
         return batched_inputs
 
     def forward(self, batched_inputs):
-        xt = batched_inputs[kfg.TOKEN_EMBED]
-        gv_feat = batched_inputs[kfg.GLOBAL_FEATS]
-        hidden_states = batched_inputs[kfg.HIDDEN_STATES] # [num_layer, batch_size, hidden_size]
-        cell_states = batched_inputs[kfg.CELL_STATES]
+        xt = batched_inputs[kfg.G_TOKEN_EMBED]
+        hidden_states = batched_inputs[kfg.G_HIDDEN_STATES] # [num_layer, batch_size, hidden_size]
+        cell_states = batched_inputs[kfg.G_CELL_STATES]
 
-        input_combined = torch.cat((xt, gv_feat), dim=-1) # [batch_size, 3072]
-
-        if self.lstm_input_dropout:
-            input_combined = self.lstm_input_dropout(input_combined)
-
-        h, c = self.lstm(input_combined, (hidden_states[0], cell_states[0]))
+        hidden_state, cell_state = self.lstm(xt, (hidden_states[0], cell_states[0]))
 
         return { 
-                    kfg.HIDDEN_STATES: h.unsqueeze(0),
-                    kfg.CELL_STATES: c.unsqueeze(0),
+            kfg.G_HIDDEN_STATES: [hidden_state],
+            kfg.G_CELL_STATES: [cell_state]
         }
     

@@ -48,6 +48,18 @@ _C.ENGINE = CN()
 
 _C.ENGINE.NAME = 'DefaultTrainer'
 
+# -----------------------------------------------------------------------------
+# Scheduled sampling
+# -----------------------------------------------------------------------------
+_C.SCHEDULED_SAMPLING = CN()
+
+_C.SCHEDULED_SAMPLING.START_EPOCH = 0
+
+_C.SCHEDULED_SAMPLING.INC_EVERY_EPOCH = 5
+
+_C.SCHEDULED_SAMPLING.INC_PROB = 0.05
+
+_C.SCHEDULED_SAMPLING.MAX_PROB = 0.25
 
 # -----------------------------------------------------------------------------
 # Model
@@ -67,6 +79,8 @@ _C.MODEL.ENCODER_DIM = 1024
 _C.MODEL.DECODER = ''
 
 _C.MODEL.DECODER_DIM = 1024
+
+_C.MODEL.PRED_DROPOUT = 0.0
 
 _C.MODEL.PREDICTOR = ''
 

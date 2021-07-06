@@ -73,6 +73,21 @@ class CallbackHook(HookBase):
             self._after_step(self.trainer)
 
 
+class ScheduledSampling(HookBase):
+    def __init__(self, start_iter, inc_every_iter, inc_prob, max_prob):
+        self._start_iter = start_iter
+        self._inc_every_iter = inc_every_iter
+        self._inc_prob = inc_prob
+        self._max_prob = max_prob
+
+    def after_step(self):
+        next_iter = self.trainer.iter + 1
+        if next_iter > self._start_iter:
+            frac = (next_iter - self._start_iter) // self._inc_every_iter
+            ss_prob = min(self._inc_prob * frac, self._max_prob)
+            self.trainer.ss_prob = ss_prob
+
+
 class IterationTimer(HookBase):
     """
     Track the time spent for each iteration (each run_step call in the trainer).

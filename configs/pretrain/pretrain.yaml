@@ -10,8 +10,8 @@ DATALOADER:
   NUM_WORKERS: 0
   #FEATS_FOLDER: 'D:/export/dataset/ConceptualCaptions/features_train'
   #ANNO_FOLDER:  'D:/export/dataset/ConceptualCaptions/features_train'
-  FEATS_FOLDER: '/export1/dataset/ConceptualCaptions_opensource/features_train'
-  ANNO_FOLDER: '/export1/dataset/ConceptualCaptions_opensource'
+  FEATS_FOLDER: '/export1/dataset/open_source/ConceptualCaptions/features_train'
+  ANNO_FOLDER: '/export1/dataset/open_source/ConceptualCaptions'
   MAX_FEAT_NUM: 51
 
 ######################################### MODEL #########################################

@@ -14,16 +14,19 @@ class BasePredictor(nn.Module):
         self,
         *,
         hidden_size: int,
-        vocab_size: int   # include <BOS>/<EOS>
+        vocab_size: int,   # include <BOS>/<EOS>
+        dropout: float
     ):
         super(BasePredictor, self).__init__()
         self.logits = nn.Linear(hidden_size, vocab_size)
-        
+        self.dropout = nn.Dropout(dropout)
+
     @classmethod
     def from_config(cls, cfg):
         return {
             "hidden_size": cfg.MODEL.DECODER_DIM,
-            "vocab_size": cfg.MODEL.VOCAB_SIZE
+            "vocab_size": cfg.MODEL.VOCAB_SIZE,
+            "dropout": cfg.MODEL.PRED_DROPOUT
         }
 
     @classmethod
@@ -32,5 +35,6 @@ class BasePredictor(nn.Module):
 
     def forward(self, batched_inputs):
         hidden_states = batched_inputs[kfg.G_HIDDEN_STATES][-1]
+        hidden_states = self.dropout(hidden_states)
         logits = self.logits(hidden_states)
         return { kfg.G_LOGITS: logits }
