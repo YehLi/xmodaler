@@ -13,7 +13,6 @@ class BertSelfAttention(nn.Module):
         *,
         hidden_size,
         num_attention_heads,
-        hidden_dropout_prob,
         attention_probs_dropout_prob
     ):
         super(BertSelfAttention, self).__init__()
@@ -38,7 +37,6 @@ class BertSelfAttention(nn.Module):
         return {
             "hidden_size": cfg.MODEL.BERT.HIDDEN_SIZE,
             "num_attention_heads": cfg.MODEL.BERT.NUM_ATTENTION_HEADS,
-            "hidden_dropout_prob": cfg.MODEL.BERT.HIDDEN_DROPOUT_PROB,
             "attention_probs_dropout_prob": cfg.MODEL.BERT.ATTENTION_PROBS_DROPOUT_PROB
         }
 
@@ -212,7 +210,6 @@ class BertXAttention(nn.Module):
         *,
         hidden_size,
         num_attention_heads,
-        hidden_dropout_prob,
         attention_probs_dropout_prob
     ):
         super(BertXAttention, self).__init__()
@@ -236,7 +233,6 @@ class BertXAttention(nn.Module):
         return {
             "hidden_size": cfg.MODEL.BERT.HIDDEN_SIZE,
             "num_attention_heads": cfg.MODEL.BERT.NUM_ATTENTION_HEADS,
-            "hidden_dropout_prob": cfg.MODEL.BERT.HIDDEN_DROPOUT_PROB,
             "attention_probs_dropout_prob": cfg.MODEL.BERT.ATTENTION_PROBS_DROPOUT_PROB
         }
 
@@ -405,7 +401,7 @@ class BertGenerationLayer(nn.Module):
 
     def forward(self, lang_feats, v_feats, lang_attention_mask=None, v_attention_mask=None, t_history_states=None):
         x, _ = self.self_attn(lang_feats, lang_attention_mask, t_history_states)
-        x, _ = self.x_att(x, v_feats[-1], v_feats[-1], v_attention_mask, lang_attention_mask)
+        x, _ = self.x_att(x, v_feats, v_feats, v_attention_mask, lang_attention_mask)
         intermediate_output = self.intermediate(x)
         layer_output = self.output(intermediate_output, x)
 

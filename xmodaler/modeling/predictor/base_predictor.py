@@ -34,7 +34,9 @@ class BasePredictor(nn.Module):
         pass
 
     def forward(self, batched_inputs):
-        hidden_states = batched_inputs[kfg.G_HIDDEN_STATES][-1]
+        hidden_states = batched_inputs[kfg.G_HIDDEN_STATES]
+        if isinstance(hidden_states, list):
+            hidden_states = hidden_states[-1]        
         hidden_states = self.dropout(hidden_states)
         logits = self.logits(hidden_states)
         return { kfg.G_LOGITS: logits }

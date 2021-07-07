@@ -48,7 +48,7 @@ class MPLSTMDecoder(Decoder):
 
     def forward(self, batched_inputs):
         xt = batched_inputs[kfg.G_TOKEN_EMBED]
-        hidden_states = batched_inputs[kfg.G_HIDDEN_STATES] # [num_layer, batch_size, hidden_size]
+        hidden_states = batched_inputs[kfg.G_HIDDEN_STATES]
         cell_states = batched_inputs[kfg.G_CELL_STATES]
 
         hidden_state, cell_state = self.lstm(xt, (hidden_states[0], cell_states[0]))

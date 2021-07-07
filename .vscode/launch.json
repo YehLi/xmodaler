@@ -14,7 +14,9 @@
                 "--num-gpus", "1",
                 //"--config-file", "./configs/pretrain/pretrain.yaml", 
                 //"--config-file", "./configs/image_caption/updown.yaml", 
-                "--config-file", "./configs/video_caption/msrvtt/salstm.yaml", 
+                //"--config-file", "./configs/image_caption/transformer.yaml", 
+                //"--config-file", "./configs/video_caption/msvd/salstm.yaml", 
+                "--config-file", "./configs/video_caption/msvd/mplstm.yaml", 
             ]
         }
     ]

@@ -35,7 +35,6 @@ class BeamSearcher(DecodeStrategy):
         seq_logprob = torch.zeros((batch_size, 1, 1)).cuda()
         seq_mask = torch.ones((batch_size, beam_size, 1)).cuda()
         wt = Variable(torch.zeros(batch_size, dtype=torch.long).cuda())
-        g_tokens_type = batched_inputs[kfg.G_TOKENS_TYPE]
 
         inputs = batched_inputs
         masks = model.get_extended_attention_mask(batched_inputs)
@@ -52,7 +51,7 @@ class BeamSearcher(DecodeStrategy):
         for t in range(self.max_seq_len):
             cur_beam_size = 1 if t == 0 else beam_size
 
-            inputs.update({ kfg.G_TOKENS_IDS: wt, kfg.G_TOKENS_TYPE: g_tokens_type[:,t] })
+            inputs.update({ kfg.G_TOKENS_IDS: wt, kfg.TIME_STEP: t })
             vt_out = model.token_embed(inputs)
             inputs.update(vt_out)
 
@@ -63,7 +62,7 @@ class BeamSearcher(DecodeStrategy):
             inputs.update(decoder_out)
 
             logit = model.predictor(inputs)[kfg.G_LOGITS]
-            word_logprob = F.log_softmax(logit, dim=1)
+            word_logprob = F.log_softmax(logit, dim=-1)
             word_logprob = word_logprob.view(batch_size, cur_beam_size, -1)
             candidate_logprob = seq_logprob + word_logprob
 
@@ -79,18 +78,17 @@ class BeamSearcher(DecodeStrategy):
             selected_idx, selected_logprob = self._select(batch_size, beam_size, t, candidate_logprob)
             selected_beam = torch.div(selected_idx, candidate_logprob.shape[-1], rounding_mode='floor')
             selected_words = selected_idx - selected_beam * candidate_logprob.shape[-1]
+ 
+            if kfg.HISTORY_STATES in inputs:
+                expand_keys = [kfg.HISTORY_STATES]
+            else:
+                expand_keys = [kfg.G_HIDDEN_STATES, kfg.G_CELL_STATES]
 
-            # hidden states
-            if kfg.G_HIDDEN_STATES in inputs:
-                states = inputs[kfg.G_HIDDEN_STATES]
-                self._expand_state(states, selected_beam, batch_size, beam_size, cur_beam_size)
-                inputs.update({ kfg.G_HIDDEN_STATES: states })
-
-            # cells
-            if kfg.G_CELL_STATES in inputs:
-                cells = inputs[kfg.G_CELL_STATES]
-                self._expand_state(cells, selected_beam, batch_size, beam_size, cur_beam_size)
-                inputs.update({ kfg.G_CELL_STATES: cells })
+            for key in expand_keys:
+                if key in inputs:
+                    states = inputs[key]
+                    self._expand_state(states, selected_beam, batch_size, beam_size, cur_beam_size)
+                    inputs.update({ key: states })            
 
             seq_logprob = selected_logprob.unsqueeze(-1)
             seq_mask = torch.gather(seq_mask, 1, selected_beam.unsqueeze(-1))
@@ -107,25 +105,18 @@ class BeamSearcher(DecodeStrategy):
             wt = selected_words.squeeze(-1)
 
             if t == 0:
-                if kfg.ATT_FEATS in inputs:
-                    att_feats = expand_tensor(inputs[kfg.ATT_FEATS], beam_size)
-                    inputs.update({ kfg.ATT_FEATS: att_feats })
-
-                if kfg.GLOBAL_FEATS in inputs:
-                    gv_feat = expand_tensor(inputs[kfg.GLOBAL_FEATS], beam_size)
-                    inputs.update({ kfg.GLOBAL_FEATS: gv_feat })
-
-                if kfg.ATT_MASKS in inputs:
-                    att_mask = expand_tensor(inputs[kfg.ATT_MASKS], beam_size)
-                    inputs.update({ kfg.ATT_MASKS: att_mask })
-
-                if kfg.EXT_ATT_MASKS in inputs:
-                    ext_att_masks = expand_tensor(inputs[kfg.EXT_ATT_MASKS], beam_size)
-                    inputs.update({ kfg.EXT_ATT_MASKS: ext_att_masks })
-
-                if kfg.P_ATT_FEATS in inputs:
-                    p_att_feats = expand_tensor(inputs[kfg.P_ATT_FEATS], beam_size)
-                    inputs.update({ kfg.P_ATT_FEATS: p_att_feats })
+                expand_keys = { 
+                    kfg.ATT_FEATS, 
+                    kfg.GLOBAL_FEATS, 
+                    kfg.ATT_MASKS, 
+                    kfg.EXT_ATT_MASKS, 
+                    kfg.P_ATT_FEATS, 
+                    kfg.EXT_G_TOKENS_MASKS 
+                }
+                for key in expand_keys:
+                    if key in inputs:
+                        tensor = expand_tensor(inputs[key], beam_size)
+                        inputs.update({ key: tensor })
 
         seq_logprob, sort_idxs = torch.sort(seq_logprob, 1, descending=True)
         outputs = torch.cat(outputs, -1)

@@ -1,16 +1,16 @@
 CUDNN_BENCHMARK: true
 DATALOADER:
-  ANNO_FOLDER: /export1/dataset/open_source/msrvtt_dataset
-  FEATS_FOLDER: /export1/dataset/open_source/msrvtt_dataset/feat_resnet152_imagenet_pytorch
+  ANNO_FOLDER: ../open_source_dataset/msvd_dataset
+  FEATS_FOLDER: ../open_source_dataset/msvd_dataset/features/resnet152
   MAX_FEAT_NUM: 25
   NUM_WORKERS: 0
   SEQ_PER_SAMPLE: 1
   TEST_BATCH_SIZE: 32
   TRAIN_BATCH_SIZE: 8
 DATASETS:
-  TEST: MSRVTTDataset
-  TRAIN: MSRVTTDataset
-  VAL: MSRVTTDataset
+  TEST: MSVDDataset
+  TRAIN: MSVDDataset
+  VAL: MSVDDataset
 DECODE_STRATEGY:
   BEAM_SIZE: 5
   NAME: BeamSearcher
@@ -20,9 +20,9 @@ INFERENCE:
   CAP_KEY: caption
   ID_KEY: image_id
   NAME: COCOEvaler
-  TEST_ANNFILE: /export1/dataset/open_source/msrvtt_dataset/captions_test.json
-  VAL_ANNFILE: /export1/dataset/open_source/msrvtt_dataset/captions_val.json
-  VOCAB: /export1/dataset/open_source/msrvtt_dataset/vocabulary.txt
+  TEST_ANNFILE: ../open_source_dataset/msvd_dataset/captions_test.json
+  VAL_ANNFILE: ../open_source_dataset/msvd_dataset/captions_val.json
+  VOCAB: ../open_source_dataset/msvd_dataset/vocabulary.txt
 LOSSES:
   LABELSMOOTHING: 0.1
   NAMES:
@@ -45,11 +45,11 @@ MODEL:
     NUM_HIDDEN_LAYERS: 12
     NUM_UNDERSTANDING_LAYERS: 6
     V_NUM_HIDDEN_LAYERS: 6
-    V_TARGET_SIZE: 1600
-  DECODER: SALSTMDecoder
+    V_TARGET_SIZE: 0
+  DECODER: MPLSTMDecoder
   DECODER_DIM: 1024
   DEVICE: cuda
-  ENCODER: Encoder
+  ENCODER: UpDownEncoder
   ENCODER_DIM: 1024
   MAX_SEQ_LEN: 21
   META_ARCHITECTURE: RnnAttEncoderDecoder
@@ -59,11 +59,8 @@ MODEL:
     DO_LOWER_CASE: true
     FROM_PRETRAINED: bert-base-uncased
     MODEL_NAME: bert-base-uncased
-  SALSTM:
-    ATT_EMBED_DROPOUT: 0.0
-    ATT_EMBED_SIZE: 512
   TOKEN_EMBED:
-    ACTIVATION: none
+    ACTIVATION: relu
     DIM: 1024
     DROPOUT: 0.5
     ELU_ALPHA: 0.5
@@ -73,7 +70,7 @@ MODEL:
     TYPE_VOCAB_SIZE: 0
     USE_NORM: false
   VISUAL_EMBED:
-    ACTIVATION: none
+    ACTIVATION: relu
     DROPOUT: 0.5
     ELU_ALPHA: 0.5
     IN_DIM: 2048
@@ -81,7 +78,7 @@ MODEL:
     NAME: VisualBaseEmbedding
     OUT_DIM: 1024
     USE_NORM: false
-  VOCAB_SIZE: 7001
+  VOCAB_SIZE: 5492
   V_PREDICTOR: ''
   WEIGHTS: ''
 OUTPUT_DIR: ./output
@@ -105,16 +102,16 @@ SOLVER:
   BASE_LR: 0.0005
   BETAS:
   - 0.9
-  - 0.98
+  - 0.999
   BIAS_LR_FACTOR: 1.0
   CHECKPOINT_PERIOD: 1
   DAMPENING: 0.0
   EPOCH: 50
   EPS: 1.0e-08
   EVAL_PERIOD: 1
-  GRAD_CLIP: 0.5
-  GRAD_CLIP_TYPE: norm
-  MOMENTUM: 0.0
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: value
+  MOMENTUM: 0.9
   NAME: Adam
   NESTEROV: 0.0
   NORM_TYPE: 2.0

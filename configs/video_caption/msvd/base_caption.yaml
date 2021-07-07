@@ -9,8 +9,8 @@ DATALOADER:
   TRAIN_BATCH_SIZE: 8
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 0
-  FEATS_FOLDER: '/export1/dataset/open_source/msvd_dataset/feat_resnet152_imagenet_pytorch'
-  ANNO_FOLDER:  '/export1/dataset/open_source/msvd_dataset'
+  FEATS_FOLDER: '../open_source_dataset/msvd_dataset/features/resnet152'
+  ANNO_FOLDER:  '../open_source_dataset/msvd_dataset'
   SEQ_PER_SAMPLE:  1
   MAX_FEAT_NUM: 25
 
@@ -29,7 +29,7 @@ SCHEDULED_SAMPLING:
 MODEL:
   VOCAB_SIZE: 5492 # include <BOS>/<EOS>
   META_ARCHITECTURE: 'RnnAttEncoderDecoder'
-  ENCODER: 'UpDownEncoder'
+  ENCODER: 'Encoder'
   ENCODER_DIM: 1024
   DECODER: 'SALSTMDecoder'
   DECODER_DIM: 1024
@@ -41,7 +41,7 @@ MODEL:
   TOKEN_EMBED:
     NAME: 'TokenBaseEmbedding'
     DIM: 1024
-    ACTIVATION: 'none'
+    ACTIVATION: 'relu'
     USE_NORM: False
     DROPOUT: 0.5
 
@@ -50,7 +50,7 @@ MODEL:
     NAME: 'VisualBaseEmbedding'
     IN_DIM: 2048
     OUT_DIM: 1024
-    ACTIVATION: 'none'
+    ACTIVATION: 'relu'
     USE_NORM: False
     DROPOUT: 0.5
   
@@ -65,13 +65,13 @@ SOLVER:
   WEIGHT_DECAY: 0.0
   WEIGHT_DECAY_NORM: 0.0
   WEIGHT_DECAY_BIAS: 0.0
-  MOMENTUM: 0.0
+  MOMENTUM: 0.9
   DAMPENING: 0.0
   NESTEROV: 0.0
-  BETAS: [0.9, 0.98]
+  BETAS: [0.9, 0.999]
   EPS: 1e-8
-  GRAD_CLIP: 0.5
-  GRAD_CLIP_TYPE: 'norm'
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: 'value'
   NORM_TYPE: 2.0
   
 ####################################### lr scheduler ####################################### 
@@ -93,8 +93,8 @@ DECODE_STRATEGY:
 ####################################### evaluation ####################################### 
 INFERENCE:
   NAME: 'COCOEvaler'
-  VOCAB: '/export1/dataset/open_source/msvd_dataset/vocabulary.txt'
+  VOCAB: '../open_source_dataset/msvd_dataset/vocabulary.txt'
   ID_KEY: 'image_id'
   CAP_KEY: 'caption'
-  VAL_ANNFILE: '/export1/dataset/open_source/msvd_dataset/captions_val.json'
-  TEST_ANNFILE: '/export1/dataset/open_source/msvd_dataset/captions_test.json'
+  VAL_ANNFILE: '../open_source_dataset/msvd_dataset/captions_val.json'
+  TEST_ANNFILE: '../open_source_dataset/msvd_dataset/captions_test.json'

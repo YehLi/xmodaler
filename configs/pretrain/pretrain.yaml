@@ -1,6 +1,7 @@
 ####################################### DATASETS #######################################
 DATASETS:
   TRAIN: 'ConceptualCaptionsDataset'
+  VAL: ''
   TEST: ''
 
 ###################################### DATALOADER ######################################
@@ -8,16 +9,26 @@ DATALOADER:
   TRAIN_BATCH_SIZE: 8
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 0
-  #FEATS_FOLDER: 'D:/export/dataset/ConceptualCaptions/features_train'
-  #ANNO_FOLDER:  'D:/export/dataset/ConceptualCaptions/features_train'
-  FEATS_FOLDER: '/export1/dataset/open_source/ConceptualCaptions/features_train'
-  ANNO_FOLDER: '/export1/dataset/open_source/ConceptualCaptions'
+  FEATS_FOLDER: '../open_source_dataset/ConceptualCaptions/features/up_down'
+  ANNO_FOLDER: '../open_source_dataset/ConceptualCaptions'
+  SEQ_PER_SAMPLE:  1
   MAX_FEAT_NUM: 51
+
+######################################### Engine #########################################
+ENGINE:
+  NAME: 'DefaultTrainer'
+
+######################################### Scheduled sampling #########################################
+SCHEDULED_SAMPLING:
+  START_EPOCH: 0
+  INC_EVERY_EPOCH: 5
+  INC_PROB: 0.05
+  MAX_PROB: 0.25
 
 ######################################### MODEL #########################################
 MODEL:
   VOCAB_SIZE: 30522 # include <BOS>/<EOS>
-  META_ARCHITECTURE: 'VLPBertPreTraining'
+  META_ARCHITECTURE: 'TransformerEncoderDecoder'
   ENCODER: 'TwoStreamBertEncoder'
   DECODER: 'DecoupleBertDecoder'
   PREDICTOR: 'BertPredictionHead'
@@ -86,6 +97,11 @@ LR_SCHEDULER:
   NAME: 'StepLR'
   STEP_SIZE: 3
   GAMMA: 0.1
+
+####################################### decode strategy ####################################### 
+DECODE_STRATEGY:
+  NAME: 'BeamSearcher'
+  BEAM_SIZE: 3
 
 ####################################### losses ####################################### 
 LOSSES:

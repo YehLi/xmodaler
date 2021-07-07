@@ -16,7 +16,6 @@ from xmodaler.utils.file_io import PathManager
 from xmodaler.utils.logger import log_first_n
 from xmodaler.utils.registry import Registry
 from .common import DatasetFromList, MapDataset
-from .samplers import InferenceSampler
 
 DATASETS_REGISTRY = Registry("DATASETS")  # noqa F401 isort:skip
 DATASETS_REGISTRY.__doc__ = """
@@ -104,13 +103,13 @@ def build_xmodaler_valtest_loader(datalist, *, dataset_mapper, batch_size, num_w
         dataset = DatasetFromList(datalist, copy=False)
     if dataset_mapper is not None:
         dataset = MapDataset(dataset, dataset_mapper)
-    sampler = InferenceSampler(len(dataset))
 
-    batch_sampler = torch.utils.data.sampler.BatchSampler(sampler, batch_size, drop_last=False)
     data_loader = torch.utils.data.DataLoader(
         dataset,
-        num_workers=num_workers,
-        batch_sampler=batch_sampler,
+        batch_size = batch_size,
+        num_workers = num_workers,
+        drop_last=False,
+        shuffle = False,
         collate_fn=trivial_batch_collator,
     )
     return data_loader

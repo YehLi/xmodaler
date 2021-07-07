@@ -20,20 +20,26 @@ class TransformerEncoderDecoder(BaseEncoderDecoder):
         self,
         *,
         vocab_size,
+        max_seq_len,
         token_embed,
         visual_embed,
         encoder,
         decoder,
         predictor,
+        greedy_decoder,
+        beam_searcher,
         v_predictor,
     ):
         super().__init__(
             vocab_size=vocab_size,
+            max_seq_len=max_seq_len,
             token_embed=token_embed,
             visual_embed=visual_embed,
             encoder=encoder,
             decoder=decoder,
             predictor=predictor,
+            greedy_decoder=greedy_decoder,
+            beam_searcher=beam_searcher
         )
         self.v_predictor = v_predictor
 
@@ -41,11 +47,17 @@ class TransformerEncoderDecoder(BaseEncoderDecoder):
     def from_config(cls, cfg):
         ret = super().from_config(cfg)
         if cfg.MODEL.BERT.V_TARGET_SIZE > 0:
-            ret.update({ "v_predictor": build_v_predictor(cfg, ) })
-
+            v_predictor = build_v_predictor(cfg)
+        else:
+            v_predictor = None
+        
+        ret.update({ "v_predictor": v_predictor })
         return ret
 
     def get_extended_attention_mask(self, batched_inputs):
+        if kfg.TOKENS_MASKS not in batched_inputs:
+            batched_inputs[kfg.TOKENS_MASKS] = torch.ones((batched_inputs[kfg.ATT_MASKS].size(0), self.max_seq_len)).cuda()
+
         tmasks = batched_inputs[kfg.TOKENS_MASKS]
         seq_length = tmasks.size(-1)
         tmasks = tmasks.to(dtype=next(self.parameters()).dtype)
@@ -98,60 +110,7 @@ class TransformerEncoderDecoder(BaseEncoderDecoder):
         tlogits = self.predictor(inputs)
         inputs.update(tlogits)
 
-        vlogits = self.v_predictor(inputs)
-        inputs.update(vlogits)
+        if self.v_predictor is not None:
+            vlogits = self.v_predictor(inputs)
+            inputs.update(vlogits)
         return inputs
-
-
-#    def preprocess_batch(self, batched_inputs):
-#        vfeats = [x[kfg.ATT_FEATS] for x in batched_inputs]
-#        vfeats, vmasks = pad_tensor(vfeats, padding_value=0, use_mask=True)
-#        ret = { kfg.ATT_FEATS: vfeats, kfg.ATT_MASKS: vmasks }
-#
-#        if kfg.U_TOKENS_IDS in batched_inputs[0]:
-#            u_tokens_ids = [x[kfg.U_TOKENS_IDS] for x in batched_inputs]
-#            u_tokens_ids, tmasks = pad_tensor(u_tokens_ids, padding_value=0, use_mask=True)
-#            ret.update( { kfg.U_TOKENS_IDS: u_tokens_ids, kfg.TOKENS_MASKS: tmasks} )
-#
-#        if kfg.G_TOKENS_IDS in batched_inputs[0]:
-#            g_tokens_ids = [x[kfg.G_TOKENS_IDS] for x in batched_inputs]
-#            g_tokens_ids, tmasks = pad_tensor(g_tokens_ids, padding_value=0, use_mask=True)
-#            ret.update( { kfg.G_TOKENS_IDS: g_tokens_ids, kfg.TOKENS_MASKS: tmasks} )
-#
-#        if kfg.U_TARGET_IDS in batched_inputs[0]:
-#            u_target_ids = [x[kfg.U_TARGET_IDS] for x in batched_inputs]
-#            u_target_ids = pad_tensor(u_target_ids, padding_value=-1, use_mask=False)
-#            ret.update({ kfg.U_TARGET_IDS: u_target_ids })
-#
-#        if kfg.G_TARGET_IDS in batched_inputs[0]:
-#            g_target_ids = [x[kfg.G_TARGET_IDS] for x in batched_inputs]
-#            g_target_ids = pad_tensor(g_target_ids, padding_value=-1, use_mask=False)
-#            ret.update({ kfg.G_TARGET_IDS: g_target_ids })
-#
-#        if kfg.ATT_FEATS_LOC in batched_inputs[0]:
-#            vfeats_loc = [x[kfg.ATT_FEATS_LOC] for x in batched_inputs]
-#            vfeats_loc = pad_tensor(vfeats_loc, padding_value=0, use_mask=False)
-#            ret.update({ kfg.ATT_FEATS_LOC: vfeats_loc })
-#
-#        if kfg.U_TOKENS_TYPE in batched_inputs[0]:
-#            u_tokens_type = [x[kfg.U_TOKENS_TYPE] for x in batched_inputs]
-#            u_tokens_type = pad_tensor(u_tokens_type, padding_value=0, use_mask=False)
-#            ret.update({ kfg.U_TOKENS_TYPE: u_tokens_type })
-#
-#        if kfg.G_TOKENS_TYPE in batched_inputs[0]:
-#            g_tokens_type = [x[kfg.G_TOKENS_TYPE] for x in batched_inputs]
-#            g_tokens_type = pad_tensor(g_tokens_type, padding_value=1, use_mask=False)
-#            ret.update({ kfg.G_TOKENS_TYPE: g_tokens_type })
-#
-#        if kfg.V_TARGET in batched_inputs[0]:
-#            v_target = [x[kfg.V_TARGET] for x in batched_inputs]
-#            v_target = pad_tensor(v_target, padding_value=0, use_mask=False)
-#            ret.update({ kfg.V_TARGET: v_target })
-#
-#        if kfg.V_TARGET_LABELS in batched_inputs[0]:
-#            v_target_labels = [x[kfg.V_TARGET_LABELS] for x in batched_inputs]
-#            v_target_labels = pad_tensor(v_target_labels, padding_value=-1, use_mask=False)
-#            ret.update({ kfg.V_TARGET_LABELS: v_target_labels })
-#
-#        dict_to_cuda(ret)
-#        return ret

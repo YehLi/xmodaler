@@ -9,7 +9,7 @@ def build_predictor(cfg):
     predictor = PREDICTOR_REGISTRY.get(cfg.MODEL.PREDICTOR)(cfg)
     return predictor
 
-def build_v_predictor(cfg, name=None):
+def build_v_predictor(cfg):
     predictor = PREDICTOR_REGISTRY.get(cfg.MODEL.V_PREDICTOR)(cfg)
     return predictor  
 

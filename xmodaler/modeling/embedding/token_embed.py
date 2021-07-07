@@ -75,20 +75,23 @@ class TokenBaseEmbedding(nn.Module):
             ret.update({ kfg.U_TOKEN_EMBED: u_token_embed })
 
         if kfg.G_TOKENS_IDS in batched_inputs:
+            time_step = batched_inputs.get(kfg.TIME_STEP, None)
             g_tokens_ids = batched_inputs[kfg.G_TOKENS_IDS]
             g_tokens_type = batched_inputs.get(kfg.G_TOKENS_TYPE, None)
-            g_token_embed = self._forward(g_tokens_ids, token_type_ids=g_tokens_type)
+            g_token_embed = self._forward(g_tokens_ids, token_type_ids=g_tokens_type, time_step=time_step)
             ret.update({ kfg.G_TOKEN_EMBED: g_token_embed })
         return ret
 
-    def _forward(self, input_ids, token_type_ids=None):
+    def _forward(self, input_ids, token_type_ids=None, time_step=None):
         embeddings = self.embeddings(input_ids)
         
         if self.embeddings_pos is not None:
-            position_embeddings = self.embeddings_pos(input_ids)
+            pos_inputs = input_ids if time_step is None else time_step
+            position_embeddings = self.embeddings_pos(pos_inputs)
             embeddings = embeddings + position_embeddings
 
         if (self.embeddings_token_type is not None) and (token_type_ids is not None):
+            token_type_ids = token_type_ids if time_step is None else token_type_ids[:,time_step] 
             embeddings_token_type = self.embeddings_token_type(token_type_ids)
             embeddings = embeddings + embeddings_token_type
 

@@ -29,8 +29,11 @@ class SinusoidEncoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
-        x_size = x.size(1)
-        return self.pe[:, :x_size]
+        if isinstance(x, int):
+            return self.pe[:, x]
+        else:
+            x_size = x.size(1)
+            return self.pe[:, :x_size]
 
 @POSITION_ENC_REGISTRY.register()
 class NNEmbeddingEncoding(nn.Module):
