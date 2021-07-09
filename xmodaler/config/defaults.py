@@ -259,7 +259,7 @@ _C.SCORER.EOS_ID = 0
 # ---------------------------------------------------------------------------- #
 _C.DECODE_STRATEGY = CN()
 
-_C.DECODE_STRATEGY.NAME = ''
+_C.DECODE_STRATEGY.NAME = 'BeamSearcher'
 
 _C.DECODE_STRATEGY.BEAM_SIZE = 1
 
@@ -274,11 +274,13 @@ _C.INFERENCE.VOCAB = 'coco_vocabulary.txt'
 
 _C.INFERENCE.ID_KEY = 'image_id'
 
-_C.INFERENCE.CAP_KEY = 'caption'
+_C.INFERENCE.VALUE = 'caption'
 
 _C.INFERENCE.VAL_ANNFILE = 'captions_val5k.json'
 
 _C.INFERENCE.TEST_ANNFILE = 'captions_test5k.json'
+
+_C.INFERENCE.GENERATION_MODE = True
 
 # ---------------------------------------------------------------------------- #
 # Misc options

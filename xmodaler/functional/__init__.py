@@ -3,6 +3,7 @@ from .func_io import (
     read_lines_set,
     load_vocab,
     read_np,
+    read_np_bbox
 )
 
 from .func_feats import (

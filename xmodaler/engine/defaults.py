@@ -241,7 +241,17 @@ class DefaultTrainer(TrainerBase):
         self._train_data_loader_iter = iter(self.train_data_loader)
         self.val_data_loader = self.build_val_loader(cfg)
         self.test_data_loader = self.build_test_loader(cfg)
-        self.evaluator = self.build_evaluator(cfg) if self.test_data_loader is not None else None
+        
+        if (self.val_data_loader is not None) and (len(cfg.INFERENCE.VAL_ANNFILE) > 0):
+            self.val_evaluator = build_evaluation(cfg, cfg.INFERENCE.VAL_ANNFILE)
+        else:
+            self.val_evaluator = None
+
+        if (self.test_data_loader is not None) and (len(cfg.INFERENCE.TEST_ANNFILE) > 0):
+            self.test_evaluator = build_evaluation(cfg, cfg.INFERENCE.TEST_ANNFILE)
+        else:
+            self.test_evaluator = None
+
         self.losses = self.build_losses(cfg)
         self.scheduler = self.build_lr_scheduler(cfg, self.optimizer, self.iters_per_epoch)
         self.ss_prob = 0.0
@@ -282,8 +292,8 @@ class DefaultTrainer(TrainerBase):
             hooks.IterationTimer(),
             hooks.LRScheduler(),
             hooks.ScheduledSampling(
-                start_iter = cfg.SCHEDULED_SAMPLING.START_EPOCH, #* self.iters_per_epoch, 
-                inc_every_iter = cfg.SCHEDULED_SAMPLING.INC_EVERY_EPOCH, #* self.iters_per_epoch, 
+                start_iter = cfg.SCHEDULED_SAMPLING.START_EPOCH * self.iters_per_epoch, 
+                inc_every_iter = cfg.SCHEDULED_SAMPLING.INC_EVERY_EPOCH * self.iters_per_epoch, 
                 inc_prob = cfg.SCHEDULED_SAMPLING.INC_PROB, 
                 max_prob = cfg.SCHEDULED_SAMPLING.MAX_PROB
             )
@@ -297,14 +307,20 @@ class DefaultTrainer(TrainerBase):
             ret.append(hooks.PeriodicCheckpointer(self.checkpointer, cfg.SOLVER.CHECKPOINT_PERIOD * self.iters_per_epoch))
 
         def test_and_save_results():
-            self._last_eval_results = self.test(self.cfg, self.model, self.test_data_loader, self.evaluator)
-            return self._last_eval_results
+            eval_results = self.test(self.cfg, self.model, self.test_data_loader, self.test_evaluator)
+            return eval_results
+
+        def val_and_save_results():
+            eval_results = self.test(self.cfg, self.model, self.val_data_loader, self.val_evaluator)
+            return eval_results
 
         # Do evaluation after checkpointer, because then if it fails,
         # we can use the saved checkpoint to debug.
+        if self.val_data_loader is not None:
+            ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, val_and_save_results, self.iters_per_epoch, 'val'))
+
         if self.test_data_loader is not None:
-            #ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD * self.iters_per_epoch, test_and_save_results))
-            ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, test_and_save_results)) ######
+            ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, test_and_save_results, self.iters_per_epoch, 'test'))
 
         if comm.is_main_process():
             # Here the default print/log frequency of each writer is used.
@@ -317,12 +333,6 @@ class DefaultTrainer(TrainerBase):
 
     def train(self):
         super().train(self.start_iter, self.max_iter)
-        #if len(self.cfg.TEST.EXPECTED_RESULTS) and comm.is_main_process():
-        #    assert hasattr(
-        #        self, "_last_eval_results"
-        #    ), "No evaluation results obtained during training!"
-        #    verify_results(self.cfg, self._last_eval_results)
-        #    return self._last_eval_results
 
     @classmethod
     def build_model(cls, cfg):
@@ -354,10 +364,6 @@ class DefaultTrainer(TrainerBase):
     @classmethod
     def build_losses(cls, cfg):
         return build_losses(cfg)
-
-    @classmethod
-    def build_evaluator(cls, cfg):
-        return build_evaluation(cfg, cfg.INFERENCE.TEST_ANNFILE)
 
     @staticmethod
     def auto_scale_workers(cfg, num_workers: int):
@@ -429,12 +435,17 @@ class DefaultTrainer(TrainerBase):
                 data = comm.unwrap_model(model).preprocess_batch(data)
                 ids = data[kfg.IDS]
 
-                res = model(data, use_beam_search=True, output_sents=True)
-                sents = res[kfg.G_SENTS]
-                
-                for id, sent in zip(ids, sents):
-                    results.append({cfg.INFERENCE.ID_KEY: int(id), cfg.INFERENCE.CAP_KEY: sent})
-        eval_res = evaluator.eval(results)
+                if cfg.INFERENCE.GENERATION_MODE == True:
+                    res = model(data, use_beam_search=True, output_sents=True)
+                else:
+                    res = model(data)
+
+                outputs = res[kfg.OUTPUT]
+                for id, output in zip(ids, outputs):
+                    results.append({cfg.INFERENCE.ID_KEY: int(id), cfg.INFERENCE.VALUE: output})
+
+        if evaluator is not None:
+            eval_res = evaluator.eval(results)
         model.train()
         return eval_res
 

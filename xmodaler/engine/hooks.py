@@ -330,7 +330,7 @@ class EvalHook(HookBase):
     It is executed every ``eval_period`` iterations and after the last iteration.
     """
 
-    def __init__(self, eval_period, eval_function):
+    def __init__(self, eval_period, eval_function, iters_per_epoch, stage):
         """
         Args:
             eval_period (int): the period to run `eval_function`. Set to 0 to
@@ -343,10 +343,13 @@ class EvalHook(HookBase):
             If you would like only certain workers to perform evaluation,
             give other workers a no-op function (`eval_function=lambda: None`).
         """
-        self._period = eval_period
+        self._period = eval_period #* iters_per_epoch
         self._func = eval_function
+        self._stage = stage
+        self._iters_per_epoch = iters_per_epoch
 
     def _do_eval(self):
+        
         if comm.is_main_process():
             results = self._func()
             if results:
@@ -361,6 +364,13 @@ class EvalHook(HookBase):
                             "Got '{}: {}' instead.".format(k, v)
                         ) from e
                 self.trainer.storage.put_scalars(**flattened_results, smoothing_hint=False)
+
+                logger = logging.getLogger(__name__)
+                epoch = (self.trainer.iter + 1) // self._iters_per_epoch
+                logger.info('############################## {}: {} ##############################'.format(self._stage, epoch))
+                for k, v in flattened_results.items():
+                    logger.info("{}: {}".format(k, v)) 
+                
 
         # Evaluation may take different time among workers.
         # A barrier make them start the next iteration together.

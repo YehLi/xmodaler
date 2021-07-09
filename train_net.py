@@ -31,7 +31,6 @@ def main(args):
     consider writing your own training loop (see plain_train_net.py) or
     subclassing the trainer.
     """
-    #trainer = DefaultTrainer(cfg)
     trainer = build_engine(cfg)
     trainer.resume_or_load(resume=args.resume)
     return trainer.train()

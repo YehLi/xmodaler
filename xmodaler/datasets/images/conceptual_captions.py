@@ -62,7 +62,8 @@ class ConceptualCaptionsDataset:
             "max_feat_num": cfg.DATALOADER.MAX_FEAT_NUM,
             "feats_folder": cfg.DATALOADER.FEATS_FOLDER,
             "images_ids_file": images_ids_files[stage],
-            "tokenizer": BertTokenizer.from_pretrained(cfg.MODEL.PRETRAINING.MODEL_NAME, do_lower_case=cfg.MODEL.PRETRAINING.DO_LOWER_CASE),
+            "tokenizer": BertTokenizer.from_pretrained(cfg.MODEL.PRETRAINING.MODEL_NAME,
+                do_lower_case=cfg.MODEL.PRETRAINING.DO_LOWER_CASE),
         }
         return ret
 

@@ -78,9 +78,14 @@ def build_xmodaler_train_loader(datalist, *, dataset_mapper, batch_size, num_wor
 
 
 def _valtest_loader_from_config(cfg, dataset_mapper=None, *, datalist=None, sampler=None, stage="val"):
-    if len(cfg.DATASETS.TEST) > 0:
+    dataset_names = {
+        "val": cfg.DATASETS.VAL,
+        "test": cfg.DATASETS.TEST,
+    }
+    dataset_name = dataset_names[stage]
+    if len(dataset_name) > 0:
         if dataset_mapper is None:
-            dataset_mapper = build_dataset_mapper(cfg, name=cfg.DATASETS.TEST, stage=stage)
+            dataset_mapper = build_dataset_mapper(cfg, name=dataset_name, stage=stage)
         if datalist is None:
             datalist = dataset_mapper.load_data(cfg)
     else:

@@ -52,18 +52,38 @@ class DecoupleBertDecoder(Decoder):
         vfeats = batched_inputs[kfg.ATT_FEATS]
         ext_vmasks = batched_inputs[kfg.EXT_ATT_MASKS]
 
+        if isinstance(vfeats, list):
+            vfeats = vfeats[-1]
+
+        if (kfg.G_TOKEN_EMBED not in batched_inputs) and (self.num_generation_layers > 0):
+            batched_inputs[kfg.G_TOKEN_EMBED] = batched_inputs[kfg.U_TOKEN_EMBED]
+        if (kfg.U_TOKEN_EMBED not in batched_inputs) and (self.num_understanding_layers > 0):
+            batched_inputs[kfg.U_TOKEN_EMBED] = batched_inputs[kfg.G_TOKEN_EMBED]
+
         if kfg.U_TOKEN_EMBED in batched_inputs:
             u_tfeats = batched_inputs[kfg.U_TOKEN_EMBED]
             ext_u_tmasks = batched_inputs[kfg.EXT_U_TOKENS_MASKS]
+            if isinstance(u_tfeats, list):
+                u_tfeats = u_tfeats[-1]
+
+            vfeats_arr = []
+            u_tfeats_arr = []
             for layer_module in self.u_layers:
                 vfeats, u_tfeats = layer_module(vfeats, ext_vmasks, u_tfeats, ext_u_tmasks)
-            ret.update({ kfg.U_HIDDEN_STATES: u_tfeats, kfg.ATT_FEATS: vfeats })
+                vfeats_arr.append(vfeats)
+                u_tfeats_arr.append(u_tfeats)
+            ret.update({ kfg.U_HIDDEN_STATES: u_tfeats_arr, kfg.ATT_FEATS: vfeats_arr })
 
         if kfg.G_TOKEN_EMBED in batched_inputs:
             g_tfeats = batched_inputs[kfg.G_TOKEN_EMBED]
             ext_g_tmasks = batched_inputs[kfg.EXT_G_TOKENS_MASKS]
+            if isinstance(g_tfeats, list):
+                g_tfeats = g_tfeats[-1]
+
+            g_tfeats_arr = []
             for layer_module in self.g_layers:
                 g_tfeats = layer_module(g_tfeats, vfeats, ext_g_tmasks, ext_vmasks)
-            ret.update({ kfg.G_HIDDEN_STATES: g_tfeats })
+                g_tfeats_arr.append(g_tfeats)
+            ret.update({ kfg.G_HIDDEN_STATES: g_tfeats_arr })
 
         return ret

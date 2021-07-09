@@ -54,8 +54,8 @@ class MSCoCoDataset:
         dataset_dict = copy.deepcopy(dataset_dict)
         image_id = dataset_dict['image_id']
         
-        feat_path  = os.path.join(self.feats_folder, '100001.npz')
-        #feat_path = os.path.join(self.feats_folder, image_id + '.npz')
+        #feat_path  = os.path.join(self.feats_folder, '100001.npz')
+        feat_path = os.path.join(self.feats_folder, image_id + '.npz')
         content = read_np(feat_path)
         att_feats = content['features'][0:self.max_feat_num].astype('float32')
         ret = { kfg.IDS: image_id, kfg.ATT_FEATS: att_feats }

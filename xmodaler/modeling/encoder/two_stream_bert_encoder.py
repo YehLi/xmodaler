@@ -48,23 +48,32 @@ class TwoStreamBertEncoder(nn.Module):
         if mode == None or mode == 'v':
             vfeats = batched_inputs[kfg.ATT_FEATS]
             ext_vmasks = batched_inputs[kfg.EXT_ATT_MASKS]
+
+            vfeats_arr = []
             for layer_module in self.v_layers:
                 vfeats, _ = layer_module(vfeats, ext_vmasks)
-            ret.update({ kfg.ATT_FEATS: vfeats })
+                vfeats_arr.append(vfeats)
+            ret.update({ kfg.ATT_FEATS: vfeats_arr })
 
         elif mode == 't':
             if kfg.U_TOKEN_EMBED in batched_inputs:
                 u_tfeats = batched_inputs[kfg.U_TOKEN_EMBED]
                 ext_u_tmasks = batched_inputs[kfg.EXT_U_TOKENS_MASKS]
+
+                u_tfeats_arr = []
                 for layer_module in self.layers:
                     u_tfeats, _ = layer_module(u_tfeats, ext_u_tmasks)
-                ret.update({ kfg.U_TOKEN_EMBED: u_tfeats })
+                    u_tfeats_arr.append(u_tfeats)
+                ret.update({ kfg.U_TOKEN_EMBED: u_tfeats_arr })
 
             if kfg.G_TOKEN_EMBED in batched_inputs:
                 g_tfeats = batched_inputs[kfg.G_TOKEN_EMBED]
                 ext_g_tmasks = batched_inputs[kfg.EXT_G_TOKENS_MASKS]
+
+                g_tfeats_arr = []
                 for layer_module in self.layers:
                     g_tfeats, _ = layer_module(g_tfeats, ext_g_tmasks)
-                ret.update({ kfg.G_TOKEN_EMBED: g_tfeats })
+                    g_tfeats_arr.append(g_tfeats)
+                ret.update({ kfg.G_TOKEN_EMBED: g_tfeats_arr })
 
         return ret

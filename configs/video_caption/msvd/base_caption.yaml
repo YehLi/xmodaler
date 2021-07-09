@@ -95,6 +95,7 @@ INFERENCE:
   NAME: 'COCOEvaler'
   VOCAB: '../open_source_dataset/msvd_dataset/vocabulary.txt'
   ID_KEY: 'image_id'
-  CAP_KEY: 'caption'
+  VALUE: 'caption'
   VAL_ANNFILE: '../open_source_dataset/msvd_dataset/captions_val.json'
   TEST_ANNFILE: '../open_source_dataset/msvd_dataset/captions_test.json'
+  GENERATION_MODE: True

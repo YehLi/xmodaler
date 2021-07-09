@@ -46,12 +46,18 @@ class BertPredictionHead(nn.Module):
         ret = {}
         if kfg.U_HIDDEN_STATES in batched_inputs:
            hidden_states = batched_inputs[kfg.U_HIDDEN_STATES]
+           if isinstance(hidden_states, list):
+               hidden_states = hidden_states[-1]
+
            hidden_states = self.transform(hidden_states)
            u_logits = self.decoder(hidden_states)
            ret.update({ kfg.U_LOGITS: u_logits })
 
         if kfg.G_HIDDEN_STATES in batched_inputs:
            hidden_states = batched_inputs[kfg.G_HIDDEN_STATES]
+           if isinstance(hidden_states, list):
+               hidden_states = hidden_states[-1]
+
            hidden_states = self.transform(hidden_states)
            g_logits = self.decoder(hidden_states)
            ret.update({ kfg.G_LOGITS: g_logits })
@@ -93,6 +99,9 @@ class BertVisualPredictionHead(nn.Module):
 
     def forward(self, batched_inputs):
         hidden_states = batched_inputs[kfg.ATT_FEATS]
+        if isinstance(hidden_states, list):
+            hidden_states = hidden_states[-1]
+
         hidden_states = self.transform(hidden_states)
         logits = self.decoder(hidden_states)
         return { kfg.V_LOGITS: logits }

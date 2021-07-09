@@ -16,7 +16,8 @@
                 //"--config-file", "./configs/image_caption/updown.yaml", 
                 //"--config-file", "./configs/image_caption/transformer.yaml", 
                 //"--config-file", "./configs/video_caption/msvd/salstm.yaml", 
-                "--config-file", "./configs/video_caption/msvd/mplstm.yaml", 
+                //"--config-file", "./configs/video_caption/msvd/mplstm.yaml", 
+                "--config-file", "./configs/mm_understanding/vqa/vqa.yaml",
             ]
         }
     ]

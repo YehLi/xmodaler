@@ -35,5 +35,5 @@ class DecodeStrategy(nn.Module, metaclass=ABCMeta):
         ret = self._forward(batched_inputs, model)
         if output_sents:
             sents = decode_sequence(self.vocab, ret[kfg.G_SENTS_IDS])
-            ret.update({ kfg.G_SENTS: sents })
+            ret.update({ kfg.OUTPUT: sents })
         return ret

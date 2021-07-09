@@ -10,7 +10,6 @@ from ..predictor import build_v_predictor
 from .base_enc_dec import BaseEncoderDecoder
 from .build import META_ARCH_REGISTRY
 
-
 __all__ = ["TransformerEncoderDecoder"]
 
 @META_ARCH_REGISTRY.register()

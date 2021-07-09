@@ -118,7 +118,8 @@ INFERENCE:
   NAME: 'COCOEvaler'
   VOCAB: '../open_source_dataset/mscoco_dataset/vocabulary.txt'
   ID_KEY: 'image_id'
-  CAP_KEY: 'caption'
+  VALUE: 'caption'
   VAL_ANNFILE: '../open_source_dataset/mscoco_dataset/captions_val5k.json'
   TEST_ANNFILE: '../open_source_dataset/mscoco_dataset/captions_test5k.json'
+  GENERATION_MODE: True
 
