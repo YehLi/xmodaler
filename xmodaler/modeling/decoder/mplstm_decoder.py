@@ -1,3 +1,8 @@
+# Copyright 2021 JD.com, Inc., JD AI
+"""
+@author: Yehao Li, Jingwen Chen
+@contact: yehaoli.sysu@gmail.com, chenjingwen.sysu@gmail.com
+"""
 import torch
 from torch import nn
 

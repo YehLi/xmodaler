@@ -1,4 +1,8 @@
-
+# Copyright 2021 JD.com, Inc., JD AI
+"""
+@author: Yehao Li
+@contact: yehaoli.sysu@gmail.com
+"""
 import time
 import copy
 import torch

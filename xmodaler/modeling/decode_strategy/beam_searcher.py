@@ -1,3 +1,8 @@
+"""
+From original at https://github.com/aimagelab/meshed-memory-transformer/blob/master/models/beam_search/beam_search.py
+Original copyright of AImageLab code below, modifications by Yehao Li, Copyright 2021.
+"""
+# Copyright (c) 2019, AImageLab
 import torch
 from torch import nn
 import torch.nn.functional as F

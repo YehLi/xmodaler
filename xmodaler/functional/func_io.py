@@ -1,3 +1,8 @@
+# Copyright 2021 JD.com, Inc., JD AI
+"""
+@author: Yehao Li
+@contact: yehaoli.sysu@gmail.com
+"""
 import os
 import numpy as np
 from .func_feats import boxes_to_locfeats

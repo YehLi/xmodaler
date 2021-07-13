@@ -1,3 +1,9 @@
+# Copyright 2021 JD.com, Inc., JD AI
+"""
+@author: Yehao Li
+@contact: yehaoli.sysu@gmail.com
+"""
+
 from .config import CfgNode as CN
 
 _K = CN()

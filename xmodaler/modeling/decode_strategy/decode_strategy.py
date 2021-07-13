@@ -1,3 +1,8 @@
+# Copyright 2021 JD.com, Inc., JD AI
+"""
+@author: Yehao Li
+@contact: yehaoli.sysu@gmail.com
+"""
 from abc import ABCMeta, abstractmethod
 import torch
 import torch.nn as nn

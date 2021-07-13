@@ -1,3 +1,8 @@
+# Copyright 2021 JD.com, Inc., JD AI
+"""
+@author: Yehao Li
+@contact: yehaoli.sysu@gmail.com
+"""
 from xmodaler.utils.registry import Registry
 
 DECODE_STRATEGY_REGISTRY = Registry("DECODE_STRATEGY")

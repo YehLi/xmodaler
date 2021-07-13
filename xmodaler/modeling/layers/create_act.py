@@ -1,3 +1,8 @@
+"""
+From original at https://github.com/huggingface/transformers and https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/create_act.py
+Modifications by Yehao Li, Copyright 2021.	
+"""
+
 import math
 
 import torch

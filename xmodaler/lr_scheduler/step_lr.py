@@ -1,3 +1,8 @@
+# Copyright 2021 JD.com, Inc., JD AI
+"""
+@author: Yehao Li
+@contact: yehaoli.sysu@gmail.com
+"""
 import torch
 from xmodaler.config import configurable
 from .build import LR_SCHEDULER_REGISTRY
