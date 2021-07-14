@@ -1,8 +1,0 @@
-Adamax   torch.optim.Adamax
-ADAGRAD  torch.optim.Adagrad
-RMSPROP  torch.optim.RMSprop
-ADAMW    torch.optim.AdamW
-RADAM    radam.py
-
-
-
