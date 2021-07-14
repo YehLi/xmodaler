@@ -232,6 +232,20 @@ _C.LR_SCHEDULER.STEP_SIZE = 3
 
 _C.LR_SCHEDULER.GAMMA = 0.1
 
+_C.LR_SCHEDULER.MODEL_SIZE = -1 # for Noam only
+
+_C.LR_SCHEDULER.FACTOR = 1.0 # for Noam only
+
+_C.LR_SCHEDULER.WARMUP = 0 # epoch, for WarmupXXX
+
+_C.LR_SCHEDULER.MIN_LR = 0.00001 
+
+_C.LR_SCHEDULER.MILESTONES = (3,) # for WarmupMultiStep only
+
+_C.LR_SCHEDULER.WARMUP_FACTOR = 1.0 / 3 # for WarmupMultiStep only
+
+_C.LR_SCHEDULER.WARMUP_METHOD = "linear" # for WarmupMultiStep only
+
 # ---------------------------------------------------------------------------- #
 # Losses
 # ---------------------------------------------------------------------------- #

@@ -6,3 +6,11 @@
 from .build import build_lr_scheduler
 
 from .step_lr import StepLR
+from .noam_lr import NoamLR
+from .warmup_lr import (
+   WarmupConstantSchedule, 
+   WarmupLinearSchedule, 
+   WarmupCosineSchedule, 
+   WarmupCosineWithHardRestartsSchedule, 
+   WarmupMultiStepLR
+)
