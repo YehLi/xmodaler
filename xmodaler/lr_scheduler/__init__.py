@@ -15,3 +15,4 @@ from .warmup_lr import (
    WarmupMultiStepLR
 )
 from .multi_step_lr import MultiStepLR
+from .fix_lr import FixLR

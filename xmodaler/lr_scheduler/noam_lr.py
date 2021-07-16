@@ -26,7 +26,7 @@ class NoamLR(torch.optim.lr_scheduler._LRScheduler):
             "optimizer": optimizer,
             "model_size": cfg.LR_SCHEDULER.MODEL_SIZE,
             "factor": cfg.LR_SCHEDULER.FACTOR,
-            "warmup": cfg.LR_SCHEDULER.WARMUP * data_size, # epoch -> iterations
+            "warmup": cfg.LR_SCHEDULER.WARMUP, # iterations
             "last_epoch": -1
         }
 
