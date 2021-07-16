@@ -259,7 +259,7 @@ class CommonMetricPrinter(EventWriter):
                     [
                         "{}: {:.4g}".format(k, v.median(20))
                         for k, v in storage.histories().items()
-                        if "loss" in k
+                        if ("loss" in k) or ("Cider" in k) or ("RewardCriterion" in k)
                     ]
                 ),
                 time="time: {:.4f}  ".format(iter_time) if iter_time is not None else "",
