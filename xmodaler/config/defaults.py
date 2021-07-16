@@ -244,7 +244,7 @@ _C.LR_SCHEDULER.MODEL_SIZE = -1 # for Noam only
 
 _C.LR_SCHEDULER.FACTOR = 1.0 # for Noam only
 
-_C.LR_SCHEDULER.WARMUP = 0 # epoch, for WarmupXXX
+_C.LR_SCHEDULER.WARMUP = 0 # epoch, for WarmupXXX; iteration, for Noam
 
 _C.LR_SCHEDULER.MIN_LR = 0.00001 
 
