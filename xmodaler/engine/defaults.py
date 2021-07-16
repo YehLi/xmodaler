@@ -462,7 +462,12 @@ class DefaultTrainer(TrainerBase):
         """
         If you want to do something with the data, you can wrap the dataloader.
         """
-        data = next(self._train_data_loader_iter)
+        try:
+            data = next(self._train_data_loader_iter)
+        except StopIteration:
+            self._train_data_loader_iter = iter(self.train_data_loader)
+            data = next(self._train_data_loader_iter)
+
         data_time = time.perf_counter() - start
 
         """

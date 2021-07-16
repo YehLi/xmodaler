@@ -347,7 +347,7 @@ class EvalHook(HookBase):
             If you would like only certain workers to perform evaluation,
             give other workers a no-op function (`eval_function=lambda: None`).
         """
-        self._period = eval_period #* iters_per_epoch
+        self._period = eval_period * iters_per_epoch
         self._func = eval_function
         self._stage = stage
         self._iters_per_epoch = iters_per_epoch
