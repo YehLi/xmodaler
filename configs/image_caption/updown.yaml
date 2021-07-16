@@ -1,8 +1,13 @@
 _BASE_: "base_att_image_caption.yaml"
 
+######################################### MODEL #########################################
 MODEL:
   UPDOWN:
     ATT_EMBED_SIZE: 512
     DROPOUT1: 0.0
     DROPOUT2: 0.0
     ATT_EMBED_DROPOUT: 0.0
+
+####################################### losses ####################################### 
+LOSSES:
+  NAMES: ['CrossEntropy']

@@ -65,8 +65,8 @@ MODEL:
     INTERMEDIATE_DROP: 0.1
     FFN_DROPOUT_PROB: 0.1
     ATTENTION_PROBS_DROPOUT_PROB: 0.1
-    NUM_HIDDEN_LAYERS: 3
-    NUM_GENERATION_LAYERS: 3
+    NUM_HIDDEN_LAYERS: 6
+    NUM_GENERATION_LAYERS: 6
   
 ####################################### Optimizer #######################################
 SOLVER:
@@ -90,9 +90,10 @@ SOLVER:
   
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
-  NAME: 'StepLR'
-  STEP_SIZE: 3
-  GAMMA: 0.8
+  NAME: 'NoamLR'
+  MODEL_SIZE: 512
+  FACTOR: 1.0
+  WARMUP: 10000
 
 ####################################### losses ####################################### 
 LOSSES:
@@ -111,7 +112,7 @@ SCORER:
 ####################################### decode strategy ####################################### 
 DECODE_STRATEGY:
   NAME: 'BeamSearcher'
-  BEAM_SIZE: 3
+  BEAM_SIZE: 2
 
 ####################################### evaluation ####################################### 
 INFERENCE:
