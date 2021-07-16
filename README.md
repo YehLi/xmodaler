@@ -14,6 +14,11 @@ We provide a script in "train_net.py", that is made to train all the configs pro
 
 To train a model with "train_net.py", first setup the corresponding datasets following [xmodaler/datasets/README.md](./xmodaler/datasets/README.md), then run:
 ```
+# Teacher Force
 python train_net.py --num-gpus 4 \
- 	--config-file configs/COCO/updown.yaml
+ 	--config-file configs/image_caption/updown.yaml
+
+# Reinforcement Learning
+python train_net.py --num-gpus 4 \
+ 	--config-file configs/image_caption/updown_rl.yaml
 ```

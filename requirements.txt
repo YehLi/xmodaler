@@ -1,4 +1,4 @@
-torch
+torch>=1.9.0
 fvcore
 pycocotools
 omegaconf
