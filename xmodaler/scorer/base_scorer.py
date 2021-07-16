@@ -50,7 +50,7 @@ class BaseScorer(object):
         words = []
         for word in sent:
             if word == self.eos_id:
-                words.append('.')
+                words.append(self.eos_id)
                 break
             words.append(word)
         return words
@@ -58,6 +58,7 @@ class BaseScorer(object):
     def __call__(self, batched_inputs):
         ids = batched_inputs[kfg.IDS]
         res = batched_inputs[kfg.G_SENTS_IDS]
+        res = res.cpu().tolist()
 
         hypo = [self.get_sents(r) for r in res]
         gts = [self.gts[i] for i in ids]
