@@ -11,8 +11,9 @@ Registry for encoder
 """
 
 def build_encoder(cfg):
-    encoder = ENCODER_REGISTRY.get(cfg.MODEL.ENCODER)(cfg)
+    encoder = ENCODER_REGISTRY.get(cfg.MODEL.ENCODER)(cfg) if len(cfg.MODEL.ENCODER) > 0 else None
     return encoder
 
 def add_encoder_config(cfg, tmp_cfg):
-    ENCODER_REGISTRY.get(tmp_cfg.MODEL.ENCODER).add_config(cfg)
+    if len(tmp_cfg.MODEL.ENCODER) > 0:
+        ENCODER_REGISTRY.get(tmp_cfg.MODEL.ENCODER).add_config(cfg)

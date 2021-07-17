@@ -1,0 +1,82 @@
+_BASE_: "../mm_understanding_base.yaml"
+
+####################################### DATASETS #######################################
+DATASETS:
+  TRAIN: 'Flickr30kDataset'
+  VAL: 'Flickr30kDataset'
+  TEST: 'Flickr30kDataset'
+
+######################################### Engine #########################################
+ENGINE:
+  NAME: 'RetrievalTrainer'
+
+###################################### DATALOADER ######################################
+DATALOADER:
+  TRAIN_BATCH_SIZE: 8
+  TEST_BATCH_SIZE: 32
+  NUM_WORKERS: 0
+  FEATS_FOLDER: '../open_source_dataset/flickr30k/features/up_down'
+  ANNO_FOLDER: '../open_source_dataset/flickr30k'
+  SEQ_PER_SAMPLE:  1
+  MAX_FEAT_NUM: 51
+
+######################################### MODEL #########################################
+MODEL:
+  MAX_SEQ_LEN: 30
+  DECODER: ''
+  PREDICTOR: 'MultiModalSimilarity'
+
+######################################### BERT #########################################
+  BERT:
+    NUM_HIDDEN_LAYERS: 2
+    V_NUM_HIDDEN_LAYERS: 2
+    NUM_UNDERSTANDING_LAYERS: 0
+    NUM_GENERATION_LAYERS: 0
+
+######################################### MM_PREDICTOR #########################################
+  MM_PREDICTOR:
+    POOLER_INPUT_SIZE: 768
+    POOLER_OUTPUT_SIZE: 768
+    POOLER_BN: True
+    POOLER_DROPOUT: 0.1
+
+####################################### Optimizer #######################################
+SOLVER:
+  NAME: 'Adam'
+  EPOCH: 10
+  CHECKPOINT_PERIOD: 1
+  EVAL_PERIOD: 1
+  BASE_LR: 0.0005
+  BIAS_LR_FACTOR: 1.0
+  WEIGHT_DECAY: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+  WEIGHT_DECAY_BIAS: 0.0
+  MOMENTUM: 0.0
+  DAMPENING: 0.0
+  NESTEROV: 0.0
+  BETAS: [0.9, 0.999]
+  EPS: 1e-8
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: 'value'
+  NORM_TYPE: 2.0
+  
+####################################### lr scheduler ####################################### 
+LR_SCHEDULER:
+  NAME: 'StepLR'
+  STEP_SIZE: 3
+  GAMMA: 0.1
+
+####################################### losses ####################################### 
+LOSSES:
+  NAMES: ['BatchTriplet']
+  MARGIN: 0.2
+  MAX_VIOLATION: True
+
+INFERENCE:
+  VOCAB: ''
+  ID_KEY: 'image_id'
+  VALUE: 'caption'
+  NAME: 'RetrievalEvaler'
+  VAL_ANNFILE: '../open_source_dataset/flickr30k/all_data_final_val_set0_2014.jsonline'
+  TEST_ANNFILE: '../open_source_dataset/flickr30k/all_data_final_test_set0_2014.jsonline'
+  GENERATION_MODE: False

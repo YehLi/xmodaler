@@ -40,9 +40,12 @@ class RnnAttEncoderDecoder(BaseEncoderDecoder):
         ve_out = self.visual_embed(batched_inputs)
         inputs.update(ve_out)
 
-        encoder_out_v = self.encoder(inputs, mode='v')
-        inputs.update(encoder_out_v)
-        inputs = self.decoder.preprocess(inputs)
+        if self.encoder is not None:
+            encoder_out_v = self.encoder(inputs, mode='v')
+            inputs.update(encoder_out_v)
+
+        if self.decoder is not None:
+            inputs = self.decoder.preprocess(inputs)
 
         tokens_ids = batched_inputs[kfg.G_TOKENS_IDS]
         batch_size, seq_len = tokens_ids.shape
@@ -70,14 +73,17 @@ class RnnAttEncoderDecoder(BaseEncoderDecoder):
             te_out = self.token_embed(inputs)
             inputs.update(te_out)
 
-            encoder_out_t = self.encoder(inputs, mode='t')
-            inputs.update(encoder_out_t)
+            if self.encoder is not None:
+                encoder_out_t = self.encoder(inputs, mode='t')
+                inputs.update(encoder_out_t)
 
-            decoder_out = self.decoder(inputs)
-            inputs.update(decoder_out)
+            if self.decoder is not None:
+                decoder_out = self.decoder(inputs)
+                inputs.update(decoder_out)
 
-            logit = self.predictor(inputs)[kfg.G_LOGITS]
-            outputs[:, t] = logit
+            if self.predictor is not None:
+                logit = self.predictor(inputs)[kfg.G_LOGITS]
+                outputs[:, t] = logit
 
         inputs.update({kfg.G_LOGITS: outputs})
         return inputs

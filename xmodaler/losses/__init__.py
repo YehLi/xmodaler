@@ -10,3 +10,4 @@ from .label_smoothing import LabelSmoothing
 from .pretrain_losses import PretrainLosses
 from .reward_criterion import RewardCriterion
 from .bce_logits import BCEWithLogits
+from .triplet import BatchTriplet

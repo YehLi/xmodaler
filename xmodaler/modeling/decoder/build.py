@@ -11,8 +11,9 @@ Registry for decoder
 """
 
 def build_decoder(cfg):
-    decoder = DECODER_REGISTRY.get(cfg.MODEL.DECODER)(cfg)
+    decoder = DECODER_REGISTRY.get(cfg.MODEL.DECODER)(cfg) if len(cfg.MODEL.DECODER) > 0 else None
     return decoder
 
 def add_decoder_config(cfg, tmp_cfg):
-    DECODER_REGISTRY.get(tmp_cfg.MODEL.DECODER).add_config(cfg)
+    if len(tmp_cfg.MODEL.DECODER) > 0:
+        DECODER_REGISTRY.get(tmp_cfg.MODEL.DECODER).add_config(cfg)
