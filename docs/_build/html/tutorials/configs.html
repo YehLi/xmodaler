@@ -1,0 +1,258 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Configs &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Notes" href="../notes/index.html" />
+    <link rel="prev" title="Evaluation" href="evaluation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting Started with X-modaler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using_builtin_datasets.html">Use Builtin Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extend_defaults.html">Extend X-modaler’s Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_datasets.html">Use Custom Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_loaders.html">Dataloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="use_models.html">Use Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="write_models.html">Write Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html">Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+        
+      <li>Configs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/YehLi/xmodaler/blob/master/docs/tutorials/configs.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="configs">
+<h1>Configs<a class="headerlink" href="#configs" title="Permalink to this headline">¶</a></h1>
+<p>X-modaler provides a key-value based config system that can be used to obtain standard, common behaviors.</p>
+<p>X-modaler’s config system uses YAML. In addition to the basic operations that access and update a config, we provide the following extra functionality:</p>
+<ul class="simple">
+<li><p>The config can have <em>BASE</em>: base.yaml field, which will load a base config first. Values in the base config will be overwritten in sub-configs, if there are any conflicts. We provided several base configs for standard model architectures in the folder <code class="docutils literal notranslate"><span class="pre">configs</span></code>.</p></li>
+</ul>
+<div class="section" id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>Some basic usage of the <code class="docutils literal notranslate"><span class="pre">CfgNode</span></code> object is shown here:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">get_cfg</span>
+<span class="kn">from</span> <span class="nn">xmodaler.modeling</span> <span class="kn">import</span> <span class="n">add_config</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">get_cfg</span><span class="p">()</span> <span class="c1"># obtain X-modaler&#39;s default config</span>
+<span class="n">tmp_cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">load_from_file_tmp</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="c1"># load custom config</span>
+<span class="n">add_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">tmp_cfg</span><span class="p">)</span> <span class="c1"># combining default and custom configs</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">merge_from_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="c1"># load values from a file</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">merge_from_list</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span> <span class="c1"># # can also load values from a list of str</span>
+</pre></div>
+</div>
+<p>Many builtin tools in detectron2 accept command line config overwrite: Key-value pairs provided in the command line will overwrite the existing values in the config file. For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">train_net</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="n">config</span><span class="o">.</span><span class="n">yaml</span> <span class="p">[</span><span class="o">--</span><span class="n">other</span><span class="o">-</span><span class="n">options</span><span class="p">]</span> \
+  <span class="o">--</span><span class="n">opts</span> <span class="n">MODEL</span><span class="o">.</span><span class="n">WEIGHTS</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">weights</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../notes/index.html" class="btn btn-neutral float-right" title="Notes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="evaluation.html" class="btn btn-neutral float-left" title="Evaluation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

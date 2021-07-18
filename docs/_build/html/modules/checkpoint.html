@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.checkpoint &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xmodaler.config" href="config.html" />
+    <link rel="prev" title="API Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/index.html">Notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">xmodaler.checkpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">xmodaler.config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html">xmodaler.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="engine.html">xmodaler.engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">xmodaler.evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functional.html">xmodaler.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses.html">xmodaler.losses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lr_scheduler.html">xmodaler.lr_scheduler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modeling/index.html">xmodaler.modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.html">xmodaler.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scorer.html">xmodaler.scorer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tokenization.html">xmodaler.tokenization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/index.html">xmodaler.utils</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">API Documentation</a> &raquo;</li>
+        
+      <li>xmodaler.checkpoint</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/YehLi/xmodaler/blob/master/docs/modules/checkpoint.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xmodaler.checkpoint">
+<span id="xmodaler-checkpoint"></span><h1>xmodaler.checkpoint<a class="headerlink" href="#module-xmodaler.checkpoint" title="Permalink to this headline">¶</a></h1>
+<p>From original at <a class="reference external" href="https://github.com/facebookresearch/detectron2/blob/master/detectron2/checkpoint/__init__.py">https://github.com/facebookresearch/detectron2/blob/master/detectron2/checkpoint/__init__.py</a>
+Original copyright of Facebook code below, modifications by Yehao Li, Copyright 2021.</p>
+<dl class="class">
+<dt id="xmodaler.checkpoint.Checkpointer">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.checkpoint.</code><code class="sig-name descname">Checkpointer</code><span class="sig-paren">(</span><em class="sig-param">model: torch.nn.modules.module.Module</em>, <em class="sig-param">save_dir: str = ''</em>, <em class="sig-param">*</em>, <em class="sig-param">save_to_disk: bool = True</em>, <em class="sig-param">**checkpointables: Any</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#Checkpointer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.Checkpointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A checkpointer that can save/load model as well as extra checkpointable
+objects.</p>
+<dl class="method">
+<dt id="xmodaler.checkpoint.Checkpointer.add_checkpointable">
+<code class="sig-name descname">add_checkpointable</code><span class="sig-paren">(</span><em class="sig-param">key: str</em>, <em class="sig-param">checkpointable: Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#Checkpointer.add_checkpointable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.Checkpointer.add_checkpointable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add checkpointable object for this checkpointer to track.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – the key used to save the object</p></li>
+<li><p><strong>checkpointable</strong> – any object with <code class="docutils literal notranslate"><span class="pre">state_dict()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">load_state_dict()</span></code> method</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.checkpoint.Checkpointer.get_all_checkpoint_files">
+<code class="sig-name descname">get_all_checkpoint_files</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#Checkpointer.get_all_checkpoint_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.Checkpointer.get_all_checkpoint_files" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>All available checkpoint files (.pth files) in target</dt><dd><p>directory.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.checkpoint.Checkpointer.get_checkpoint_file">
+<code class="sig-name descname">get_checkpoint_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#Checkpointer.get_checkpoint_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.Checkpointer.get_checkpoint_file" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The latest checkpoint file in target directory.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.checkpoint.Checkpointer.has_checkpoint">
+<code class="sig-name descname">has_checkpoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#Checkpointer.has_checkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.Checkpointer.has_checkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>whether a checkpoint exists in the target directory.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.checkpoint.Checkpointer.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">checkpointables: Optional[List[str]] = None</em><span class="sig-paren">)</span> &#x2192; Dict[str, Any]<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#Checkpointer.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.Checkpointer.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load from the given checkpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – path or url to the checkpoint. If empty, will not load
+anything.</p></li>
+<li><p><strong>checkpointables</strong> (<em>list</em>) – List of checkpointable names to load. If not
+specified (None), will load all the possible checkpointables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>extra data loaded from the checkpoint that has not been
+processed. For example, those saved with
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">save(**extra_data)()</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.checkpoint.Checkpointer.resume_or_load">
+<code class="sig-name descname">resume_or_load</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">*</em>, <em class="sig-param">resume: bool = True</em><span class="sig-paren">)</span> &#x2192; Dict[str, Any]<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#Checkpointer.resume_or_load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.Checkpointer.resume_or_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <cite>resume</cite> is True, this method attempts to resume from the last
+checkpoint, if exists. Otherwise, load checkpoint from the given path.
+This is useful when restarting an interrupted training job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – path to the checkpoint.</p></li>
+<li><p><strong>resume</strong> (<em>bool</em>) – if True, resume from the last checkpoint if it exists
+and load the model together with all the checkpointables. Otherwise
+only load the model without loading any checkpointables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>same as <a class="reference internal" href="#xmodaler.checkpoint.Checkpointer.load" title="xmodaler.checkpoint.Checkpointer.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.checkpoint.Checkpointer.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">**kwargs: Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#Checkpointer.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.Checkpointer.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump model and checkpointables to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – name of the file.</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – extra arbitrary data to save.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.checkpoint.Checkpointer.tag_last_checkpoint">
+<code class="sig-name descname">tag_last_checkpoint</code><span class="sig-paren">(</span><em class="sig-param">last_filename_basename: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#Checkpointer.tag_last_checkpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.Checkpointer.tag_last_checkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag the last checkpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>last_filename_basename</strong> (<em>str</em>) – the basename of the last filename.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.checkpoint.PeriodicCheckpointer">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.checkpoint.</code><code class="sig-name descname">PeriodicCheckpointer</code><span class="sig-paren">(</span><em class="sig-param">checkpointer: fvcore.common.checkpoint.Checkpointer</em>, <em class="sig-param">period: int</em>, <em class="sig-param">max_iter: Optional[int] = None</em>, <em class="sig-param">max_to_keep: Optional[int] = None</em>, <em class="sig-param">file_prefix: str = 'model'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#PeriodicCheckpointer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.PeriodicCheckpointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Save checkpoints periodically. When <cite>.step(iteration)</cite> is called, it will
+execute <cite>checkpointer.save</cite> on the given checkpointer, if iteration is a
+multiple of period or if <cite>max_iter</cite> is reached.</p>
+<dl class="attribute">
+<dt id="xmodaler.checkpoint.PeriodicCheckpointer.checkpointer">
+<code class="sig-name descname">checkpointer</code><a class="headerlink" href="#xmodaler.checkpoint.PeriodicCheckpointer.checkpointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>the underlying checkpointer object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#xmodaler.checkpoint.Checkpointer" title="xmodaler.checkpoint.Checkpointer">Checkpointer</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.checkpoint.PeriodicCheckpointer.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">**kwargs: Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#PeriodicCheckpointer.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.PeriodicCheckpointer.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same argument as <a class="reference internal" href="#xmodaler.checkpoint.Checkpointer.save" title="xmodaler.checkpoint.Checkpointer.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Checkpointer.save()</span></code></a>.
+Use this method to manually save checkpoints outside the schedule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – file name.</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – extra data to save, same as in
+<a class="reference internal" href="#xmodaler.checkpoint.Checkpointer.save" title="xmodaler.checkpoint.Checkpointer.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Checkpointer.save()</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.checkpoint.PeriodicCheckpointer.step">
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><em class="sig-param">iteration: int</em>, <em class="sig-param">**kwargs: Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/fvcore/common/checkpoint.html#PeriodicCheckpointer.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.PeriodicCheckpointer.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the appropriate action at the given iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iteration</strong> (<em>int</em>) – the current iteration, ranged in [0, max_iter-1].</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – extra data to save, same as in
+<a class="reference internal" href="#xmodaler.checkpoint.Checkpointer.save" title="xmodaler.checkpoint.Checkpointer.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Checkpointer.save()</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.checkpoint.PeriodicEpochCheckpointer">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.checkpoint.</code><code class="sig-name descname">PeriodicEpochCheckpointer</code><span class="sig-paren">(</span><em class="sig-param">checkpointer: fvcore.common.checkpoint.Checkpointer</em>, <em class="sig-param">period: int</em>, <em class="sig-param">max_iter: Optional[int] = None</em>, <em class="sig-param">max_to_keep: Optional[int] = None</em>, <em class="sig-param">file_prefix: str = 'model'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/checkpoint/xmodaler_checkpoint.html#PeriodicEpochCheckpointer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.PeriodicEpochCheckpointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">fvcore.common.checkpoint.PeriodicCheckpointer</span></code></p>
+<dl class="method">
+<dt id="xmodaler.checkpoint.PeriodicEpochCheckpointer.step">
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><em class="sig-param">iteration: int</em>, <em class="sig-param">epoch: int</em>, <em class="sig-param">**kwargs: Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/xmodaler/checkpoint/xmodaler_checkpoint.html#PeriodicEpochCheckpointer.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.PeriodicEpochCheckpointer.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the appropriate action at the given iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iteration</strong> (<em>int</em>) – the current iteration, ranged in [0, max_iter-1].</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>) – extra data to save, same as in
+<a class="reference internal" href="#xmodaler.checkpoint.Checkpointer.save" title="xmodaler.checkpoint.Checkpointer.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Checkpointer.save()</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.checkpoint.XmodalerCheckpointer">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.checkpoint.</code><code class="sig-name descname">XmodalerCheckpointer</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">save_dir=''</em>, <em class="sig-param">*</em>, <em class="sig-param">save_to_disk=None</em>, <em class="sig-param">**checkpointables</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/checkpoint/xmodaler_checkpoint.html#XmodalerCheckpointer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.checkpoint.XmodalerCheckpointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">fvcore.common.checkpoint.Checkpointer</span></code></p>
+<p>Same as <a class="reference internal" href="#xmodaler.checkpoint.Checkpointer" title="xmodaler.checkpoint.Checkpointer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Checkpointer</span></code></a>, but is able to handle models in xmodaler
+model zoo, and apply conversions for legacy models.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="config.html" class="btn btn-neutral float-right" title="xmodaler.config" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

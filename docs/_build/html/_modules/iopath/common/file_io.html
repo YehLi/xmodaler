@@ -1,0 +1,1732 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>iopath.common.file_io &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>iopath.common.file_io</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for iopath.common.file_io</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.</span>
+
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">concurrent.futures</span>
+<span class="kn">import</span> <span class="nn">errno</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">IO</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">MutableMapping</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
+
+<span class="kn">import</span> <span class="nn">portalocker</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">iopath.common.download</span> <span class="kn">import</span> <span class="n">download</span>
+<span class="kn">from</span> <span class="nn">iopath.common.event_logger</span> <span class="kn">import</span> <span class="n">VTYPE</span><span class="p">,</span> <span class="n">EventLogger</span>
+<span class="kn">from</span> <span class="nn">iopath.common.non_blocking_io</span> <span class="kn">import</span> <span class="n">NonBlockingIOManager</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;LazyPath&quot;</span><span class="p">,</span> <span class="s2">&quot;PathManager&quot;</span><span class="p">,</span> <span class="s2">&quot;get_cache_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;file_lock&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">get_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a default directory to cache static files</span>
+<span class="sd">    (usually downloaded from Internet), if None is provided.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cache_dir (None or str): if not None, will be returned as is.</span>
+<span class="sd">            If None, returns the default cache directory as:</span>
+
+<span class="sd">        1) $FVCORE_CACHE, if set</span>
+<span class="sd">        2) otherwise ~/.torch/iopath_cache</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;FVCORE_CACHE&quot;</span><span class="p">,</span> <span class="s2">&quot;~/.torch/iopath_cache&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">g_pathmgr</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">):</span>
+        <span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">(),</span> <span class="s2">&quot;iopath_cache&quot;</span><span class="p">)</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{cache_dir}</span><span class="s2"> is not accessible! Using </span><span class="si">{tmp_dir}</span><span class="s2"> instead!&quot;</span><span class="p">)</span>
+        <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">tmp_dir</span>
+    <span class="k">return</span> <span class="n">cache_dir</span>
+
+
+<span class="k">def</span> <span class="nf">file_lock</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A file lock. Once entered, it is guaranteed that no one else holds the</span>
+<span class="sd">    same lock. Others trying to enter the lock will block for 30 minutes and</span>
+<span class="sd">    raise an exception.</span>
+
+<span class="sd">    This is useful to make sure workers don&#39;t cache files to the same location.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): a path to be locked. This function will create a lock named</span>
+<span class="sd">            `path + &quot;.lock&quot;`</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        filename = &quot;/path/to/file&quot;</span>
+<span class="sd">        with file_lock(filename):</span>
+<span class="sd">            if not os.path.isfile(filename):</span>
+<span class="sd">                do_create_file()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="c1"># makedir is not atomic. Exceptions can happen when multiple workers try</span>
+        <span class="c1"># to create the same dir, despite exist_ok=True.</span>
+        <span class="c1"># When this happens, we assume the dir is created and proceed to creating</span>
+        <span class="c1"># the lock. If failed to create the directory, the next line will raise</span>
+        <span class="c1"># exceptions.</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">Lock</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;.lock&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3600</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+
+<span class="k">class</span> <span class="nc">LazyPath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A path that&#39;s lazily evaluated when it&#39;s used.</span>
+
+<span class="sd">    Users should be careful to not use it like a str, because</span>
+<span class="sd">    it behaves differently from a str.</span>
+<span class="sd">    Path manipulation functions in Python such as `os.path.*` all accept</span>
+<span class="sd">    PathLike objects already.</span>
+
+<span class="sd">    It can be materialized to a str using `os.fspath`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">KEPT_ATTRIBUTES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;__getstate__&quot;</span><span class="p">,</span> <span class="s2">&quot;__setstate__&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            func: a function that takes no arguments and returns the</span>
+<span class="sd">                actual path as a str. It will be called at most once.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_func</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>  <span class="c1"># pyre-ignore</span>
+
+    <span class="k">def</span> <span class="nf">__fspath__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">()</span>
+
+    <span class="c1"># behave more like a str after evaluated</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">LazyPath</span><span class="o">.</span><span class="n">KEPT_ATTRIBUTES</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uninitialized LazyPath has no attribute: </span><span class="si">{name}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Uninitialized LazyPath is not subscriptable.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>  <span class="c1"># type: ignore</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="PathHandler"><a class="viewcode-back" href="../../../modules/utils/file_io.html#xmodaler.utils.file_io.PathHandler">[docs]</a><span class="k">class</span> <span class="nc">PathHandler</span><span class="p">(</span><span class="n">EventLogger</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    PathHandler is a base class that defines common I/O functionality for a URI</span>
+<span class="sd">    protocol. It routes I/O for a generic URI which may look like &quot;protocol://*&quot;</span>
+<span class="sd">    or a canonical filepath &quot;/foo/bar/baz&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_strict_kwargs_check</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">async_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">Executor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When registering a `PathHandler`, the user can optionally pass in a</span>
+<span class="sd">        `Executor` to run the asynchronous file operations.</span>
+<span class="sd">        NOTE: For regular non-async operations of `PathManager`, there is</span>
+<span class="sd">        no need to pass `async_executor`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            async_executor (optional `Executor`): Used for async file operations.</span>
+<span class="sd">                Usage:</span>
+<span class="sd">                ```</span>
+<span class="sd">                    path_handler = NativePathHandler(async_executor=exe)</span>
+<span class="sd">                    path_manager.register_handler(path_handler)</span>
+<span class="sd">                ```</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_manager</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_executor</span> <span class="o">=</span> <span class="n">async_executor</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">iopath.common.setup_defaults</span> <span class="kn">import</span> <span class="n">setup_handler_defaults</span>
+
+            <span class="n">setup_handler_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_check_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the given arguments are empty. Throws a ValueError if strict</span>
+<span class="sd">        kwargs checking is enabled and args are non-empty. If strict kwargs</span>
+<span class="sd">        checking is disabled, only a warning is logged.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kwargs (Dict[str, Any])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strict_kwargs_check</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unused arguments: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;[PathManager] </span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2"> argument ignored&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_supported_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: the list of URI prefixes this PathHandler can support</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a filepath which is compatible with native Python I/O such as `open`</span>
+<span class="sd">        and `os.path`.</span>
+
+<span class="sd">        If URI points to a remote resource, this function may download and cache</span>
+<span class="sd">        the resource to local disk. In this case, the cache stays on filesystem</span>
+<span class="sd">        (under `file_io.get_cache_dir()`) and will be used by a different run.</span>
+<span class="sd">        Therefore this function is meant to be used with read-only resources.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">            force(bool): Forces a download from backend if set to True.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            local_path (str): a file path which exists on the local file system</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_copy_from_local</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">local_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copies a local file to the specified URI.</span>
+
+<span class="sd">        If the URI is another local path, this should be functionally identical</span>
+<span class="sd">        to copy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            local_path (str): a file path which exists on the local file system</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            overwrite (bool): Bool flag for forcing overwrite of existing URI</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_opent</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">buffering</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">buffering</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a stream to a URI, similar to the built-in `open`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">            mode (str): Specifies the mode in which the file is opened. It defaults</span>
+<span class="sd">                to &#39;r&#39;.</span>
+<span class="sd">            buffering (int): An optional integer used to set the buffering policy.</span>
+<span class="sd">                Pass 0 to switch buffering off and an integer &gt;= 1 to indicate the</span>
+<span class="sd">                size in bytes of a fixed-size chunk buffer. When no buffering</span>
+<span class="sd">                argument is given, the default buffering policy depends on the</span>
+<span class="sd">                underlying I/O implementation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            file: a file-like object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_opena</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span>
+        <span class="n">callback_after_file_close</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="kc">None</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">buffering</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a stream to a URI with asynchronous permissions.</span>
+
+<span class="sd">        NOTE: Writes to the same path are serialized so they are written in</span>
+<span class="sd">        the same order as they were called but writes to distinct paths can</span>
+<span class="sd">        happen concurrently.</span>
+
+<span class="sd">        Usage (default / without callback function):</span>
+<span class="sd">            for n in range(50):</span>
+<span class="sd">                results = run_a_large_task(n)</span>
+<span class="sd">                with path_manager.opena(uri, &quot;w&quot;) as f:</span>
+<span class="sd">                    f.write(results)            # Runs in separate thread</span>
+<span class="sd">                # Main process returns immediately and continues to next iteration</span>
+<span class="sd">            path_manager.async_close()</span>
+
+<span class="sd">        Usage (advanced / with callback function):</span>
+<span class="sd">            # To write local and then copy to Manifold:</span>
+<span class="sd">            def cb():</span>
+<span class="sd">                path_manager.copy_from_local(</span>
+<span class="sd">                    &quot;checkpoint.pt&quot;, &quot;manifold://path/to/bucket&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            f = pm.opena(&quot;checkpoint.pt&quot;, &quot;wb&quot;, callback_after_file_close=cb)</span>
+<span class="sd">            torch.save({...}, f)</span>
+<span class="sd">            f.close()</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ...same args as `_open`...</span>
+<span class="sd">            callback_after_file_close (Callable): An optional argument that can</span>
+<span class="sd">                be passed to perform operations that depend on the asynchronous</span>
+<span class="sd">                writes being completed. The file is first written to the local</span>
+<span class="sd">                disk and then the callback is executed.</span>
+<span class="sd">            buffering (int): An optional argument to set the buffer size for</span>
+<span class="sd">                buffered asynchronous writing.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            file: a file-like object with asynchronous methods.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Restrict mode until `NonBlockingIO` has async read feature.</span>
+        <span class="n">valid_modes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">m</span> <span class="ow">in</span> <span class="n">valid_modes</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`opena` mode must be write or append&quot;</span><span class="p">)</span>
+
+        <span class="c1"># TODO: Each `PathHandler` should set its own `self._buffered`</span>
+        <span class="c1"># parameter and pass that in here. Until then, we assume no</span>
+        <span class="c1"># buffering for any storage backend.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_manager</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_manager</span> <span class="o">=</span> <span class="n">NonBlockingIOManager</span><span class="p">(</span>
+                <span class="n">buffered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">executor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_executor</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_manager</span><span class="o">.</span><span class="n">get_non_blocking_io</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
+                <span class="n">io_obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+                <span class="n">callback_after_file_close</span><span class="o">=</span><span class="n">callback_after_file_close</span><span class="p">,</span>
+                <span class="n">buffering</span><span class="o">=</span><span class="n">buffering</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="c1"># When `_strict_kwargs_check = True`, then `open_callable`</span>
+            <span class="c1"># will throw a `ValueError`. This generic `_opena` function</span>
+            <span class="c1"># does not check the kwargs since it may include any `_open`</span>
+            <span class="c1"># args like `encoding`, `ttl`, `has_user_data`, etc.</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                <span class="s2">&quot;An exception occurred in `NonBlockingIOManager`. This &quot;</span>
+                <span class="s2">&quot;is most likely due to invalid `opena` args. Make sure &quot;</span>
+                <span class="s2">&quot;they match the `open` args for the `PathHandler`.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_async_close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_async_join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensures that desired async write threads are properly joined.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Pass in a file path to wait until all asynchronous</span>
+<span class="sd">                activity for that path is complete. If no path is passed in,</span>
+<span class="sd">                then this will wait until all asynchronous jobs are complete.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_manager</span><span class="p">:</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;This is an async feature. No threads to join because &quot;</span>
+                <span class="s2">&quot;`opena` was not used.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_manager</span><span class="o">.</span><span class="n">_join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_async_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Closes the thread pool used for the asynchronous operations.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_manager</span><span class="p">:</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;This is an async feature. No threadpool to close because &quot;</span>
+                <span class="s2">&quot;`opena` was not used.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_non_blocking_io_manager</span><span class="o">.</span><span class="n">_close_thread_pool</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_copy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">src_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copies a source path to a destination path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            overwrite (bool): Bool flag for forcing overwrite of existing file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_mv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Moves (renames) a source path to a destination path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if there is a resource at the given URI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if the path exists</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_isfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the resource at the given URI is a file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if the path is a file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_isdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the resource at the given URI is a directory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if the path is a directory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_ls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List the contents of the directory at the provided URI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: list of contents in given path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_mkdirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recursive directory creation function. Like mkdir(), but makes all</span>
+<span class="sd">        intermediate-level directories needed to contain the leaf directory.</span>
+<span class="sd">        Similar to the native `os.makedirs`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_rm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the file (not directory) at the provided URI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_symlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Symlink the src_path to the dst_path</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_path (str): A URI supported by this PathHandler to symlink from</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler to symlink to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_cwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the current working directory. PathHandler classes prepend the cwd</span>
+<span class="sd">        to all URI paths that are handled.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str) or None: A URI supported by this PathHandler. Must be a valid</span>
+<span class="sd">                absolute path or None to set the cwd to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if cwd was set without errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_path_with_cwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Default implementation. PathHandler classes that provide a `_set_cwd`</span>
+<span class="sd">        feature should also override this `_get_path_with_cwd` method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path (str): Full path with the cwd attached.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">path</span></div>
+
+
+<span class="k">class</span> <span class="nc">NativePathHandler</span><span class="p">(</span><span class="n">PathHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles paths that can be accessed using Python native system calls. This</span>
+<span class="sd">    handler uses `open()` and `os.*` calls on the given path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_cwd</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">async_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">Executor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">async_executor</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_copy_from_local</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">local_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">local_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span>
+        <span class="n">dst_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">(</span>
+            <span class="n">src_path</span><span class="o">=</span><span class="n">local_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="o">=</span><span class="n">dst_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span>
+        <span class="n">buffering</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">errors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">newline</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">closefd</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">opener</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">            mode (str): Specifies the mode in which the file is opened. It defaults</span>
+<span class="sd">                to &#39;r&#39;.</span>
+<span class="sd">            buffering (int): An optional integer used to set the buffering policy.</span>
+<span class="sd">                Pass 0 to switch buffering off and an integer &gt;= 1 to indicate the</span>
+<span class="sd">                size in bytes of a fixed-size chunk buffer. When no buffering</span>
+<span class="sd">                argument is given, the default buffering policy works as follows:</span>
+<span class="sd">                    * Binary files are buffered in fixed-size chunks; the size of</span>
+<span class="sd">                    the buffer is chosen using a heuristic trying to determine the</span>
+<span class="sd">                    underlying device’s “block size” and falling back on</span>
+<span class="sd">                    io.DEFAULT_BUFFER_SIZE. On many systems, the buffer will</span>
+<span class="sd">                    typically be 4096 or 8192 bytes long.</span>
+<span class="sd">            encoding (Optional[str]): the name of the encoding used to decode or</span>
+<span class="sd">                encode the file. This should only be used in text mode.</span>
+<span class="sd">            errors (Optional[str]): an optional string that specifies how encoding</span>
+<span class="sd">                and decoding errors are to be handled. This cannot be used in binary</span>
+<span class="sd">                mode.</span>
+<span class="sd">            newline (Optional[str]): controls how universal newlines mode works</span>
+<span class="sd">                (it only applies to text mode). It can be None, &#39;&#39;, &#39;\n&#39;, &#39;\r&#39;,</span>
+<span class="sd">                and &#39;\r\n&#39;.</span>
+<span class="sd">            closefd (bool): If closefd is False and a file descriptor rather than</span>
+<span class="sd">                a filename was given, the underlying file descriptor will be kept</span>
+<span class="sd">                open when the file is closed. If a filename is given closefd must</span>
+<span class="sd">                be True (the default) otherwise an error will be raised.</span>
+<span class="sd">            opener (Optional[Callable]): A custom opener can be used by passing</span>
+<span class="sd">                a callable as opener. The underlying file descriptor for the file</span>
+<span class="sd">                object is then obtained by calling opener with (file, flags).</span>
+<span class="sd">                opener must return an open file descriptor (passing os.open as opener</span>
+<span class="sd">                results in functionality similar to passing None).</span>
+
+<span class="sd">            See https://docs.python.org/3/library/functions.html#open for details.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            file: a file-like object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
+            <span class="n">mode</span><span class="p">,</span>
+            <span class="n">buffering</span><span class="o">=</span><span class="n">buffering</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span>
+            <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">,</span>
+            <span class="n">newline</span><span class="o">=</span><span class="n">newline</span><span class="p">,</span>
+            <span class="n">closefd</span><span class="o">=</span><span class="n">closefd</span><span class="p">,</span>
+            <span class="n">opener</span><span class="o">=</span><span class="n">opener</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_copy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">src_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copies a source path to a destination path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            overwrite (bool): Bool flag for forcing overwrite of existing file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">src_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span>
+        <span class="n">dst_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Destination file </span><span class="si">{}</span><span class="s2"> already exists.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dst_path</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in file copy - </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_mv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Moves (renames) a source path to a destination path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">src_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span>
+        <span class="n">dst_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst_path</span><span class="p">):</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Destination file </span><span class="si">{}</span><span class="s2"> already exists.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dst_path</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in move operation - </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_symlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a symlink to the src_path at the dst_path</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">src_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span>
+        <span class="n">dst_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">src_path</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Source path </span><span class="si">{}</span><span class="s2"> does not exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src_path</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst_path</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Destination path </span><span class="si">{}</span><span class="s2"> already exists.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dst_path</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in symlink - </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_isfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_isdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_ls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path_with_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_mkdirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># EEXIST it can still happen if multiple processes are creating the dir</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">:</span>
+                <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">_rm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_cwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Remove cwd path if None</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cwd</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Make sure path is a valid Unix path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{path}</span><span class="s2"> is not a valid Unix path&quot;</span><span class="p">)</span>
+        <span class="c1"># Make sure path is an absolute path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{path}</span><span class="s2"> is not an absolute path&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cwd</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_get_path_with_cwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">path</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span>
+            <span class="n">path</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cwd</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cwd</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">HTTPURLHandler</span><span class="p">(</span><span class="n">PathHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download URLs and cache them to disk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">MAX_FILENAME_LEN</span> <span class="o">=</span> <span class="mi">250</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_get_supported_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="s2">&quot;ftp://&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_local_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">cache_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This implementation downloads the remote resource and caches it locally.</span>
+<span class="sd">        The resource will only be downloaded if not previously requested.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">force</span>
+            <span class="ow">or</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_map</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_map</span><span class="p">[</span><span class="n">path</span><span class="p">])</span>
+        <span class="p">):</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">parsed_url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">get_cache_dir</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">parsed_url</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_FILENAME_LEN</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
+
+            <span class="n">cached</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">file_lock</span><span class="p">(</span><span class="n">cached</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cached</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading </span><span class="si">{}</span><span class="s2"> ...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+                    <span class="n">cached</span> <span class="o">=</span> <span class="n">download</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;URL </span><span class="si">{}</span><span class="s2"> cached in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cached</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache_map</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">cached</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_map</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_open</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">buffering</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a remote HTTP path. The resource is first downloaded and cached</span>
+<span class="sd">        locally.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">            mode (str): Specifies the mode in which the file is opened. It defaults</span>
+<span class="sd">                to &#39;r&#39;.</span>
+<span class="sd">            buffering (int): Not used for this PathHandler.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            file: a file-like object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> does not support open with </span><span class="si">{}</span><span class="s2"> mode&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">mode</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">buffering</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{self.__class__.__name__}</span><span class="s2"> does not support the `buffering` argument&quot;</span>
+        <span class="n">local_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_local_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">OneDrivePathHandler</span><span class="p">(</span><span class="n">HTTPURLHandler</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Map OneDrive (short) URLs to direct download links</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ONE_DRIVE_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;https://1drv.ms/u/s!&quot;</span>
+
+    <span class="k">def</span> <span class="nf">create_one_drive_direct_download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">one_drive_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a short OneDrive URI into a download link that can be used with wget</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            one_drive_url (str): A OneDrive URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result_url (str): A direct download URI for the file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_b64</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">one_drive_url</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="n">data_b64_string</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">data_b64</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">result_url</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;https://api.onedrive.com/v1.0/shares/u!</span><span class="si">{data_b64_string}</span><span class="s2">/root/content&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result_url</span>
+
+    <span class="k">def</span> <span class="nf">_get_supported_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ONE_DRIVE_PREFIX</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This implementation downloads the remote resource and caches it locally.</span>
+<span class="sd">        The resource will only be downloaded if not previously requested.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">direct_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_one_drive_direct_download</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;URL </span><span class="si">{path}</span><span class="s2"> mapped to direct download link </span><span class="si">{direct_url}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_local_path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">direct_url</span><span class="p">),</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PathManager"><a class="viewcode-back" href="../../../modules/utils/file_io.html#xmodaler.utils.file_io.PathManager">[docs]</a><span class="k">class</span> <span class="nc">PathManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for users to open generic paths or translate generic paths to file names.</span>
+
+<span class="sd">    path_manager.method(path) will do the following:</span>
+<span class="sd">    1. Find a handler by checking the prefixes in `self._path_handlers`.</span>
+<span class="sd">    2. Call handler.method(path) on the handler that&#39;s found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PathHandler</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dict from path prefix to handler.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_native_path_handler</span><span class="p">:</span> <span class="n">PathHandler</span> <span class="o">=</span> <span class="n">NativePathHandler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A NativePathHandler that works on posix paths. This is used as the fallback.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cwd</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Keeps track of the single cwd (if set).</span>
+<span class="sd">        NOTE: Only one PathHandler can have a cwd set at a time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_async_handlers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">PathHandler</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Keeps track of the PathHandler subclasses where `opena` was used so</span>
+<span class="sd">        all of the threads can be properly joined when calling</span>
+<span class="sd">        `PathManager.join`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_enable_logging</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flag for enabling / disabling telemetry.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__get_path_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">PathHandler</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds a PathHandler that supports the given path. Falls back to the native</span>
+<span class="sd">        PathHandler if no other handler is found.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str or os.PathLike): URI path to resource</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            handler (PathHandler)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>  <span class="c1"># pyre-ignore</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_native_path_handler</span>
+
+    <span class="k">def</span> <span class="nf">__log_tmetry_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">PathHandler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">VTYPE</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs a dictionary of key-value pairs to a given path handler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            handler (PathHandler): The path handler to send the key-value pairs to.</span>
+<span class="sd">            kvs (Dict): Dict of Key-value pairs to be logged.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_logging</span><span class="p">:</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">add_keys</span><span class="p">(</span><span class="n">kvs</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">handler</span><span class="o">.</span><span class="n">log_event</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                    <span class="s2">&quot;An exception occurred in telemetry logging.&quot;</span>
+                    <span class="s2">&quot;Disabling telemetry to prevent further exceptions.&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_enable_logging</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__get_open_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">buffering</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">VTYPE</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to return common set of key-value pairs applicable to open apis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str):</span>
+<span class="sd">            mode (str):</span>
+<span class="sd">            buffering (int):</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">kvs</span><span class="p">[</span><span class="s2">&quot;op&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="n">kvs</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;read&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="n">kvs</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;write&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;a&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="n">kvs</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;append&quot;</span>
+        <span class="n">kvs</span><span class="p">[</span><span class="s2">&quot;buffering&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">buffering</span>
+        <span class="k">if</span> <span class="s2">&quot;b&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="n">kvs</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;binary&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">kvs</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span>
+        <span class="n">kvs</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+
+        <span class="k">return</span> <span class="n">kvs</span>
+
+    <span class="k">def</span> <span class="nf">opent</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">buffering</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a tabular data source. Only reading is supported.</span>
+<span class="sd">        The opent() returns a Python iterable collection object, compared to bytes/text data with open()</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">            mode (str): Specifies the mode in which the file is opened. It defaults</span>
+<span class="sd">                to &#39;r&#39;</span>
+<span class="sd">            buffering (int): number of rows fetched and cached</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An iterable collection object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">_opent</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">buffering</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">buffering</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a stream to a URI, similar to the built-in `open`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">            mode (str): Specifies the mode in which the file is opened. It defaults</span>
+<span class="sd">                to &#39;r&#39;.</span>
+<span class="sd">            buffering (int): An optional integer used to set the buffering policy.</span>
+<span class="sd">                Pass 0 to switch buffering off and an integer &gt;= 1 to indicate the</span>
+<span class="sd">                size in bytes of a fixed-size chunk buffer. When no buffering</span>
+<span class="sd">                argument is given, the default buffering policy depends on the</span>
+<span class="sd">                underlying I/O implementation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            file: a file-like object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">buffering</span><span class="o">=</span><span class="n">buffering</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+        <span class="n">kvs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_open_keys</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">buffering</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="c1"># NOTE: This feature is only implemented for `NativePathHandler` and can</span>
+    <span class="c1"># currently only be used in write mode.</span>
+    <span class="k">def</span> <span class="nf">opena</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span>
+        <span class="n">buffering</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">callback_after_file_close</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="kc">None</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a file with asynchronous permissions. `f.write()` calls (and</span>
+<span class="sd">        potentially `f.read()` calls in the future) will be dispatched</span>
+<span class="sd">        asynchronously such that the main program can continue running.</span>
+
+<span class="sd">        NOTE: Writes to the same path are serialized so they are written in</span>
+<span class="sd">        the same order as they were called but writes to distinct paths can</span>
+<span class="sd">        happen concurrently.</span>
+
+<span class="sd">        Usage (default / without callback function):</span>
+<span class="sd">            for n in range(50):</span>
+<span class="sd">                results = run_a_large_task(n)</span>
+<span class="sd">                # `f` is a file-like object with asynchronous methods</span>
+<span class="sd">                with path_manager.opena(uri, &quot;w&quot;) as f:</span>
+<span class="sd">                    f.write(results)            # Runs in separate thread</span>
+<span class="sd">                # Main process returns immediately and continues to next iteration</span>
+<span class="sd">            path_manager.async_close()</span>
+
+<span class="sd">        Usage (advanced / with callback function):</span>
+<span class="sd">            # To asynchronously write to Manifold:</span>
+<span class="sd">            def cb():</span>
+<span class="sd">                path_manager.copy_from_local(</span>
+<span class="sd">                    &quot;checkpoint.pt&quot;, &quot;manifold://path/to/bucket&quot;</span>
+<span class="sd">                )</span>
+<span class="sd">            f = pm.opena(&quot;checkpoint.pt&quot;, &quot;wb&quot;, callback_after_file_close=cb)</span>
+<span class="sd">            torch.save({...}, f)</span>
+<span class="sd">            f.close()</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ...</span>
+<span class="sd">            callback_after_file_close (Callable): An optional argument that can</span>
+<span class="sd">                be passed to perform operations that depend on the asynchronous</span>
+<span class="sd">                writes being completed. The file is first written to the local</span>
+<span class="sd">                disk and then the callback is executed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            file: a file-like object with asynchronous methods.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">non_blocking_io</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">_opena</span><span class="p">(</span>
+            <span class="n">path</span><span class="p">,</span>
+            <span class="n">mode</span><span class="p">,</span>
+            <span class="n">buffering</span><span class="o">=</span><span class="n">buffering</span><span class="p">,</span>
+            <span class="n">callback_after_file_close</span><span class="o">=</span><span class="n">callback_after_file_close</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Keep track of the path handlers where `opena` is used so that all of the</span>
+        <span class="c1"># threads can be properly joined on `PathManager.join`.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_async_handlers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">non_blocking_io</span>
+
+    <span class="k">def</span> <span class="nf">async_join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensures that desired async write threads are properly joined.</span>
+
+<span class="sd">        Usage:</span>
+<span class="sd">            Wait for asynchronous methods operating on specific file paths to</span>
+<span class="sd">            complete.</span>
+<span class="sd">                async_join(&quot;path/to/file1.txt&quot;)</span>
+<span class="sd">                async_join(&quot;path/to/file2.txt&quot;, &quot;path/to/file3.txt&quot;)</span>
+<span class="sd">            Wait for all asynchronous methods to complete.</span>
+<span class="sd">                async_join()</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *paths (str): Pass in any number of file paths and `async_join` will wait</span>
+<span class="sd">                until all asynchronous activity for those paths is complete. If no</span>
+<span class="sd">                paths are passed in, then `async_join` will wait until all asynchronous</span>
+<span class="sd">                jobs are complete.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">paths</span><span class="p">:</span>  <span class="c1"># Join all.</span>
+            <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_handlers</span><span class="p">:</span>
+                <span class="n">success</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_async_join</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="ow">and</span> <span class="n">success</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Join specific paths.</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+                <span class="n">success</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">_async_join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">success</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">success</span>
+
+    <span class="k">def</span> <span class="nf">async_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        `async_close()` must be called at the very end of any script that uses the</span>
+<span class="sd">        asynchronous `opena` feature. This calls `async_join()` first and then closes</span>
+<span class="sd">        the thread pool used for the asynchronous operations.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_join</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_handlers</span><span class="p">:</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_async_close</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="ow">and</span> <span class="n">success</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_async_handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">success</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">src_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copies a source path to a destination path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            overwrite (bool): Bool flag for forcing overwrite of existing file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Copying across handlers is not supported.</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="n">src_path</span>
+        <span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_copy</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">src_path</span><span class="p">,</span> <span class="s2">&quot;dst_path&quot;</span><span class="p">:</span> <span class="n">dst_path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">mv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Moves (renames) a source path supported by NativePathHandler to</span>
+<span class="sd">        a destination path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_path (str): A URI supported by NativePathHandler</span>
+<span class="sd">            dst_path (str): A URI supported by NativePathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        Exception:</span>
+<span class="sd">            Asserts if both the src and dest paths are not supported by</span>
+<span class="sd">            NativePathHandler.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Moving across handlers is not supported.</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="n">src_path</span>
+        <span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span>
+            <span class="n">dst_path</span>
+        <span class="p">),</span> <span class="s2">&quot;Src and dest paths must be supported by the same path handler.&quot;</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_mv</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;mv&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">src_path</span><span class="p">,</span> <span class="s2">&quot;dst_path&quot;</span><span class="p">:</span> <span class="n">dst_path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a filepath which is compatible with native Python I/O such as `open`</span>
+<span class="sd">        and `os.path`.</span>
+
+<span class="sd">        If URI points to a remote resource, this function may download and cache</span>
+<span class="sd">        the resource to local disk.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">            force(bool): Forces a download from backend if set to True.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            local_path (str): a file path which exists on the local file system</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_get_local_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_get_local_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;get_local_path&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">force</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">copy_from_local</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">local_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copies a local file to the specified URI.</span>
+
+<span class="sd">        If the URI is another local path, this should be functionally identical</span>
+<span class="sd">        to copy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            local_path (str): a file path which exists on the local file system</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler</span>
+<span class="sd">            overwrite (bool): Bool flag for forcing overwrite of existing URI</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            status (bool): True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span>
+
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;copy_from_local&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">local_path</span><span class="p">,</span>
+            <span class="s2">&quot;dst_path&quot;</span><span class="p">:</span> <span class="n">dst_path</span><span class="p">,</span>
+            <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span> <span class="n">overwrite</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_copy_from_local</span><span class="p">(</span>
+            <span class="n">local_path</span><span class="o">=</span><span class="n">local_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="o">=</span><span class="n">dst_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if there is a resource at the given URI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if the path exists</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_exists</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;exists&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">isfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if there the resource at the given URI is a file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if the path is a file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_isfile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;isfile&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">isdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the resource at the given URI is a directory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if the path is a directory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_isdir</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;isdir&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">ls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        List the contents of the directory at the provided URI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: list of contents in given path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">_ls</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">mkdirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recursive directory creation function. Like mkdir(), but makes all</span>
+<span class="sd">        intermediate-level directories needed to contain the leaf directory.</span>
+<span class="sd">        Similar to the native `os.makedirs`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_mkdirs</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;mkdirs&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">rm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the file (not directory) at the provided URI.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): A URI supported by this PathHandler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_rm</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;rm&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">symlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Symlink the src_path to the dst_path</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            src_path (str): A URI supported by this PathHandler to symlink from</span>
+<span class="sd">            dst_path (str): A URI supported by this PathHandler to symlink to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Copying across handlers is not supported.</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="n">src_path</span>
+        <span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span>
+        <span class="n">bret</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">_symlink</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;symlink&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">src_path</span><span class="p">,</span> <span class="s2">&quot;dst_path&quot;</span><span class="p">:</span> <span class="n">dst_path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">set_cwd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the current working directory. PathHandler classes prepend the cwd</span>
+<span class="sd">        to all URI paths that are handled.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str) or None: A URI supported by this PathHandler. Must be a valid</span>
+<span class="sd">                absolute Unix path or None to set the cwd to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if cwd was set without errors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cwd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cwd</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path_handler</span><span class="p">(</span><span class="n">path</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cwd</span><span class="p">)</span><span class="o">.</span><span class="n">_set_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cwd</span> <span class="o">=</span> <span class="n">path</span>
+            <span class="n">bret</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bret</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">kvs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="s2">&quot;set_cwd&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_tmetry_keys</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">kvs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bret</span>
+
+    <span class="k">def</span> <span class="nf">register_handler</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">PathHandler</span><span class="p">,</span> <span class="n">allow_override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a path handler associated with `handler._get_supported_prefixes`</span>
+<span class="sd">        URI prefixes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            handler (PathHandler)</span>
+<span class="sd">            allow_override (bool): allow overriding existing handler for prefix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">PathHandler</span><span class="p">),</span> <span class="n">handler</span>
+
+        <span class="c1"># Allow override of `NativePathHandler` which is automatically</span>
+        <span class="c1"># instantiated by `PathManager`.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">NativePathHandler</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">allow_override</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_native_path_handler</span> <span class="o">=</span> <span class="n">handler</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`NativePathHandler` is registered by default. Use the &quot;</span>
+                    <span class="s2">&quot;`allow_override=True` kwarg to override it.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">handler</span><span class="o">.</span><span class="n">_get_supported_prefixes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">handler</span>
+                <span class="k">continue</span>
+
+            <span class="n">old_handler_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span><span class="p">[</span><span class="n">prefix</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">allow_override</span><span class="p">:</span>
+                <span class="c1"># if using the global PathManager, show the warnings</span>
+                <span class="k">global</span> <span class="n">g_pathmgr</span>
+                <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">g_pathmgr</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;[PathManager] Attempting to register prefix &#39;</span><span class="si">{prefix}</span><span class="s2">&#39; from &quot;</span>
+                        <span class="s2">&quot;the following call stack:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_stack</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+                        <span class="c1"># show the most recent callstack</span>
+                    <span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;[PathManager] Prefix &#39;</span><span class="si">{prefix}</span><span class="s2">&#39; is already registered &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;by </span><span class="si">{old_handler_type}</span><span class="s2">. We will override the old handler. &quot;</span>
+                        <span class="s2">&quot;To avoid such conflicts, create a project-specific PathManager &quot;</span>
+                        <span class="s2">&quot;instead.&quot;</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">handler</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;[PathManager] Prefix &#39;</span><span class="si">{prefix}</span><span class="s2">&#39; already registered by </span><span class="si">{old_handler_type}</span><span class="s2">!&quot;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Sort path handlers in reverse order so longer prefixes take priority,</span>
+        <span class="c1"># eg: http://foo/bar before http://foo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+            <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_strict_kwargs_checking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Toggles strict kwargs checking. If enabled, a ValueError is thrown if any</span>
+<span class="sd">        unused parameters are passed to a PathHandler function. If disabled, only</span>
+<span class="sd">        a warning is given.</span>
+
+<span class="sd">        With a centralized file API, there&#39;s a tradeoff of convenience and</span>
+<span class="sd">        correctness delegating arguments to the proper I/O layers. An underlying</span>
+<span class="sd">        `PathHandler` may support custom arguments which should not be statically</span>
+<span class="sd">        exposed on the `PathManager` function. For example, a custom `HTTPURLHandler`</span>
+<span class="sd">        may want to expose a `cache_timeout` argument for `open()` which specifies</span>
+<span class="sd">        how old a locally cached resource can be before it&#39;s refetched from the</span>
+<span class="sd">        remote server. This argument would not make sense for a `NativePathHandler`.</span>
+<span class="sd">        If strict kwargs checking is disabled, `cache_timeout` can be passed to</span>
+<span class="sd">        `PathManager.open` which will forward the arguments to the underlying</span>
+<span class="sd">        handler. By default, checking is enabled since it is innately unsafe:</span>
+<span class="sd">        multiple `PathHandler`s could reuse arguments with different semantic</span>
+<span class="sd">        meanings or types.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            enable (bool)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_native_path_handler</span><span class="o">.</span><span class="n">_strict_kwargs_check</span> <span class="o">=</span> <span class="n">enable</span>
+        <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path_handlers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">_strict_kwargs_check</span> <span class="o">=</span> <span class="n">enable</span>
+
+    <span class="k">def</span> <span class="nf">set_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_enable_logging</span> <span class="o">=</span> <span class="n">enable_logging</span></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">History: at first, PathManager is part of detectron2 *only*, and therefore</span>
+<span class="sd">does not consider cross-projects conflict issues. It was designed to provide</span>
+<span class="sd">a global interface with static methods.</span>
+
+<span class="sd">It is later used by more projects and moved to iopath to faciliate more use</span>
+<span class="sd">across projects and lead to some conflicts.</span>
+
+<span class="sd">Now &#39;PathManager&#39; class has been changed to provide a per-project interface.</span>
+<span class="sd">This means that any project using PathManager will first have to instantiate the</span>
+<span class="sd">class and call methods on the instantiated object.</span>
+
+<span class="sd">  example:</span>
+
+<span class="sd">  _pathmgr = PathManager()</span>
+<span class="sd">  _pathmgr.register_handler(&lt;a PathHandler instance&gt;)</span>
+<span class="sd">  _pathmgr.mkdir(&lt;dir-path&gt;)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">PathManagerFactory</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    PathManagerFactory is the class responsible for creating new PathManager</span>
+<span class="sd">    instances and removing them when no longer needed.</span>
+<span class="sd">    PathManager can be instantiated directly too, but it is recommended that</span>
+<span class="sd">    you use PathManagerFactory to create them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">GLOBAL_PATH_MANAGER</span> <span class="o">=</span> <span class="s2">&quot;global_path_manager&quot;</span>
+    <span class="n">pm_list</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">GLOBAL_PATH_MANAGER</span><span class="p">,</span> <span class="n">defaults_setup</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PathManager</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the path manager instance associated with a key.</span>
+<span class="sd">        A new instance will be created if there is no existing</span>
+<span class="sd">        instance associated with the key passed in.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            key (str):</span>
+<span class="sd">            defaults_setup (bool): If True, setup_defaults is called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">PathManagerFactory</span><span class="o">.</span><span class="n">pm_list</span><span class="p">:</span>
+            <span class="n">PathManagerFactory</span><span class="o">.</span><span class="n">pm_list</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">PathManager</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">defaults_setup</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">iopath.common.setup_defaults</span> <span class="kn">import</span> <span class="n">setup_defaults</span>
+
+                    <span class="n">setup_defaults</span><span class="p">(</span><span class="n">PathManagerFactory</span><span class="o">.</span><span class="n">pm_list</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">PathManagerFactory</span><span class="o">.</span><span class="n">pm_list</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the path manager instance associated with a key.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            key (str):</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">PathManagerFactory</span><span class="o">.</span><span class="n">pm_list</span><span class="p">:</span>
+            <span class="n">_pm</span> <span class="o">=</span> <span class="n">PathManagerFactory</span><span class="o">.</span><span class="n">pm_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>  <span class="c1"># noqa: F841</span>
+            <span class="k">del</span> <span class="n">_pm</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A global instance of PathManager.</span>
+<span class="sd">This global instance is provided for backward compatibility, but it is</span>
+<span class="sd">recommended that clients use PathManagerFactory</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">g_pathmgr</span> <span class="o">=</span> <span class="n">PathManagerFactory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">defaults_setup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

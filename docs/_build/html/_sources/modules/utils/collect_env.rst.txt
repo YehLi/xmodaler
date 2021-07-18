@@ -1,0 +1,8 @@
+xmodaler.utils.collect_env 
+=============================
+
+.. automodule:: xmodaler.utils.collect_env
+    :members:
+    :imported-members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,420 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.lr_scheduler.warmup_lr &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xmodaler.lr_scheduler.warmup_lr</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for xmodaler.lr_scheduler.warmup_lr</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">bisect</span> <span class="kn">import</span> <span class="n">bisect_right</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span> <span class="nn">torch.optim.lr_scheduler</span> <span class="kn">import</span> <span class="n">LambdaLR</span>
+<span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">configurable</span>
+<span class="kn">from</span> <span class="nn">.build</span> <span class="kn">import</span> <span class="n">LR_SCHEDULER_REGISTRY</span>
+
+<div class="viewcode-block" id="WarmupConstantSchedule"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupConstantSchedule">[docs]</a><span class="nd">@LR_SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">WarmupConstantSchedule</span><span class="p">(</span><span class="n">LambdaLR</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Linear warmup and then constant.</span>
+<span class="sd">        Linearly increases learning rate schedule from 0 to 1 over `warmup_steps` training steps.</span>
+<span class="sd">        Keeps learning rate schedule equal to 1. after warmup_steps.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@configurable</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">,</span> 
+        <span class="n">warmup_steps</span><span class="p">,</span> 
+        <span class="n">last_epoch</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span> <span class="o">=</span> <span class="n">warmup_steps</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupConstantSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WarmupConstantSchedule.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupConstantSchedule.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
+            <span class="s2">&quot;warmup_steps&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">WARMUP</span> <span class="o">*</span> <span class="n">data_size</span><span class="p">,</span>
+            <span class="s2">&quot;last_epoch&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="WarmupConstantSchedule.lr_lambda"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupConstantSchedule.lr_lambda">[docs]</a>    <span class="k">def</span> <span class="nf">lr_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mf">1.</span></div></div>
+
+<div class="viewcode-block" id="WarmupLinearSchedule"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupLinearSchedule">[docs]</a><span class="nd">@LR_SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">WarmupLinearSchedule</span><span class="p">(</span><span class="n">LambdaLR</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Linear warmup and then linear decay.</span>
+<span class="sd">        Linearly increases learning rate from 0 to 1 over `warmup_steps` training steps.</span>
+<span class="sd">        Linearly decreases learning rate from 1. to 0. over remaining `t_total - warmup_steps` steps.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@configurable</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">,</span> 
+        <span class="n">min_lr</span><span class="p">,</span> 
+        <span class="n">warmup_steps</span><span class="p">,</span>
+        <span class="n">t_total</span><span class="p">,</span> 
+        <span class="n">last_epoch</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span> <span class="o">=</span> <span class="n">warmup_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">=</span> <span class="n">t_total</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_lr</span> <span class="o">=</span> <span class="n">min_lr</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupLinearSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WarmupLinearSchedule.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupLinearSchedule.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
+            <span class="s2">&quot;min_lr&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">MIN_LR</span><span class="p">,</span>
+            <span class="s2">&quot;warmup_steps&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">WARMUP</span> <span class="o">*</span> <span class="n">data_size</span><span class="p">,</span>
+            <span class="s2">&quot;t_total&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SOLVER</span><span class="o">.</span><span class="n">EPOCH</span> <span class="o">*</span> <span class="n">data_size</span><span class="p">,</span> <span class="c1"># total iterations</span>
+            <span class="s2">&quot;last_epoch&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="WarmupLinearSchedule.lr_lambda"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupLinearSchedule.lr_lambda">[docs]</a>    <span class="k">def</span> <span class="nf">lr_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_lr</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">-</span> <span class="n">step</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">)))</span></div></div>
+
+<div class="viewcode-block" id="WarmupCosineSchedule"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineSchedule">[docs]</a><span class="nd">@LR_SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">WarmupCosineSchedule</span><span class="p">(</span><span class="n">LambdaLR</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Linear warmup and then cosine decay.</span>
+<span class="sd">        Linearly increases learning rate from 0 to 1 over `warmup_steps` training steps.</span>
+<span class="sd">        Decreases learning rate from 1. to 0. over remaining `t_total - warmup_steps` steps following a cosine curve.</span>
+<span class="sd">        If `cycles` (default=0.5) is different from default, learning rate follows cosine function after warmup.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@configurable</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">,</span> 
+        <span class="n">min_lr</span><span class="p">,</span> 
+        <span class="n">warmup_steps</span><span class="p">,</span> 
+        <span class="n">t_total</span><span class="p">,</span> 
+        <span class="n">cycles</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> 
+        <span class="n">last_epoch</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span> <span class="o">=</span> <span class="n">warmup_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">=</span> <span class="n">t_total</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycles</span> <span class="o">=</span> <span class="n">cycles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_lr</span> <span class="o">=</span> <span class="n">min_lr</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupCosineSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WarmupCosineSchedule.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineSchedule.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
+            <span class="s2">&quot;min_lr&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">MIN_LR</span><span class="p">,</span>
+            <span class="s2">&quot;warmup_steps&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">WARMUP</span> <span class="o">*</span> <span class="n">data_size</span><span class="p">,</span>
+            <span class="s2">&quot;t_total&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SOLVER</span><span class="o">.</span><span class="n">EPOCH</span> <span class="o">*</span> <span class="n">data_size</span><span class="p">,</span> <span class="c1"># total iterations</span>
+            <span class="s2">&quot;cycles&quot;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> 
+            <span class="s2">&quot;last_epoch&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="WarmupCosineSchedule.lr_lambda"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineSchedule.lr_lambda">[docs]</a>    <span class="k">def</span> <span class="nf">lr_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">))</span>
+        <span class="c1"># progress after warmup</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_lr</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cycles</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">progress</span><span class="p">)))</span></div></div>
+
+<div class="viewcode-block" id="WarmupCosineWithHardRestartsSchedule"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineWithHardRestartsSchedule">[docs]</a><span class="nd">@LR_SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">WarmupCosineWithHardRestartsSchedule</span><span class="p">(</span><span class="n">LambdaLR</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Linear warmup and then cosine cycles with hard restarts.</span>
+<span class="sd">        Linearly increases learning rate from 0 to 1 over `warmup_steps` training steps.</span>
+<span class="sd">        If `cycles` (default=1.) is different from default, learning rate follows `cycles` times a cosine decaying</span>
+<span class="sd">        learning rate (with hard restarts).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@configurable</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">,</span> 
+        <span class="n">warmup_steps</span><span class="p">,</span> 
+        <span class="n">t_total</span><span class="p">,</span> 
+        <span class="n">cycles</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> 
+        <span class="n">last_epoch</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span> <span class="o">=</span> <span class="n">warmup_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">=</span> <span class="n">t_total</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycles</span> <span class="o">=</span> <span class="n">cycles</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupCosineWithHardRestartsSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WarmupCosineWithHardRestartsSchedule.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineWithHardRestartsSchedule.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
+            <span class="s2">&quot;warmup_steps&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">WARMUP</span> <span class="o">*</span> <span class="n">data_size</span><span class="p">,</span>
+            <span class="s2">&quot;t_total&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SOLVER</span><span class="o">.</span><span class="n">EPOCH</span> <span class="o">*</span> <span class="n">data_size</span><span class="p">,</span> <span class="c1"># total iterations</span>
+            <span class="s2">&quot;cycles&quot;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> 
+            <span class="s2">&quot;last_epoch&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="WarmupCosineWithHardRestartsSchedule.lr_lambda"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineWithHardRestartsSchedule.lr_lambda">[docs]</a>    <span class="k">def</span> <span class="nf">lr_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">))</span>
+        <span class="c1"># progress after warmup</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">progress</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cycles</span><span class="p">)</span> <span class="o">*</span> <span class="n">progress</span><span class="p">)</span> <span class="o">%</span> <span class="mf">1.0</span><span class="p">))))</span></div></div>
+
+<div class="viewcode-block" id="WarmupMultiStepLR"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupMultiStepLR">[docs]</a><span class="nd">@LR_SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">WarmupMultiStepLR</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">_LRScheduler</span><span class="p">):</span>
+    <span class="nd">@configurable</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">,</span>
+        <span class="n">milestones</span><span class="p">,</span>
+        <span class="n">gamma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">warmup_factor</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">warmup_iters</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+        <span class="n">warmup_method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+        <span class="n">last_epoch</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">(</span><span class="n">milestones</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">milestones</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Milestones should be a list of&quot;</span> <span class="s2">&quot; increasing integers. Got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">milestones</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">warmup_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="s2">&quot;linear&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Only &#39;constant&#39; or &#39;linear&#39; warmup_method accepted&quot;</span>
+                <span class="s2">&quot;got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">warmup_method</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">milestones</span> <span class="o">=</span> <span class="n">milestones</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_factor</span> <span class="o">=</span> <span class="n">warmup_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_iters</span> <span class="o">=</span> <span class="n">warmup_iters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_method</span> <span class="o">=</span> <span class="n">warmup_method</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupMultiStepLR</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">last_epoch</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WarmupMultiStepLR.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupMultiStepLR.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
+            <span class="s2">&quot;milestones&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">MILESTONES</span><span class="p">,</span>
+            <span class="s2">&quot;gamma&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">GAMMA</span><span class="p">,</span>
+            <span class="s2">&quot;warmup_factor&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">WARMUP_FACTOR</span><span class="p">,</span>
+            <span class="s2">&quot;warmup_iters&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">WARMUP</span> <span class="o">*</span> <span class="n">data_size</span><span class="p">,</span>
+            <span class="s2">&quot;warmup_method&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LR_SCHEDULER</span><span class="o">.</span><span class="n">WARMUP_METHOD</span><span class="p">,</span>
+            <span class="s2">&quot;last_epoch&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="WarmupMultiStepLR.get_lr"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupMultiStepLR.get_lr">[docs]</a>    <span class="k">def</span> <span class="nf">get_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">warmup_factor</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_epoch</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_iters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_method</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
+                <span class="n">warmup_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_factor</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_method</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_epoch</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_iters</span>
+                <span class="n">warmup_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_factor</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">alpha</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">base_lr</span>
+            <span class="o">*</span> <span class="n">warmup_factor</span>
+            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">**</span> <span class="n">bisect_right</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">milestones</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_epoch</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">base_lr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_lrs</span>
+        <span class="p">]</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

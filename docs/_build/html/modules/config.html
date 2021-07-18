@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.config &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xmodaler.datasets" href="datasets.html" />
+    <link rel="prev" title="xmodaler.checkpoint" href="checkpoint.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/index.html">Notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="checkpoint.html">xmodaler.checkpoint</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">xmodaler.config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html">xmodaler.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="engine.html">xmodaler.engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">xmodaler.evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functional.html">xmodaler.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses.html">xmodaler.losses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lr_scheduler.html">xmodaler.lr_scheduler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modeling/index.html">xmodaler.modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.html">xmodaler.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scorer.html">xmodaler.scorer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tokenization.html">xmodaler.tokenization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/index.html">xmodaler.utils</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">API Documentation</a> &raquo;</li>
+        
+      <li>xmodaler.config</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/YehLi/xmodaler/blob/master/docs/modules/config.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xmodaler.config">
+<span id="xmodaler-config"></span><h1>xmodaler.config<a class="headerlink" href="#module-xmodaler.config" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="xmodaler.config.CfgNode">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.config.</code><code class="sig-name descname">CfgNode</code><span class="sig-paren">(</span><em class="sig-param">init_dict=None</em>, <em class="sig-param">key_list=None</em>, <em class="sig-param">new_allowed=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/config/config.html#CfgNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">fvcore.common.config.CfgNode</span></code></p>
+<p>The same as <cite>fvcore.common.config.CfgNode</cite>, but different in:</p>
+<ol class="arabic simple">
+<li><p>Use unsafe yaml loading by default.
+Note that this may lead to arbitrary code execution: you must not
+load a config file from untrusted sources before manually inspecting
+the content of the file.</p></li>
+<li><p>Support config versioning.
+When attempting to merge an old config, it will convert the old config automatically.</p></li>
+</ol>
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.dump">
+<code class="sig-name descname">dump</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/config/config.html#CfgNode.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.dump" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a yaml string representation of the config</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.load_from_file_tmp">
+<code class="sig-name descname">load_from_file_tmp</code><span class="sig-paren">(</span><em class="sig-param">cfg_filename: str</em>, <em class="sig-param">allow_unsafe: bool = True</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/xmodaler/config/config.html#CfgNode.load_from_file_tmp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.load_from_file_tmp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.merge_from_file">
+<code class="sig-name descname">merge_from_file</code><span class="sig-paren">(</span><em class="sig-param">cfg_filename: str</em>, <em class="sig-param">allow_unsafe: bool = True</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/xmodaler/config/config.html#CfgNode.merge_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.merge_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge configs from a given yaml file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg_filename</strong> – the file name of the yaml config.</p></li>
+<li><p><strong>allow_unsafe</strong> – whether to allow loading the config file with
+<cite>yaml.unsafe_load</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.config.get_cfg">
+<code class="sig-prename descclassname">xmodaler.config.</code><code class="sig-name descname">get_cfg</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; xmodaler.config.config.CfgNode<a class="reference internal" href="../_modules/xmodaler/config/config.html#get_cfg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.get_cfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a copy of the default config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a detectron2 CfgNode instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.config.set_global_cfg">
+<code class="sig-prename descclassname">xmodaler.config.</code><code class="sig-name descname">set_global_cfg</code><span class="sig-paren">(</span><em class="sig-param">cfg: xmodaler.config.config.CfgNode</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/xmodaler/config/config.html#set_global_cfg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.set_global_cfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Let the global config point to the given cfg.</p>
+<p>Assume that the given “cfg” has the key “KEY”, after calling
+<cite>set_global_cfg(cfg)</cite>, the key can be accessed by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">detectron2.config</span> <span class="kn">import</span> <span class="n">global_cfg</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">KEY</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By using a hacky global config, you can access these configs anywhere,
+without having to pass the config object or the values deep into the code.
+This is a hacky feature introduced for quick prototyping / research exploration.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.config.downgrade_config">
+<code class="sig-prename descclassname">xmodaler.config.</code><code class="sig-name descname">downgrade_config</code><span class="sig-paren">(</span><em class="sig-param">cfg: xmodaler.config.config.CfgNode</em>, <em class="sig-param">to_version: int</em><span class="sig-paren">)</span> &#x2192; xmodaler.config.config.CfgNode<a class="reference internal" href="../_modules/xmodaler/config/compat.html#downgrade_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.downgrade_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downgrade a config from its current version to an older version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<a class="reference internal" href="#xmodaler.config.CfgNode" title="xmodaler.config.CfgNode"><em>CfgNode</em></a>) – </p></li>
+<li><p><strong>to_version</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A general downgrade of arbitrary configs is not always possible due to the
+different functionalities in different versions.
+The purpose of downgrade is only to recover the defaults in old versions,
+allowing it to load an old partial yaml config.
+Therefore, the implementation only needs to fill in the default values
+in the old version when a general downgrade is not possible.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.config.upgrade_config">
+<code class="sig-prename descclassname">xmodaler.config.</code><code class="sig-name descname">upgrade_config</code><span class="sig-paren">(</span><em class="sig-param">cfg: xmodaler.config.config.CfgNode</em>, <em class="sig-param">to_version: Optional[int] = None</em><span class="sig-paren">)</span> &#x2192; xmodaler.config.config.CfgNode<a class="reference internal" href="../_modules/xmodaler/config/compat.html#upgrade_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.upgrade_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upgrade a config from its current version to a newer version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<a class="reference internal" href="#xmodaler.config.CfgNode" title="xmodaler.config.CfgNode"><em>CfgNode</em></a>) – </p></li>
+<li><p><strong>to_version</strong> (<em>int</em>) – defaults to the latest version.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.config.configurable">
+<code class="sig-prename descclassname">xmodaler.config.</code><code class="sig-name descname">configurable</code><span class="sig-paren">(</span><em class="sig-param">init_func=None</em>, <em class="sig-param">*</em>, <em class="sig-param">from_config=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/config/config.html#configurable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.configurable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorate a function or a class’s __init__ method so that it can be called
+with a <a class="reference internal" href="#xmodaler.config.CfgNode" title="xmodaler.config.CfgNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">CfgNode</span></code></a> object using a <code class="xref py py-func docutils literal notranslate"><span class="pre">from_config()</span></code> function that translates
+<a class="reference internal" href="#xmodaler.config.CfgNode" title="xmodaler.config.CfgNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">CfgNode</span></code></a> to arguments.</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Usage 1: Decorator on __init__:</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="nd">@configurable</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>   <span class="c1"># &#39;cfg&#39; must be the first argument</span>
+        <span class="c1"># Returns kwargs to be passed to __init__</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">B</span><span class="p">}</span>
+
+<span class="n">a1</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># regular construction</span>
+<span class="n">a2</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>       <span class="c1"># construct with a cfg</span>
+<span class="n">a3</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># construct with extra overwrite</span>
+
+<span class="c1"># Usage 2: Decorator on any function. Needs an extra from_config argument:</span>
+<span class="nd">@configurable</span><span class="p">(</span><span class="n">from_config</span><span class="o">=</span><span class="k">lambda</span> <span class="n">cfg</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;a: cfg.A, &quot;</span><span class="sa">b</span><span class="s2">&quot;: cfg.B})</span>
+<span class="k">def</span> <span class="nf">a_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="n">a1</span> <span class="o">=</span> <span class="n">a_func</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># regular call</span>
+<span class="n">a2</span> <span class="o">=</span> <span class="n">a_func</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>       <span class="c1"># call with a cfg</span>
+<span class="n">a3</span> <span class="o">=</span> <span class="n">a_func</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># call with extra overwrite</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_func</strong> (<em>callable</em>) – a class’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method in usage 1. The
+class must have a <code class="docutils literal notranslate"><span class="pre">from_config</span></code> classmethod which takes <cite>cfg</cite> as
+the first argument.</p></li>
+<li><p><strong>from_config</strong> (<em>callable</em>) – the from_config function in usage 2. It must take <cite>cfg</cite>
+as its first argument.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="datasets.html" class="btn btn-neutral float-right" title="xmodaler.datasets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="checkpoint.html" class="btn btn-neutral float-left" title="xmodaler.checkpoint" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

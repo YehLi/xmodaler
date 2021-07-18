@@ -1,0 +1,434 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.config.compat &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xmodaler.config.compat</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for xmodaler.config.compat</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Facebook, Inc. and its affiliates.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Backward compatibility of configs.</span>
+
+<span class="sd">Instructions to bump version:</span>
+<span class="sd">+ It&#39;s not needed to bump version if new keys are added.</span>
+<span class="sd">  It&#39;s only needed when backward-incompatible changes happen</span>
+<span class="sd">  (i.e., some existing keys disappear, or the meaning of a key changes)</span>
+<span class="sd">+ To bump version, do the following:</span>
+<span class="sd">    1. Increment _C.VERSION in defaults.py</span>
+<span class="sd">    2. Add a converter in this file.</span>
+
+<span class="sd">      Each ConverterVX has a function &quot;upgrade&quot; which in-place upgrades config from X-1 to X,</span>
+<span class="sd">      and a function &quot;downgrade&quot; which in-place downgrades config from X to X-1</span>
+
+<span class="sd">      In each function, VERSION is left unchanged.</span>
+
+<span class="sd">      Each converter assumes that its input has the relevant keys</span>
+<span class="sd">      (i.e., the input is not a partial config).</span>
+<span class="sd">    3. Run the tests (test_config.py) to make sure the upgrade &amp; downgrade</span>
+<span class="sd">       functions are consistent.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">CfgNode</span> <span class="k">as</span> <span class="n">CN</span>
+<span class="kn">from</span> <span class="nn">.defaults</span> <span class="kn">import</span> <span class="n">_C</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;upgrade_config&quot;</span><span class="p">,</span> <span class="s2">&quot;downgrade_config&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="upgrade_config"><a class="viewcode-back" href="../../../modules/config.html#xmodaler.config.upgrade_config">[docs]</a><span class="k">def</span> <span class="nf">upgrade_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">CN</span><span class="p">,</span> <span class="n">to_version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CN</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Upgrade a config from its current version to a newer version.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cfg (CfgNode):</span>
+<span class="sd">        to_version (int): defaults to the latest version.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">to_version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">to_version</span> <span class="o">=</span> <span class="n">_C</span><span class="o">.</span><span class="n">VERSION</span>
+
+    <span class="k">assert</span> <span class="n">cfg</span><span class="o">.</span><span class="n">VERSION</span> <span class="o">&lt;=</span> <span class="n">to_version</span><span class="p">,</span> <span class="s2">&quot;Cannot upgrade from v</span><span class="si">{}</span><span class="s2"> to v</span><span class="si">{}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span> <span class="n">to_version</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span> <span class="n">to_version</span><span class="p">):</span>
+        <span class="n">converter</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;ConverterV&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">converter</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">VERSION</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">cfg</span></div>
+
+
+<div class="viewcode-block" id="downgrade_config"><a class="viewcode-back" href="../../../modules/config.html#xmodaler.config.downgrade_config">[docs]</a><span class="k">def</span> <span class="nf">downgrade_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">CN</span><span class="p">,</span> <span class="n">to_version</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CN</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Downgrade a config from its current version to an older version.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cfg (CfgNode):</span>
+<span class="sd">        to_version (int):</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        A general downgrade of arbitrary configs is not always possible due to the</span>
+<span class="sd">        different functionalities in different versions.</span>
+<span class="sd">        The purpose of downgrade is only to recover the defaults in old versions,</span>
+<span class="sd">        allowing it to load an old partial yaml config.</span>
+<span class="sd">        Therefore, the implementation only needs to fill in the default values</span>
+<span class="sd">        in the old version when a general downgrade is not possible.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">cfg</span><span class="o">.</span><span class="n">VERSION</span> <span class="o">&gt;=</span> <span class="n">to_version</span><span class="p">,</span> <span class="s2">&quot;Cannot downgrade from v</span><span class="si">{}</span><span class="s2"> to v</span><span class="si">{}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span> <span class="n">to_version</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span> <span class="n">to_version</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">converter</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s2">&quot;ConverterV&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span>
+        <span class="n">converter</span><span class="o">.</span><span class="n">downgrade</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">VERSION</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">cfg</span></div>
+
+
+<span class="k">def</span> <span class="nf">guess_version</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">CN</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Guess the version of a partial config where the VERSION field is not specified.</span>
+<span class="sd">    Returns the version, or the latest if cannot make a guess.</span>
+
+<span class="sd">    This makes it easier for users to migrate.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_has</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">cur</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cur</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="n">cur</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># Most users&#39; partial configs have &quot;MODEL.WEIGHT&quot;, so guess on it</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">_has</span><span class="p">(</span><span class="s2">&quot;MODEL.WEIGHT&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_has</span><span class="p">(</span><span class="s2">&quot;TEST.AUG_ON&quot;</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Config &#39;</span><span class="si">{}</span><span class="s2">&#39; has no VERSION. Assuming it to be v</span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ret</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">_C</span><span class="o">.</span><span class="n">VERSION</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Config &#39;</span><span class="si">{}</span><span class="s2">&#39; has no VERSION. Assuming it to be compatible with latest v</span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">filename</span><span class="p">,</span> <span class="n">ret</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="k">def</span> <span class="nf">_rename</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">CN</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">old_keys</span> <span class="o">=</span> <span class="n">old</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+    <span class="n">new_keys</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set</span><span class="p">(</span><span class="n">key_seq</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cur</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_seq</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cur</span><span class="p">:</span>
+                <span class="n">cur</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">CN</span><span class="p">()</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="n">cur</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">cur</span><span class="p">[</span><span class="n">key_seq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="n">key_seq</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">CN</span><span class="p">:</span>
+        <span class="n">cur</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_seq</span><span class="p">:</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="n">cur</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">cur</span>
+
+    <span class="k">def</span> <span class="nf">_del</span><span class="p">(</span><span class="n">key_seq</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cur</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_seq</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="n">cur</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">cur</span><span class="p">[</span><span class="n">key_seq</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cur</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_seq</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">_del</span><span class="p">(</span><span class="n">key_seq</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">_set</span><span class="p">(</span><span class="n">new_keys</span><span class="p">,</span> <span class="n">_get</span><span class="p">(</span><span class="n">old_keys</span><span class="p">))</span>
+    <span class="n">_del</span><span class="p">(</span><span class="n">old_keys</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_RenameConverter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A converter that handles simple rename.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">RENAME</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of tuples of (old name, new name)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">CN</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">RENAME</span><span class="p">:</span>
+            <span class="n">_rename</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">downgrade</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">CN</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">RENAME</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">_rename</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">old</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ConverterV1</span><span class="p">(</span><span class="n">_RenameConverter</span><span class="p">):</span>
+    <span class="n">RENAME</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;MODEL.RPN_HEAD.NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.RPN.HEAD_NAME&quot;</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">ConverterV2</span><span class="p">(</span><span class="n">_RenameConverter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A large bulk of rename, before public release.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">RENAME</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.WEIGHT&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.WEIGHTS&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.PANOPTIC_FPN.SEMANTIC_LOSS_SCALE&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.SEM_SEG_HEAD.LOSS_WEIGHT&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.PANOPTIC_FPN.RPN_LOSS_SCALE&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.RPN.LOSS_WEIGHT&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.PANOPTIC_FPN.INSTANCE_LOSS_SCALE&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.PANOPTIC_FPN.INSTANCE_LOSS_WEIGHT&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.PANOPTIC_FPN.COMBINE_ON&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.PANOPTIC_FPN.COMBINE.ENABLED&quot;</span><span class="p">),</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;MODEL.PANOPTIC_FPN.COMBINE_OVERLAP_THRESHOLD&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MODEL.PANOPTIC_FPN.COMBINE.OVERLAP_THRESH&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;MODEL.PANOPTIC_FPN.COMBINE_STUFF_AREA_LIMIT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MODEL.PANOPTIC_FPN.COMBINE.STUFF_AREA_LIMIT&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;MODEL.PANOPTIC_FPN.COMBINE_INSTANCES_CONFIDENCE_THRESHOLD&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MODEL.PANOPTIC_FPN.COMBINE.INSTANCES_CONFIDENCE_THRESH&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.ROI_HEADS.SCORE_THRESH&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.ROI_HEADS.SCORE_THRESH_TEST&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.ROI_HEADS.NMS&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.ROI_HEADS.NMS_THRESH_TEST&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.RETINANET.INFERENCE_SCORE_THRESHOLD&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.RETINANET.SCORE_THRESH_TEST&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.RETINANET.INFERENCE_TOPK_CANDIDATES&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.RETINANET.TOPK_CANDIDATES_TEST&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;MODEL.RETINANET.INFERENCE_NMS_THRESHOLD&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.RETINANET.NMS_THRESH_TEST&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;TEST.DETECTIONS_PER_IMG&quot;</span><span class="p">,</span> <span class="s2">&quot;TEST.DETECTIONS_PER_IMAGE&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;TEST.AUG_ON&quot;</span><span class="p">,</span> <span class="s2">&quot;TEST.AUG.ENABLED&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;TEST.AUG_MIN_SIZES&quot;</span><span class="p">,</span> <span class="s2">&quot;TEST.AUG.MIN_SIZES&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;TEST.AUG_MAX_SIZE&quot;</span><span class="p">,</span> <span class="s2">&quot;TEST.AUG.MAX_SIZE&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;TEST.AUG_FLIP&quot;</span><span class="p">,</span> <span class="s2">&quot;TEST.AUG.FLIP&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">upgrade</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">CN</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">META_ARCHITECTURE</span> <span class="o">==</span> <span class="s2">&quot;RetinaNet&quot;</span><span class="p">:</span>
+            <span class="n">_rename</span><span class="p">(</span>
+                <span class="n">cfg</span><span class="p">,</span> <span class="s2">&quot;MODEL.RETINANET.ANCHOR_ASPECT_RATIOS&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.ANCHOR_GENERATOR.ASPECT_RATIOS&quot;</span>
+            <span class="p">)</span>
+            <span class="n">_rename</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="s2">&quot;MODEL.RETINANET.ANCHOR_SIZES&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.ANCHOR_GENERATOR.SIZES&quot;</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;MODEL&quot;</span><span class="p">][</span><span class="s2">&quot;RPN&quot;</span><span class="p">][</span><span class="s2">&quot;ANCHOR_SIZES&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;MODEL&quot;</span><span class="p">][</span><span class="s2">&quot;RPN&quot;</span><span class="p">][</span><span class="s2">&quot;ANCHOR_ASPECT_RATIOS&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_rename</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="s2">&quot;MODEL.RPN.ANCHOR_ASPECT_RATIOS&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.ANCHOR_GENERATOR.ASPECT_RATIOS&quot;</span><span class="p">)</span>
+            <span class="n">_rename</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="s2">&quot;MODEL.RPN.ANCHOR_SIZES&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.ANCHOR_GENERATOR.SIZES&quot;</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;MODEL&quot;</span><span class="p">][</span><span class="s2">&quot;RETINANET&quot;</span><span class="p">][</span><span class="s2">&quot;ANCHOR_SIZES&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;MODEL&quot;</span><span class="p">][</span><span class="s2">&quot;RETINANET&quot;</span><span class="p">][</span><span class="s2">&quot;ANCHOR_ASPECT_RATIOS&quot;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;MODEL&quot;</span><span class="p">][</span><span class="s2">&quot;RETINANET&quot;</span><span class="p">][</span><span class="s2">&quot;ANCHOR_STRIDES&quot;</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">downgrade</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">CN</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">downgrade</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+        <span class="n">_rename</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="s2">&quot;MODEL.ANCHOR_GENERATOR.ASPECT_RATIOS&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.RPN.ANCHOR_ASPECT_RATIOS&quot;</span><span class="p">)</span>
+        <span class="n">_rename</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="s2">&quot;MODEL.ANCHOR_GENERATOR.SIZES&quot;</span><span class="p">,</span> <span class="s2">&quot;MODEL.RPN.ANCHOR_SIZES&quot;</span><span class="p">)</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">RETINANET</span><span class="o">.</span><span class="n">ANCHOR_ASPECT_RATIOS</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">RPN</span><span class="o">.</span><span class="n">ANCHOR_ASPECT_RATIOS</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">RETINANET</span><span class="o">.</span><span class="n">ANCHOR_SIZES</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">RPN</span><span class="o">.</span><span class="n">ANCHOR_SIZES</span>
+        <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">RETINANET</span><span class="o">.</span><span class="n">ANCHOR_STRIDES</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># this is not used anywhere in any version</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

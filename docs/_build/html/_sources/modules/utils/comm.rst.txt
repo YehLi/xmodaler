@@ -1,0 +1,8 @@
+xmodaler.utils.comm 
+=============================
+
+.. automodule:: xmodaler.utils.comm
+    :members:
+    :imported-members:
+    :undoc-members:
+    :show-inheritance:

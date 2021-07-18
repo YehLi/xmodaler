@@ -1,0 +1,8 @@
+xmodaler.utils.events 
+=============================
+
+.. automodule:: xmodaler.utils.events
+    :members:
+    :imported-members:
+    :undoc-members:
+    :show-inheritance:
