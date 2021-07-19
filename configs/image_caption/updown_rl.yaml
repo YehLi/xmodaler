@@ -22,7 +22,7 @@ MODEL:
 SOLVER:
   NAME: 'Adam'
   EPOCH: 30
-  BASE_LR: 0.00001
+  BASE_LR: 0.00005
   
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
