@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.utils.events &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>xmodaler.utils.events</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/YehLi/xmodaler/blob/master/docs/modules/bak/events.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-xmodaler.utils.events">
+<span id="xmodaler-utils-events"></span><h1>xmodaler.utils.events<a class="headerlink" href="#module-xmodaler.utils.events" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="xmodaler.utils.events.get_event_storage">
+<code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">get_event_storage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#get_event_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.get_event_storage" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The <a class="reference internal" href="../utils.html#xmodaler.utils.events.EventStorage" title="xmodaler.utils.events.EventStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventStorage</span></code></a> object that’s currently being used.
+Throws an error if no <a class="reference internal" href="../utils.html#xmodaler.utils.events.EventStorage" title="xmodaler.utils.events.EventStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventStorage</span></code></a> is currently enabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.events.JSONWriter">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">JSONWriter</code><span class="sig-paren">(</span><em class="sig-param">json_file</em>, <em class="sig-param">window_size=20</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#JSONWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.JSONWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xmodaler.utils.events.EventWriter</span></code></p>
+<p>Write scalars to a json file.</p>
+<p>It saves scalars as one json per line (instead of a big json) for easy parsing.</p>
+<p>Examples parsing such a json file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cat metrics.json | jq -s &#39;.[0:2]&#39;
+[
+  {
+    &quot;data_time&quot;: 0.008433341979980469,
+    &quot;iteration&quot;: 19,
+    &quot;loss&quot;: 1.9228371381759644,
+    &quot;loss_box_reg&quot;: 0.050025828182697296,
+    &quot;loss_classifier&quot;: 0.5316952466964722,
+    &quot;loss_mask&quot;: 0.7236229181289673,
+    &quot;loss_rpn_box&quot;: 0.0856662318110466,
+    &quot;loss_rpn_cls&quot;: 0.48198649287223816,
+    &quot;lr&quot;: 0.007173333333333333,
+    &quot;time&quot;: 0.25401854515075684
+  },
+  {
+    &quot;data_time&quot;: 0.007216215133666992,
+    &quot;iteration&quot;: 39,
+    &quot;loss&quot;: 1.282649278640747,
+    &quot;loss_box_reg&quot;: 0.06222952902317047,
+    &quot;loss_classifier&quot;: 0.30682939291000366,
+    &quot;loss_mask&quot;: 0.6970193982124329,
+    &quot;loss_rpn_box&quot;: 0.038663312792778015,
+    &quot;loss_rpn_cls&quot;: 0.1471673548221588,
+    &quot;lr&quot;: 0.007706666666666667,
+    &quot;time&quot;: 0.2490077018737793
+  }
+]
+
+$ cat metrics.json | jq &#39;.loss_mask&#39;
+0.7126231789588928
+0.689423680305481
+0.6776131987571716
+...
+</pre></div>
+</div>
+<dl class="method">
+<dt id="xmodaler.utils.events.JSONWriter.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#JSONWriter.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.JSONWriter.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.JSONWriter.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#JSONWriter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.JSONWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.events.TensorboardXWriter">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">TensorboardXWriter</code><span class="sig-paren">(</span><em class="sig-param">log_dir: str</em>, <em class="sig-param">window_size: int = 20</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#TensorboardXWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.TensorboardXWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xmodaler.utils.events.EventWriter</span></code></p>
+<p>Write all scalars to a tensorboard file.</p>
+<dl class="method">
+<dt id="xmodaler.utils.events.TensorboardXWriter.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#TensorboardXWriter.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.TensorboardXWriter.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.TensorboardXWriter.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#TensorboardXWriter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.TensorboardXWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.events.CommonMetricPrinter">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">CommonMetricPrinter</code><span class="sig-paren">(</span><em class="sig-param">max_iter: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#CommonMetricPrinter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.CommonMetricPrinter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xmodaler.utils.events.EventWriter</span></code></p>
+<p>Print <strong>common</strong> metrics to the terminal, including
+iteration time, ETA, memory, all losses, and the learning rate.
+It also applies smoothing using a window of 20 elements.</p>
+<p>It’s meant to print common metrics in common ways.
+To print something in more customized ways, please implement a similar printer by yourself.</p>
+<dl class="method">
+<dt id="xmodaler.utils.events.CommonMetricPrinter.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#CommonMetricPrinter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.CommonMetricPrinter.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.events.EventStorage">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">EventStorage</code><span class="sig-paren">(</span><em class="sig-param">start_iter=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The user-facing class that provides metric storage functionalities.</p>
+<p>In the future we may add support for storing / logging other types of data if needed.</p>
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.clear_histograms">
+<code class="sig-name descname">clear_histograms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.clear_histograms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.clear_histograms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all the stored histograms for visualization.
+This should be called after histograms are written to tensorboard.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.clear_images">
+<code class="sig-name descname">clear_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.clear_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.clear_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all the stored images for visualization. This should be called
+after images are written to tensorboard.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.histories">
+<code class="sig-name descname">histories</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.histories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.histories" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the HistoryBuffer for all scalars</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict[name -&gt; HistoryBuffer]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.history">
+<code class="sig-name descname">history</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.history" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the scalar history for name</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>HistoryBuffer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.iter">
+<em class="property">property </em><code class="sig-name descname">iter</code><a class="headerlink" href="#xmodaler.utils.events.EventStorage.iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns:
+int: The current iteration number. When used together with a trainer,</p>
+<blockquote>
+<div><p>this is ensured to be the same as trainer.iter.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.iteration">
+<em class="property">property </em><code class="sig-name descname">iteration</code><a class="headerlink" href="#xmodaler.utils.events.EventStorage.iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.latest">
+<code class="sig-name descname">latest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.latest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.latest" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>mapping from the name of each scalar to the most</dt><dd><p>recent value and the iteration number its added.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict[str -&gt; (float, int)]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.latest_with_smoothing_hint">
+<code class="sig-name descname">latest_with_smoothing_hint</code><span class="sig-paren">(</span><em class="sig-param">window_size=20</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.latest_with_smoothing_hint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.latest_with_smoothing_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="../utils.html#xmodaler.utils.events.EventStorage.latest" title="xmodaler.utils.events.EventStorage.latest"><code class="xref py py-meth docutils literal notranslate"><span class="pre">latest()</span></code></a>, but the returned values
+are either the un-smoothed original latest value,
+or a median of the given window_size,
+depend on whether the smoothing_hint is True.</p>
+<p>This provides a default behavior that other writers can use.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.name_scope">
+<code class="sig-name descname">name_scope</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.name_scope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.name_scope" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Yields</dt>
+<dd class="field-odd"><p>A context within which all the events added to this storage
+will be prefixed by the name scope.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.put_histogram">
+<code class="sig-name descname">put_histogram</code><span class="sig-paren">(</span><em class="sig-param">hist_name</em>, <em class="sig-param">hist_tensor</em>, <em class="sig-param">bins=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.put_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.put_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a histogram from a tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hist_name</strong> (<em>str</em>) – The name of the histogram to put into tensorboard.</p></li>
+<li><p><strong>hist_tensor</strong> (<em>torch.Tensor</em>) – A Tensor of arbitrary shape to be converted
+into a histogram.</p></li>
+<li><p><strong>bins</strong> (<em>int</em>) – Number of histogram bins.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.put_image">
+<code class="sig-name descname">put_image</code><span class="sig-paren">(</span><em class="sig-param">img_name</em>, <em class="sig-param">img_tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.put_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.put_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an <cite>img_tensor</cite> associated with <cite>img_name</cite>, to be shown on
+tensorboard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img_name</strong> (<em>str</em>) – The name of the image to put into tensorboard.</p></li>
+<li><p><strong>img_tensor</strong> (<em>torch.Tensor</em><em> or </em><em>numpy.array</em>) – An <cite>uint8</cite> or <cite>float</cite>
+Tensor of shape <cite>[channel, height, width]</cite> where <cite>channel</cite> is
+3. The image format should be RGB. The elements in img_tensor
+can either have values in [0, 1] (float32) or [0, 255] (uint8).
+The <cite>img_tensor</cite> will be visualized in tensorboard.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.put_scalar">
+<code class="sig-name descname">put_scalar</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">value</em>, <em class="sig-param">smoothing_hint=True</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.put_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.put_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a scalar <cite>value</cite> to the <cite>HistoryBuffer</cite> associated with <cite>name</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>smoothing_hint</strong> (<em>bool</em>) – <p>a ‘hint’ on whether this scalar is noisy and should be
+smoothed when logged. The hint will be accessible through
+<a class="reference internal" href="../utils.html#xmodaler.utils.events.EventStorage.smoothing_hints" title="xmodaler.utils.events.EventStorage.smoothing_hints"><code class="xref py py-meth docutils literal notranslate"><span class="pre">EventStorage.smoothing_hints()</span></code></a>.  A writer may ignore the hint
+and apply custom smoothing rule.</p>
+<p>It defaults to True because most scalars we save need to be smoothed to
+provide any useful signal.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.put_scalars">
+<code class="sig-name descname">put_scalars</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">smoothing_hint=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.put_scalars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.put_scalars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put multiple scalars from keyword arguments.</p>
+<p class="rubric">Examples</p>
+<p>storage.put_scalars(loss=my_loss, accuracy=my_accuracy, smoothing_hint=True)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.smoothing_hints">
+<code class="sig-name descname">smoothing_hints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.smoothing_hints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.smoothing_hints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>the user-provided hint on whether the scalar</dt><dd><p>is noisy and needs smoothing.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict[name -&gt; bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.step">
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/utils/events.html#EventStorage.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>User should either: (1) Call this function to increment storage.iter when needed. Or
+(2) Set <cite>storage.iter</cite> to the correct iteration number before each iteration.</p>
+<p>The storage will then be able to associate the new data with an iteration number.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

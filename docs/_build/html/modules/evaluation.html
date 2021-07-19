@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="optim.html">xmodaler.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scorer.html">xmodaler.scorer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tokenization.html">xmodaler.tokenization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils/index.html">xmodaler.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">xmodaler.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -179,28 +179,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-xmodaler.evaluation">
-<span id="xmodaler-evaluation"></span><h1>xmodaler.evaluation<a class="headerlink" href="#module-xmodaler.evaluation" title="Permalink to this headline">¶</a></h1>
-<p>&#64;author: Yehao Li
-&#64;contact: <a class="reference external" href="mailto:yehaoli&#46;sysu&#37;&#52;&#48;gmail&#46;com">yehaoli<span>&#46;</span>sysu<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
+  <div class="section" id="xmodaler-evaluation">
+<h1>xmodaler.evaluation<a class="headerlink" href="#xmodaler-evaluation" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="xmodaler.evaluation.build_evaluation">
+<code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">build_evaluation</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/build.html#build_evaluation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.build_evaluation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="class">
 <dt id="xmodaler.evaluation.COCOEvaler">
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">COCOEvaler</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/coco_evaler.html#COCOEvaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.COCOEvaler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
-<dt id="xmodaler.evaluation.COCOEvaler.eval">
-<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">result</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/coco_evaler.html#COCOEvaler.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.COCOEvaler.eval" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dt id="xmodaler.evaluation.COCOEvaler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/coco_evaler.html#COCOEvaler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.COCOEvaler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
-<dl class="class">
-<dt id="xmodaler.evaluation.RetrievalEvaler">
-<em class="property">class </em><code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">RetrievalEvaler</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/retrieval_evaler.html#RetrievalEvaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.RetrievalEvaler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
-<dt id="xmodaler.evaluation.RetrievalEvaler.eval">
-<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">vfeats</em>, <em class="sig-param">tfeats</em>, <em class="sig-param">labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/retrieval_evaler.html#RetrievalEvaler.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.RetrievalEvaler.eval" title="Permalink to this definition">¶</a></dt>
+<dt id="xmodaler.evaluation.COCOEvaler.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">result</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/coco_evaler.html#COCOEvaler.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.COCOEvaler.eval" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -210,16 +208,34 @@
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">VQAEvaler</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/vqa_evaler.html#VQAEvaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.VQAEvaler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
+<dt id="xmodaler.evaluation.VQAEvaler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/vqa_evaler.html#VQAEvaler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.VQAEvaler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="xmodaler.evaluation.VQAEvaler.eval">
 <code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">results</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/vqa_evaler.html#VQAEvaler.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.VQAEvaler.eval" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="xmodaler.evaluation.build_evaluation">
-<code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">build_evaluation</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/build.html#build_evaluation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.build_evaluation" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="xmodaler.evaluation.RetrievalEvaler">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">RetrievalEvaler</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/retrieval_evaler.html#RetrievalEvaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.RetrievalEvaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="xmodaler.evaluation.RetrievalEvaler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/retrieval_evaler.html#RetrievalEvaler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.RetrievalEvaler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.evaluation.RetrievalEvaler.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">vfeats</em>, <em class="sig-param">tfeats</em>, <em class="sig-param">labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/retrieval_evaler.html#RetrievalEvaler.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.RetrievalEvaler.eval" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
 
 </div>
 

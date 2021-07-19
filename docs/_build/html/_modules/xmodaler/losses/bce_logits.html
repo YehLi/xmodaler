@@ -170,10 +170,10 @@
 
 <div class="viewcode-block" id="BCEWithLogits"><a class="viewcode-back" href="../../../modules/losses.html#xmodaler.losses.BCEWithLogits">[docs]</a><span class="nd">@LOSSES_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">BCEWithLogits</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BCEWithLogits.__init__"><a class="viewcode-back" href="../../../modules/losses.html#xmodaler.losses.BCEWithLogits.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BCEWithLogits</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BCEWithLogits.from_config"><a class="viewcode-back" href="../../../modules/losses.html#xmodaler.losses.BCEWithLogits.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>

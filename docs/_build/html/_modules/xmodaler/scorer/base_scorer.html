@@ -175,7 +175,7 @@
 
 <div class="viewcode-block" id="BaseScorer"><a class="viewcode-back" href="../../../modules/scorer.html#xmodaler.scorer.BaseScorer">[docs]</a><span class="nd">@SCORER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">BaseScorer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BaseScorer.__init__"><a class="viewcode-back" href="../../../modules/scorer.html#xmodaler.scorer.BaseScorer.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -189,7 +189,7 @@
        <span class="bp">self</span><span class="o">.</span><span class="n">scorers</span> <span class="o">=</span> <span class="n">scorers</span>
        <span class="bp">self</span><span class="o">.</span><span class="n">eos_id</span> <span class="o">=</span> <span class="n">eos_id</span>
        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">gts</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">gt_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;bytes&#39;</span><span class="p">)</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">gts</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">gt_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;bytes&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseScorer.from_config"><a class="viewcode-back" href="../../../modules/scorer.html#xmodaler.scorer.BaseScorer.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>

@@ -1,0 +1,372 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.modeling.meta_arch.base_enc_dec &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xmodaler.modeling.meta_arch.base_enc_dec</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for xmodaler.modeling.meta_arch.base_enc_dec</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2021 JD.com, Inc., JD AI</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">@author: Yehao Li</span>
+<span class="sd">@contact: yehaoli.sysu@gmail.com</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="kn">import</span> <span class="n">Variable</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">configurable</span>
+<span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">CfgNode</span> <span class="k">as</span> <span class="n">CN</span>
+<span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">kfg</span>
+<span class="kn">from</span> <span class="nn">xmodaler.functional</span> <span class="kn">import</span> <span class="n">pad_tensor</span><span class="p">,</span> <span class="n">dict_to_cuda</span>
+<span class="kn">from</span> <span class="nn">..embedding</span> <span class="kn">import</span> <span class="n">build_embeddings</span>
+<span class="kn">from</span> <span class="nn">..encoder</span> <span class="kn">import</span> <span class="n">build_encoder</span><span class="p">,</span> <span class="n">add_encoder_config</span>
+<span class="kn">from</span> <span class="nn">..decoder</span> <span class="kn">import</span> <span class="n">build_decoder</span><span class="p">,</span> <span class="n">add_decoder_config</span>
+<span class="kn">from</span> <span class="nn">..predictor</span> <span class="kn">import</span> <span class="n">build_predictor</span><span class="p">,</span> <span class="n">add_predictor_config</span>
+<span class="kn">from</span> <span class="nn">..decode_strategy</span> <span class="kn">import</span> <span class="n">build_beam_searcher</span><span class="p">,</span> <span class="n">build_greedy_decoder</span>
+
+<div class="viewcode-block" id="BaseEncoderDecoder"><a class="viewcode-back" href="../../../../modules/modeling/meta_arch.html#xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder">[docs]</a><span class="k">class</span> <span class="nc">BaseEncoderDecoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseEncoderDecoder.__init__"><a class="viewcode-back" href="../../../../modules/modeling/meta_arch.html#xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder.__init__">[docs]</a>    <span class="nd">@configurable</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">vocab_size</span><span class="p">,</span>
+        <span class="n">max_seq_len</span><span class="p">,</span>
+        <span class="n">token_embed</span><span class="p">,</span>
+        <span class="n">visual_embed</span><span class="p">,</span>
+        <span class="n">encoder</span><span class="p">,</span>
+        <span class="n">decoder</span><span class="p">,</span>
+        <span class="n">predictor</span><span class="p">,</span>
+        <span class="n">greedy_decoder</span><span class="p">,</span>
+        <span class="n">beam_searcher</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BaseEncoderDecoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_embed</span> <span class="o">=</span> <span class="n">token_embed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visual_embed</span> <span class="o">=</span> <span class="n">visual_embed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">encoder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">decoder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span> <span class="o">=</span> <span class="n">predictor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">greedy_decoder</span> <span class="o">=</span> <span class="n">greedy_decoder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beam_searcher</span> <span class="o">=</span> <span class="n">beam_searcher</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span> <span class="o">=</span> <span class="n">vocab_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_seq_len</span> <span class="o">=</span> <span class="n">max_seq_len</span></div>
+
+<div class="viewcode-block" id="BaseEncoderDecoder.from_config"><a class="viewcode-back" href="../../../../modules/modeling/meta_arch.html#xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;token_embed&quot;</span><span class="p">:</span> <span class="n">build_embeddings</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">NAME</span><span class="p">),</span>
+            <span class="s2">&quot;visual_embed&quot;</span><span class="p">:</span> <span class="n">build_embeddings</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">VISUAL_EMBED</span><span class="o">.</span><span class="n">NAME</span><span class="p">),</span>
+            <span class="s2">&quot;encoder&quot;</span><span class="p">:</span> <span class="n">build_encoder</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
+            <span class="s2">&quot;decoder&quot;</span><span class="p">:</span> <span class="n">build_decoder</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
+            <span class="s2">&quot;predictor&quot;</span><span class="p">:</span> <span class="n">build_predictor</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
+            <span class="s2">&quot;greedy_decoder&quot;</span><span class="p">:</span> <span class="n">build_greedy_decoder</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
+            <span class="s2">&quot;beam_searcher&quot;</span><span class="p">:</span> <span class="n">build_beam_searcher</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
+            <span class="s2">&quot;vocab_size&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">VOCAB_SIZE</span><span class="p">,</span>
+            <span class="s2">&quot;max_seq_len&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">MAX_SEQ_LEN</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="BaseEncoderDecoder.add_config"><a class="viewcode-back" href="../../../../modules/modeling/meta_arch.html#xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder.add_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">add_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">tmp_cfg</span><span class="p">):</span>
+        <span class="n">add_encoder_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">tmp_cfg</span><span class="p">)</span>
+        <span class="n">add_decoder_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">tmp_cfg</span><span class="p">)</span>
+        <span class="n">add_predictor_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">tmp_cfg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseEncoderDecoder.get_extended_attention_mask"><a class="viewcode-back" href="../../../../modules/modeling/meta_arch.html#xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder.get_extended_attention_mask">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_extended_attention_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batched_inputs</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseEncoderDecoder.forward"><a class="viewcode-back" href="../../../../modules/modeling/meta_arch.html#xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batched_inputs</span><span class="p">,</span> <span class="n">use_beam_search</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_sents</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">use_beam_search</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward</span><span class="p">(</span><span class="n">batched_inputs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">use_beam_search</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_searcher</span><span class="o">.</span><span class="n">beam_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">greedy_decode</span><span class="p">(</span><span class="n">batched_inputs</span><span class="p">,</span> <span class="n">output_sents</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode_beam_search</span><span class="p">(</span><span class="n">batched_inputs</span><span class="p">,</span> <span class="n">output_sents</span><span class="p">)</span></div>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batched_inputs</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="BaseEncoderDecoder.preprocess_batch"><a class="viewcode-back" href="../../../../modules/modeling/meta_arch.html#xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder.preprocess_batch">[docs]</a>    <span class="k">def</span> <span class="nf">preprocess_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batched_inputs</span><span class="p">):</span>
+        <span class="n">vfeats</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">ATT_FEATS</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+        <span class="n">vfeats</span><span class="p">,</span> <span class="n">vmasks</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">vfeats</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">{</span> <span class="n">kfg</span><span class="o">.</span><span class="n">ATT_FEATS</span><span class="p">:</span> <span class="n">vfeats</span><span class="p">,</span> <span class="n">kfg</span><span class="o">.</span><span class="n">ATT_MASKS</span><span class="p">:</span> <span class="n">vmasks</span> <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKENS_IDS</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">u_tokens_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKENS_IDS</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+            <span class="n">u_tokens_ids</span><span class="p">,</span> <span class="n">tmasks</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">u_tokens_ids</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="p">{</span> <span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKENS_IDS</span><span class="p">:</span> <span class="n">u_tokens_ids</span><span class="p">,</span> <span class="n">kfg</span><span class="o">.</span><span class="n">TOKENS_MASKS</span><span class="p">:</span> <span class="n">tmasks</span><span class="p">}</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKENS_IDS</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">g_tokens_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKENS_IDS</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+            <span class="n">g_tokens_ids</span><span class="p">,</span> <span class="n">tmasks</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">g_tokens_ids</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="p">{</span> <span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKENS_IDS</span><span class="p">:</span> <span class="n">g_tokens_ids</span><span class="p">,</span> <span class="n">kfg</span><span class="o">.</span><span class="n">TOKENS_MASKS</span><span class="p">:</span> <span class="n">tmasks</span><span class="p">}</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">U_TARGET_IDS</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">u_target_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">U_TARGET_IDS</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+            <span class="n">u_target_ids</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">u_target_ids</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">U_TARGET_IDS</span><span class="p">:</span> <span class="n">u_target_ids</span> <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">G_TARGET_IDS</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">g_target_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">G_TARGET_IDS</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+            <span class="n">g_target_ids</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">g_target_ids</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">G_TARGET_IDS</span><span class="p">:</span> <span class="n">g_target_ids</span> <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">ATT_FEATS_LOC</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">vfeats_loc</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">ATT_FEATS_LOC</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+            <span class="n">vfeats_loc</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">vfeats_loc</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">ATT_FEATS_LOC</span><span class="p">:</span> <span class="n">vfeats_loc</span> <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKENS_TYPE</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">u_tokens_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKENS_TYPE</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+            <span class="n">u_tokens_type</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">u_tokens_type</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKENS_TYPE</span><span class="p">:</span> <span class="n">u_tokens_type</span> <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKENS_TYPE</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">g_tokens_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKENS_TYPE</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+            <span class="n">g_tokens_type</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">g_tokens_type</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKENS_TYPE</span><span class="p">:</span> <span class="n">g_tokens_type</span> <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">V_TARGET</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">v_target</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">V_TARGET</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+            <span class="n">v_target</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">v_target</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">V_TARGET</span><span class="p">:</span> <span class="n">v_target</span> <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">V_TARGET_LABELS</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">v_target_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">V_TARGET_LABELS</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">]</span>
+            <span class="n">v_target_labels</span> <span class="o">=</span> <span class="n">pad_tensor</span><span class="p">(</span><span class="n">v_target_labels</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">use_mask</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">V_TARGET_LABELS</span><span class="p">:</span> <span class="n">v_target_labels</span> <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">SEQ_PER_SAMPLE</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">batch_size</span><span class="p">,</span> <span class="n">max_feats_num</span><span class="p">,</span> <span class="n">feats_dim</span> <span class="o">=</span> <span class="n">vfeats</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">repeat_num</span> <span class="o">=</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">kfg</span><span class="o">.</span><span class="n">SEQ_PER_SAMPLE</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+            <span class="n">vfeats</span> <span class="o">=</span> <span class="n">vfeats</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">repeat_num</span><span class="p">,</span> <span class="n">max_feats_num</span><span class="p">,</span> <span class="n">feats_dim</span><span class="p">)</span>
+            <span class="n">vfeats</span> <span class="o">=</span> <span class="n">vfeats</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_feats_num</span><span class="p">,</span> <span class="n">feats_dim</span><span class="p">)</span>
+            <span class="n">vmasks</span> <span class="o">=</span> <span class="n">vmasks</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">repeat_num</span><span class="p">,</span> <span class="n">max_feats_num</span><span class="p">)</span>
+            <span class="n">vmasks</span> <span class="o">=</span> <span class="n">vmasks</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_feats_num</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">ATT_FEATS</span><span class="p">:</span> <span class="n">vfeats</span><span class="p">,</span> <span class="n">kfg</span><span class="o">.</span><span class="n">ATT_MASKS</span><span class="p">:</span> <span class="n">vmasks</span> <span class="p">})</span>
+
+        <span class="n">dict_to_cuda</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">IDS</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">IDS</span><span class="p">]</span>  <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batched_inputs</span> <span class="p">]</span>
+            <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">SEQ_PER_SAMPLE</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">repeat_num</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">IDS</span><span class="p">:</span> <span class="n">ids</span> <span class="p">})</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="BaseEncoderDecoder.greedy_decode"><a class="viewcode-back" href="../../../../modules/modeling/meta_arch.html#xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder.greedy_decode">[docs]</a>    <span class="k">def</span> <span class="nf">greedy_decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batched_inputs</span><span class="p">,</span> <span class="n">output_sents</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">greedy_decoder</span><span class="p">(</span>
+            <span class="n">batched_inputs</span><span class="p">,</span> 
+            <span class="n">output_sents</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseEncoderDecoder.decode_beam_search"><a class="viewcode-back" href="../../../../modules/modeling/meta_arch.html#xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder.decode_beam_search">[docs]</a>    <span class="k">def</span> <span class="nf">decode_beam_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batched_inputs</span><span class="p">,</span> <span class="n">output_sents</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">beam_searcher</span><span class="p">(</span>
+            <span class="n">batched_inputs</span><span class="p">,</span> 
+            <span class="n">output_sents</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

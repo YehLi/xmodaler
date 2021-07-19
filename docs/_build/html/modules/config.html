@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="optim.html">xmodaler.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scorer.html">xmodaler.scorer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tokenization.html">xmodaler.tokenization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils/index.html">xmodaler.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">xmodaler.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -179,8 +179,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-xmodaler.config">
-<span id="xmodaler-config"></span><h1>xmodaler.config<a class="headerlink" href="#module-xmodaler.config" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="xmodaler-config">
+<h1>xmodaler.config<a class="headerlink" href="#xmodaler-config" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="xmodaler.config.CfgNode">
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.config.</code><code class="sig-name descname">CfgNode</code><span class="sig-paren">(</span><em class="sig-param">init_dict=None</em>, <em class="sig-param">key_list=None</em>, <em class="sig-param">new_allowed=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/config/config.html#CfgNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode" title="Permalink to this definition">¶</a></dt>
@@ -194,6 +194,122 @@ the content of the file.</p></li>
 <li><p>Support config versioning.
 When attempting to merge an old config, it will convert the old config automatically.</p></li>
 </ol>
+<dl class="attribute">
+<dt id="xmodaler.config.CfgNode.DEPRECATED_KEYS">
+<code class="sig-name descname">DEPRECATED_KEYS</code><em class="property"> = '__deprecated_keys__'</em><a class="headerlink" href="#xmodaler.config.CfgNode.DEPRECATED_KEYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="xmodaler.config.CfgNode.IMMUTABLE">
+<code class="sig-name descname">IMMUTABLE</code><em class="property"> = '__immutable__'</em><a class="headerlink" href="#xmodaler.config.CfgNode.IMMUTABLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="xmodaler.config.CfgNode.NEW_ALLOWED">
+<code class="sig-name descname">NEW_ALLOWED</code><em class="property"> = '__new_allowed__'</em><a class="headerlink" href="#xmodaler.config.CfgNode.NEW_ALLOWED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="xmodaler.config.CfgNode.RENAMED_KEYS">
+<code class="sig-name descname">RENAMED_KEYS</code><em class="property"> = '__renamed_keys__'</em><a class="headerlink" href="#xmodaler.config.CfgNode.RENAMED_KEYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">init_dict=None</em>, <em class="sig-param">key_list=None</em>, <em class="sig-param">new_allowed=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_dict</strong> (<em>dict</em>) – the possibly-nested dictionary to initailize the CfgNode.</p></li>
+<li><p><strong>key_list</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – a list of names which index this CfgNode from the root.
+Currently only used for logging purposes.</p></li>
+<li><p><strong>new_allowed</strong> (<em>bool</em>) – whether adding new key is allowed when merging with
+other configs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode._create_config_tree_from_dict">
+<em class="property">classmethod </em><code class="sig-name descname">_create_config_tree_from_dict</code><span class="sig-paren">(</span><em class="sig-param">dic</em>, <em class="sig-param">key_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode._create_config_tree_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode._create_config_tree_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a configuration tree using the given dict.
+Any dict-like objects inside dict will be treated as a new CfgNode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dic</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>key_list</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – a list of names which index this CfgNode from the root.
+Currently only used for logging purposes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode._decode_cfg_value">
+<em class="property">classmethod </em><code class="sig-name descname">_decode_cfg_value</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode._decode_cfg_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode._decode_cfg_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes a raw config value (e.g., from a yaml config files or command
+line argument) into a Python object.</p>
+<p>If the value is a dict, it will be interpreted as a new CfgNode.
+If the value is a str, it will be evaluated as literals.
+Otherwise it is returned as-is.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode._immutable">
+<code class="sig-name descname">_immutable</code><span class="sig-paren">(</span><em class="sig-param">is_immutable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode._immutable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode._immutable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set immutability to is_immutable and recursively apply the setting
+to all nested CfgNodes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode._load_cfg_from_file">
+<em class="property">classmethod </em><code class="sig-name descname">_load_cfg_from_file</code><span class="sig-paren">(</span><em class="sig-param">file_obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode._load_cfg_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode._load_cfg_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a config from a YAML file or a Python source file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode._load_cfg_from_yaml_str">
+<em class="property">classmethod </em><code class="sig-name descname">_load_cfg_from_yaml_str</code><span class="sig-paren">(</span><em class="sig-param">str_obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode._load_cfg_from_yaml_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode._load_cfg_from_yaml_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a config from a YAML string encoding.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode._load_cfg_py_source">
+<em class="property">classmethod </em><code class="sig-name descname">_load_cfg_py_source</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode._load_cfg_py_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode._load_cfg_py_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a config from a Python source file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode._open_cfg">
+<em class="property">classmethod </em><code class="sig-name descname">_open_cfg</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/config/config.html#CfgNode._open_cfg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode._open_cfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines how a config file is opened. May be overridden to support
+different file schemas.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.clear">
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None.  Remove all items from D.<a class="headerlink" href="#xmodaler.config.CfgNode.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.clone">
+<code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively copy this CfgNode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a shallow copy of D<a class="headerlink" href="#xmodaler.config.CfgNode.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.defrost">
+<code class="sig-name descname">defrost</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.defrost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.defrost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make this CfgNode and all of its children mutable.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="xmodaler.config.CfgNode.dump">
 <code class="sig-name descname">dump</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/config/config.html#CfgNode.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.dump" title="Permalink to this definition">¶</a></dt>
@@ -208,9 +324,102 @@ When attempting to merge an old config, it will convert the old config automatic
 </dd></dl>
 
 <dl class="method">
+<dt id="xmodaler.config.CfgNode.freeze">
+<code class="sig-name descname">freeze</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.freeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.freeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make this CfgNode and all of its children immutable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.fromkeys">
+<code class="sig-name descname">fromkeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xmodaler.config.CfgNode.fromkeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new dictionary with keys from iterable and values set to value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xmodaler.config.CfgNode.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value for key if key is in the dictionary, else default.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.is_frozen">
+<code class="sig-name descname">is_frozen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.is_frozen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.is_frozen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return mutability.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.is_new_allowed">
+<code class="sig-name descname">is_new_allowed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.is_new_allowed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.is_new_allowed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.items">
+<code class="sig-name descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a set-like object providing a view on D's items<a class="headerlink" href="#xmodaler.config.CfgNode.items" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.key_is_deprecated">
+<code class="sig-name descname">key_is_deprecated</code><span class="sig-paren">(</span><em class="sig-param">full_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.key_is_deprecated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.key_is_deprecated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if a key is deprecated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.key_is_renamed">
+<code class="sig-name descname">key_is_renamed</code><span class="sig-paren">(</span><em class="sig-param">full_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.key_is_renamed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.key_is_renamed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if a key is renamed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.keys">
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a set-like object providing a view on D's keys<a class="headerlink" href="#xmodaler.config.CfgNode.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.load_cfg">
+<em class="property">classmethod </em><code class="sig-name descname">load_cfg</code><span class="sig-paren">(</span><em class="sig-param">cfg_file_obj_or_str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.load_cfg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.load_cfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a cfg.
+:param cfg_file_obj_or_str: Supports loading from:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A file object backed by a YAML file</p></li>
+<li><p>A file object backed by a Python source file that exports an attribute
+“cfg” that is either a dict or a CfgNode</p></li>
+<li><p>A string that can be parsed as valid YAML</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="xmodaler.config.CfgNode.load_from_file_tmp">
 <code class="sig-name descname">load_from_file_tmp</code><span class="sig-paren">(</span><em class="sig-param">cfg_filename: str</em>, <em class="sig-param">allow_unsafe: bool = True</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/xmodaler/config/config.html#CfgNode.load_from_file_tmp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.load_from_file_tmp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.load_yaml_with_base">
+<em class="property">classmethod </em><code class="sig-name descname">load_yaml_with_base</code><span class="sig-paren">(</span><em class="sig-param">filename: str</em>, <em class="sig-param">allow_unsafe: bool = False</em><span class="sig-paren">)</span> &#x2192; Dict[str, Any]<a class="reference internal" href="../_modules/fvcore/common/config.html#CfgNode.load_yaml_with_base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.load_yaml_with_base" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Just like <cite>yaml.load(open(filename))</cite>, but inherit attributes from its</dt><dd><p><cite>_BASE_</cite>.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em><em> or </em><em>file-like object</em>) – the file name or file of the current config.
+Will be used to find the base config file.</p></li>
+<li><p><strong>allow_unsafe</strong> (<em>bool</em>) – whether to allow loading the config file with
+<cite>yaml.unsafe_load</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the loaded yaml</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(dict)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="xmodaler.config.CfgNode.merge_from_file">
@@ -227,6 +436,85 @@ When attempting to merge an old config, it will convert the old config automatic
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.merge_from_list">
+<code class="sig-name descname">merge_from_list</code><span class="sig-paren">(</span><em class="sig-param">cfg_list: List[str]</em><span class="sig-paren">)</span> &#x2192; Callable[[], None]<a class="reference internal" href="../_modules/fvcore/common/config.html#CfgNode.merge_from_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.merge_from_list" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cfg_list</strong> (<em>list</em>) – list of configs to merge from.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.merge_from_other_cfg">
+<code class="sig-name descname">merge_from_other_cfg</code><span class="sig-paren">(</span><em class="sig-param">cfg_other: fvcore.common.config.CfgNode</em><span class="sig-paren">)</span> &#x2192; Callable[[], None]<a class="reference internal" href="../_modules/fvcore/common/config.html#CfgNode.merge_from_other_cfg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.merge_from_other_cfg" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cfg_other</strong> (<a class="reference internal" href="#xmodaler.config.CfgNode" title="xmodaler.config.CfgNode"><em>CfgNode</em></a>) – configs to merge from.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.pop">
+<code class="sig-name descname">pop</code><span class="sig-paren">(</span><em class="sig-param">k</em><span class="optional">[</span>, <em class="sig-param">d</em><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; v, remove specified key and return the corresponding value.<a class="headerlink" href="#xmodaler.config.CfgNode.pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>If key is not found, d is returned if given, otherwise KeyError is raised</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.popitem">
+<code class="sig-name descname">popitem</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; (k, v), remove and return some (key, value) pair as a<a class="headerlink" href="#xmodaler.config.CfgNode.popitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>2-tuple; but raise KeyError if D is empty.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.raise_key_rename_error">
+<code class="sig-name descname">raise_key_rename_error</code><span class="sig-paren">(</span><em class="sig-param">full_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.raise_key_rename_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.raise_key_rename_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.register_deprecated_key">
+<code class="sig-name descname">register_deprecated_key</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.register_deprecated_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.register_deprecated_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register key (e.g. <cite>FOO.BAR</cite>) a deprecated option. When merging deprecated
+keys a warning is generated and the key is ignored.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.register_renamed_key">
+<code class="sig-name descname">register_renamed_key</code><span class="sig-paren">(</span><em class="sig-param">old_name</em>, <em class="sig-param">new_name</em>, <em class="sig-param">message=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.register_renamed_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.register_renamed_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a key as having been renamed from <cite>old_name</cite> to <cite>new_name</cite>.
+When merging a renamed key, an exception is thrown alerting to user to
+the fact that the key has been renamed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.set_new_allowed">
+<code class="sig-name descname">set_new_allowed</code><span class="sig-paren">(</span><em class="sig-param">is_new_allowed</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yacs/config.html#CfgNode.set_new_allowed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.config.CfgNode.set_new_allowed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set this config (and recursively its subconfigs) to allow merging
+new keys from other configs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.setdefault">
+<code class="sig-name descname">setdefault</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xmodaler.config.CfgNode.setdefault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert key with a value of default if key is not in the dictionary.</p>
+<p>Return the value for key if key is in the dictionary, else default.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param">E</em>, <span class="optional">]</span><em class="sig-param">**F</em><span class="sig-paren">)</span> &#x2192; None.  Update D from dict/iterable E and F.<a class="headerlink" href="#xmodaler.config.CfgNode.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+In either case, this is followed by: for k in F:  D[k] = F[k]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.config.CfgNode.values">
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; an object providing a view on D's values<a class="headerlink" href="#xmodaler.config.CfgNode.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="function">
@@ -235,7 +523,7 @@ When attempting to merge an old config, it will convert the old config automatic
 <dd><p>Get a copy of the default config.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a detectron2 CfgNode instance.</p>
+<dd class="field-odd"><p>a X-modaler CfgNode instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -246,7 +534,7 @@ When attempting to merge an old config, it will convert the old config automatic
 <dd><p>Let the global config point to the given cfg.</p>
 <p>Assume that the given “cfg” has the key “KEY”, after calling
 <cite>set_global_cfg(cfg)</cite>, the key can be accessed by:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">detectron2.config</span> <span class="kn">import</span> <span class="n">global_cfg</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">global_cfg</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">global_cfg</span><span class="o">.</span><span class="n">KEY</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -335,6 +623,34 @@ as its first argument.</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="data">
+<dt id="xmodaler.config.global_cfg">
+<code class="sig-prename descclassname">xmodaler.config.</code><code class="sig-name descname">global_cfg</code><a class="headerlink" href="#xmodaler.config.global_cfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>The same as <cite>fvcore.common.config.CfgNode</cite>, but different in:</p>
+<ol class="arabic simple">
+<li><p>Use unsafe yaml loading by default.
+Note that this may lead to arbitrary code execution: you must not
+load a config file from untrusted sources before manually inspecting
+the content of the file.</p></li>
+<li><p>Support config versioning.
+When attempting to merge an old config, it will convert the old config automatically.</p></li>
+</ol>
+</dd></dl>
+
+<dl class="data">
+<dt id="xmodaler.config.kfg">
+<code class="sig-prename descclassname">xmodaler.config.</code><code class="sig-name descname">kfg</code><a class="headerlink" href="#xmodaler.config.kfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>The same as <cite>fvcore.common.config.CfgNode</cite>, but different in:</p>
+<ol class="arabic simple">
+<li><p>Use unsafe yaml loading by default.
+Note that this may lead to arbitrary code execution: you must not
+load a config file from untrusted sources before manually inspecting
+the content of the file.</p></li>
+<li><p>Support config versioning.
+When attempting to merge an old config, it will convert the old config automatically.</p></li>
+</ol>
 </dd></dl>
 
 </div>

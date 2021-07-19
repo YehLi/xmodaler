@@ -1,0 +1,8 @@
+xmodaler.utils.memory 
+=============================
+
+.. automodule:: xmodaler.utils.memory
+    :members:
+    :imported-members:
+    :undoc-members:
+    :show-inheritance:

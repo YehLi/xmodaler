@@ -185,7 +185,7 @@
 <p>X-modaler provides a key-value based config system that can be used to obtain standard, common behaviors.</p>
 <p>X-modaler’s config system uses YAML. In addition to the basic operations that access and update a config, we provide the following extra functionality:</p>
 <ul class="simple">
-<li><p>The config can have <em>BASE</em>: base.yaml field, which will load a base config first. Values in the base config will be overwritten in sub-configs, if there are any conflicts. We provided several base configs for standard model architectures in the folder <code class="docutils literal notranslate"><span class="pre">configs</span></code>.</p></li>
+<li><p>The config can have <em>BASE</em>: base.yaml field, which will load a base config first. Values in the base config will be overwritten in sub-configs, if there are any conflicts. We provided several base configs for standard model architectures in the folder <code class="docutils literal notranslate"><span class="pre">configs/</span></code>.</p></li>
 </ul>
 <div class="section" id="basic-usage">
 <h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
@@ -199,7 +199,7 @@
 <span class="n">cfg</span><span class="o">.</span><span class="n">merge_from_list</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span> <span class="c1"># # can also load values from a list of str</span>
 </pre></div>
 </div>
-<p>Many builtin tools in detectron2 accept command line config overwrite: Key-value pairs provided in the command line will overwrite the existing values in the config file. For example,</p>
+<p>Many builtin tools in X-modaler accept command line config overwrite: Key-value pairs provided in the command line will overwrite the existing values in the config file. For example,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">train_net</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="n">config</span><span class="o">.</span><span class="n">yaml</span> <span class="p">[</span><span class="o">--</span><span class="n">other</span><span class="o">-</span><span class="n">options</span><span class="p">]</span> \
   <span class="o">--</span><span class="n">opts</span> <span class="n">MODEL</span><span class="o">.</span><span class="n">WEIGHTS</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">weights</span>
 </pre></div>

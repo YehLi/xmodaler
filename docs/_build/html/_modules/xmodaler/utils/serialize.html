@@ -161,7 +161,7 @@
 <span class="kn">import</span> <span class="nn">cloudpickle</span>
 
 
-<div class="viewcode-block" id="PicklableWrapper"><a class="viewcode-back" href="../../../modules/utils/serialize.html#xmodaler.utils.serialize.PicklableWrapper">[docs]</a><span class="k">class</span> <span class="nc">PicklableWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PicklableWrapper"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.serialize.PicklableWrapper">[docs]</a><span class="k">class</span> <span class="nc">PicklableWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrap an object to make it more picklable, note that it uses</span>
 <span class="sd">    heavy weight serialization libraries that are slower than pickle.</span>
@@ -171,8 +171,8 @@
 <span class="sd">    https://github.com/joblib/joblib/blob/master/joblib/externals/loky/cloudpickle_wrapper.py</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span>
+<div class="viewcode-block" id="PicklableWrapper.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.serialize.PicklableWrapper.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span></div>
 
     <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">cloudpickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>

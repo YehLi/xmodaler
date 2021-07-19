@@ -1,8 +1,0 @@
-xmodaler.utils.logger 
-=============================
-
-.. automodule:: xmodaler.utils.logger
-    :members:
-    :imported-members:
-    :undoc-members:
-    :show-inheritance:

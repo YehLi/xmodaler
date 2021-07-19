@@ -170,10 +170,10 @@
 
 <div class="viewcode-block" id="CrossEntropy"><a class="viewcode-back" href="../../../modules/losses.html#xmodaler.losses.CrossEntropy">[docs]</a><span class="nd">@LOSSES_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">CrossEntropy</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="CrossEntropy.__init__"><a class="viewcode-back" href="../../../modules/losses.html#xmodaler.losses.CrossEntropy.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CrossEntropy</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">ignore_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">ignore_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CrossEntropy.from_config"><a class="viewcode-back" href="../../../modules/losses.html#xmodaler.losses.CrossEntropy.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>

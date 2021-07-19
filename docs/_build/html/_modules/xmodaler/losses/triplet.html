@@ -172,11 +172,11 @@
 
 <div class="viewcode-block" id="BatchTriplet"><a class="viewcode-back" href="../../../modules/losses.html#xmodaler.losses.BatchTriplet">[docs]</a><span class="nd">@LOSSES_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">BatchTriplet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BatchTriplet.__init__"><a class="viewcode-back" href="../../../modules/losses.html#xmodaler.losses.BatchTriplet.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">margin</span><span class="p">,</span> <span class="n">max_violation</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BatchTriplet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">margin</span> <span class="o">=</span> <span class="n">margin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_violation</span> <span class="o">=</span> <span class="n">max_violation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_violation</span> <span class="o">=</span> <span class="n">max_violation</span></div>
 
 <div class="viewcode-block" id="BatchTriplet.from_config"><a class="viewcode-back" href="../../../modules/losses.html#xmodaler.losses.BatchTriplet.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>

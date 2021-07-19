@@ -176,7 +176,7 @@
 
 <div class="viewcode-block" id="MultiModalPredictor"><a class="viewcode-back" href="../../../../modules/modeling/predictor.html#xmodaler.modeling.predictor.MultiModalPredictor">[docs]</a><span class="nd">@PREDICTOR_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">MultiModalPredictor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="MultiModalPredictor.__init__"><a class="viewcode-back" href="../../../../modules/modeling/predictor.html#xmodaler.modeling.predictor.MultiModalPredictor.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -214,7 +214,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">g_logits</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
                 <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">pooler_output_size</span><span class="p">),</span>
                 <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">pooler_output_size</span><span class="p">,</span> <span class="n">labels_num</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MultiModalPredictor.from_config"><a class="viewcode-back" href="../../../../modules/modeling/predictor.html#xmodaler.modeling.predictor.MultiModalPredictor.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>

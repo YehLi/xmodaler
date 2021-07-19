@@ -102,7 +102,7 @@ def get_cfg() -> CfgNode:
     Get a copy of the default config.
 
     Returns:
-        a detectron2 CfgNode instance.
+        a X-modaler CfgNode instance.
     """
     from .defaults import _C
 
@@ -116,7 +116,7 @@ def set_global_cfg(cfg: CfgNode) -> None:
     Assume that the given "cfg" has the key "KEY", after calling
     `set_global_cfg(cfg)`, the key can be accessed by:
     ::
-        from detectron2.config import global_cfg
+        from xmodaler.config import global_cfg
         print(global_cfg.KEY)
 
     By using a hacky global config, you can access these configs anywhere,

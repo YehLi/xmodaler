@@ -185,6 +185,7 @@
 <h1>Use Models<a class="headerlink" href="#use-models" title="Permalink to this headline">¶</a></h1>
 <p>Models (and their sub-models) in X-modaler are built by the function <code class="docutils literal notranslate"><span class="pre">build_model</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xmodaler.modeling</span> <span class="kn">import</span> <span class="n">build_model</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># read the config</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -193,16 +194,15 @@
 <h2>Load/Save a Checkpoint<a class="headerlink" href="#load-save-a-checkpoint" title="Permalink to this headline">¶</a></h2>
 <p>Users need to specify the path of the checkpoint to load by setting the argument <code class="docutils literal notranslate"><span class="pre">MODEL.WEIGHTS</span></code> in the given config (<strong>cfg</strong>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xmodaler.checkpoint</span> <span class="kn">import</span> <span class="n">XmodalerCheckpointer</span>
-
 <span class="n">checkpointer</span> <span class="o">=</span> <span class="n">XmodalerCheckpointer</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">OUTPUT_DIR</span><span class="p">)</span>
-<span class="n">checkpointer</span><span class="o">.</span><span class="n">resume_or_load</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">WEIGHTS</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">checkpointer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model_00&quot;</span><span class="p">)</span>
+<span class="n">checkpointer</span><span class="o">.</span><span class="n">resume_or_load</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">WEIGHTS</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># load a checkpoint</span>
+<span class="n">checkpointer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model_00&quot;</span><span class="p">)</span> <span class="c1"># save model</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="use-a-model">
 <h2>Use a Model<a class="headerlink" href="#use-a-model" title="Permalink to this headline">¶</a></h2>
-<p>A model can be called by <code class="docutils literal notranslate"><span class="pre">outputs</span> <span class="pre">=</span> <span class="pre">model(inputs)</span></code>, where inputs is the batched output of <a class="reference internal" href="custom_loaders.html"><span class="doc">data loader</span></a>. Each item in the dict  <code class="docutils literal notranslate"><span class="pre">inputs</span></code> corresponds to a batch of images/videos and the required keys depend on the type of model.</p>
+<p>A model can be called by <code class="docutils literal notranslate"><span class="pre">outputs</span> <span class="pre">=</span> <span class="pre">model(inputs)</span></code>, where inputs is the batched output of <a class="reference internal" href="custom_loaders.html"><span class="doc">dataloader</span></a>. Each item in the dict  <code class="docutils literal notranslate"><span class="pre">inputs</span></code> corresponds to a batch of images/videos and the required inputs depend on the type of model and task.</p>
 <p><strong>Training:</strong> When in training mode, all models are required to be used under an EventStorage. The training statistics will be put into the storage:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">EventStorage</span><span class="p">(</span><span class="n">start_iter</span><span class="p">)</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">:</span>
     <span class="n">outputs_dict</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> 

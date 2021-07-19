@@ -8,6 +8,6 @@ xmodaler.modeling
     decoder
     embedding
     encoder
-    layers/index
+    layers
     meta_arch
     predictor

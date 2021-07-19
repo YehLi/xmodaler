@@ -177,7 +177,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="get_world_size"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.get_world_size">[docs]</a><span class="k">def</span> <span class="nf">get_world_size</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="get_world_size"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.get_world_size">[docs]</a><span class="k">def</span> <span class="nf">get_world_size</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
         <span class="k">return</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
@@ -185,7 +185,7 @@
     <span class="k">return</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="get_rank"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.get_rank">[docs]</a><span class="k">def</span> <span class="nf">get_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="get_rank"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.get_rank">[docs]</a><span class="k">def</span> <span class="nf">get_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
         <span class="k">return</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">():</span>
@@ -193,7 +193,7 @@
     <span class="k">return</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="get_local_rank"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.get_local_rank">[docs]</a><span class="k">def</span> <span class="nf">get_local_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="get_local_rank"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.get_local_rank">[docs]</a><span class="k">def</span> <span class="nf">get_local_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        The rank of the current process within the local (per-machine) process group.</span>
@@ -206,7 +206,7 @@
     <span class="k">return</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_rank</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="n">_LOCAL_PROCESS_GROUP</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_local_size"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.get_local_size">[docs]</a><span class="k">def</span> <span class="nf">get_local_size</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="get_local_size"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.get_local_size">[docs]</a><span class="k">def</span> <span class="nf">get_local_size</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        The size of the per-machine process group,</span>
@@ -219,11 +219,11 @@
     <span class="k">return</span> <span class="n">dist</span><span class="o">.</span><span class="n">get_world_size</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="n">_LOCAL_PROCESS_GROUP</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="is_main_process"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.is_main_process">[docs]</a><span class="k">def</span> <span class="nf">is_main_process</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="is_main_process"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.is_main_process">[docs]</a><span class="k">def</span> <span class="nf">is_main_process</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span></div>
 
 
-<div class="viewcode-block" id="synchronize"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.synchronize">[docs]</a><span class="k">def</span> <span class="nf">synchronize</span><span class="p">():</span>
+<div class="viewcode-block" id="synchronize"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.synchronize">[docs]</a><span class="k">def</span> <span class="nf">synchronize</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function to synchronize (barrier) among all processes when</span>
 <span class="sd">    using distributed training</span>
@@ -295,7 +295,7 @@
     <span class="k">return</span> <span class="n">size_list</span><span class="p">,</span> <span class="n">tensor</span>
 
 
-<div class="viewcode-block" id="all_gather"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.all_gather">[docs]</a><span class="k">def</span> <span class="nf">all_gather</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="all_gather"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.all_gather">[docs]</a><span class="k">def</span> <span class="nf">all_gather</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run all_gather on arbitrary picklable data (not necessarily tensors).</span>
 
@@ -333,7 +333,7 @@
     <span class="k">return</span> <span class="n">data_list</span></div>
 
 
-<div class="viewcode-block" id="gather"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.gather">[docs]</a><span class="k">def</span> <span class="nf">gather</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="gather"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.gather">[docs]</a><span class="k">def</span> <span class="nf">gather</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run gather on arbitrary picklable data (not necessarily tensors).</span>
 
@@ -376,7 +376,7 @@
         <span class="k">return</span> <span class="p">[]</span></div>
 
 
-<div class="viewcode-block" id="shared_random_seed"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.shared_random_seed">[docs]</a><span class="k">def</span> <span class="nf">shared_random_seed</span><span class="p">():</span>
+<div class="viewcode-block" id="shared_random_seed"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.shared_random_seed">[docs]</a><span class="k">def</span> <span class="nf">shared_random_seed</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        int: a random number that is the same across all workers.</span>
@@ -390,7 +390,7 @@
     <span class="k">return</span> <span class="n">all_ints</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="reduce_dict"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.reduce_dict">[docs]</a><span class="k">def</span> <span class="nf">reduce_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="reduce_dict"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.reduce_dict">[docs]</a><span class="k">def</span> <span class="nf">reduce_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reduce the values in the dictionary from all processes so that process with rank</span>
 <span class="sd">    0 has the reduced results.</span>
@@ -421,7 +421,7 @@
         <span class="n">reduced_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">values</span><span class="p">)}</span>
     <span class="k">return</span> <span class="n">reduced_dict</span></div>
 
-<div class="viewcode-block" id="unwrap_model"><a class="viewcode-back" href="../../../modules/utils/comm.html#xmodaler.utils.comm.unwrap_model">[docs]</a><span class="k">def</span> <span class="nf">unwrap_model</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+<div class="viewcode-block" id="unwrap_model"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.comm.unwrap_model">[docs]</a><span class="k">def</span> <span class="nf">unwrap_model</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">module</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;module&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">model</span></div>
 </pre></div>
 

@@ -192,7 +192,7 @@
     <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="Checkpointer"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.Checkpointer">[docs]</a><span class="k">class</span> <span class="nc">Checkpointer</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">Checkpointer</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A checkpointer that can save/load model as well as extra checkpointable</span>
 <span class="sd">    objects.</span>
@@ -231,7 +231,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">path_manager</span><span class="p">:</span> <span class="n">PathManager</span> <span class="o">=</span> <span class="n">PathManager</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path_manager</span><span class="o">.</span><span class="n">register_handler</span><span class="p">(</span><span class="n">HTTPURLHandler</span><span class="p">())</span>
 
-<div class="viewcode-block" id="Checkpointer.add_checkpointable"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.Checkpointer.add_checkpointable">[docs]</a>    <span class="k">def</span> <span class="nf">add_checkpointable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpointable</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_checkpointable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpointable</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add checkpointable object for this checkpointer to track.</span>
 
@@ -246,9 +246,9 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;add_checkpointable needs an object with &#39;state_dict()&#39; method.&quot;</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">checkpointables</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkpointable</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkpointables</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkpointable</span>
 
-<div class="viewcode-block" id="Checkpointer.save"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.Checkpointer.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dump model and checkpointables to a file.</span>
 
@@ -271,9 +271,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Saving checkpoint to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">save_file</span><span class="p">))</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_manager</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">save_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag_last_checkpoint</span><span class="p">(</span><span class="n">basename</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag_last_checkpoint</span><span class="p">(</span><span class="n">basename</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Checkpointer.load"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.Checkpointer.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checkpointables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -313,17 +313,17 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
 
         <span class="c1"># return any further checkpoint data</span>
-        <span class="k">return</span> <span class="n">checkpoint</span></div>
+        <span class="k">return</span> <span class="n">checkpoint</span>
 
-<div class="viewcode-block" id="Checkpointer.has_checkpoint"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.Checkpointer.has_checkpoint">[docs]</a>    <span class="k">def</span> <span class="nf">has_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">has_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: whether a checkpoint exists in the target directory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">save_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="s2">&quot;last_checkpoint&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_manager</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">save_file</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_manager</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">save_file</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Checkpointer.get_checkpoint_file"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.Checkpointer.get_checkpoint_file">[docs]</a>    <span class="k">def</span> <span class="nf">get_checkpoint_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_checkpoint_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The latest checkpoint file in target directory.</span>
@@ -336,9 +336,9 @@
             <span class="c1"># if file doesn&#39;t exist, maybe because it has just been</span>
             <span class="c1"># deleted by a separate process</span>
             <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">last_saved</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">last_saved</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Checkpointer.get_all_checkpoint_files"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.Checkpointer.get_all_checkpoint_files">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_checkpoint_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">get_all_checkpoint_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            list: All available checkpoint files (.pth files) in target</span>
@@ -350,9 +350,9 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_manager</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
             <span class="ow">and</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pth&quot;</span><span class="p">)</span>
         <span class="p">]</span>
-        <span class="k">return</span> <span class="n">all_model_checkpoints</span></div>
+        <span class="k">return</span> <span class="n">all_model_checkpoints</span>
 
-<div class="viewcode-block" id="Checkpointer.resume_or_load"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.Checkpointer.resume_or_load">[docs]</a>    <span class="k">def</span> <span class="nf">resume_or_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">resume</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">resume_or_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">resume</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If `resume` is True, this method attempts to resume from the last</span>
 <span class="sd">        checkpoint, if exists. Otherwise, load checkpoint from the given path.</span>
@@ -371,9 +371,9 @@
             <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_checkpoint_file</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">checkpointables</span><span class="o">=</span><span class="p">[])</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">checkpointables</span><span class="o">=</span><span class="p">[])</span>
 
-<div class="viewcode-block" id="Checkpointer.tag_last_checkpoint"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.Checkpointer.tag_last_checkpoint">[docs]</a>    <span class="k">def</span> <span class="nf">tag_last_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_filename_basename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">tag_last_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_filename_basename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tag the last checkpoint.</span>
 
@@ -382,7 +382,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">save_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="s2">&quot;last_checkpoint&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_manager</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">save_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">last_filename_basename</span><span class="p">)</span>  <span class="c1"># pyre-ignore</span></div>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">last_filename_basename</span><span class="p">)</span>  <span class="c1"># pyre-ignore</span>
 
     <span class="k">def</span> <span class="nf">_load_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -517,10 +517,10 @@
                     <span class="s2">&quot;Unsupported type found in checkpoint! </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-                <span class="n">state_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
+                <span class="n">state_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="PeriodicCheckpointer"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.PeriodicCheckpointer">[docs]</a><span class="k">class</span> <span class="nc">PeriodicCheckpointer</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">PeriodicCheckpointer</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save checkpoints periodically. When `.step(iteration)` is called, it will</span>
 <span class="sd">    execute `checkpointer.save` on the given checkpointer, if iteration is a</span>
@@ -530,7 +530,7 @@
 <span class="sd">        checkpointer (Checkpointer): the underlying checkpointer object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="PeriodicCheckpointer.__init__"><a class="viewcode-back" href="../../../modules/engine.html#xmodaler.checkpoint.PeriodicCheckpointer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">checkpointer</span><span class="p">:</span> <span class="n">Checkpointer</span><span class="p">,</span>
         <span class="n">period</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -556,9 +556,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">max_to_keep</span> <span class="o">=</span> <span class="n">max_to_keep</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recent_checkpoints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path_manager</span><span class="p">:</span> <span class="n">PathManager</span> <span class="o">=</span> <span class="n">checkpointer</span><span class="o">.</span><span class="n">path_manager</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_prefix</span> <span class="o">=</span> <span class="n">file_prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_prefix</span> <span class="o">=</span> <span class="n">file_prefix</span></div>
 
-<div class="viewcode-block" id="PeriodicCheckpointer.step"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.PeriodicCheckpointer.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform the appropriate action at the given iteration.</span>
 
@@ -587,9 +587,9 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">iteration</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">checkpointer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{self.file_prefix}</span><span class="s2">_final&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">additional_state</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">checkpointer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{self.file_prefix}</span><span class="s2">_final&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">additional_state</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PeriodicCheckpointer.save"><a class="viewcode-back" href="../../../modules/checkpoint.html#xmodaler.checkpoint.PeriodicCheckpointer.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="PeriodicCheckpointer.save"><a class="viewcode-back" href="../../../modules/engine.html#xmodaler.checkpoint.PeriodicCheckpointer.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same argument as :meth:`Checkpointer.save`.</span>
 <span class="sd">        Use this method to manually save checkpoints outside the schedule.</span>
@@ -599,7 +599,7 @@
 <span class="sd">            kwargs (Any): extra data to save, same as in</span>
 <span class="sd">                :meth:`Checkpointer.save`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">checkpointer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkpointer</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_filter_reused_missing_keys</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>

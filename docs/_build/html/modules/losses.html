@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="optim.html">xmodaler.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scorer.html">xmodaler.scorer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tokenization.html">xmodaler.tokenization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils/index.html">xmodaler.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">xmodaler.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -179,14 +179,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-xmodaler.losses">
-<span id="xmodaler-losses"></span><h1>xmodaler.losses<a class="headerlink" href="#module-xmodaler.losses" title="Permalink to this headline">¶</a></h1>
-<p>&#64;author: Yehao Li
-&#64;contact: <a class="reference external" href="mailto:yehaoli&#46;sysu&#37;&#52;&#48;gmail&#46;com">yehaoli<span>&#46;</span>sysu<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
+  <div class="section" id="xmodaler-losses">
+<h1>xmodaler.losses<a class="headerlink" href="#xmodaler-losses" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="xmodaler.losses.BCEWithLogits">
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.losses.</code><code class="sig-name descname">BCEWithLogits</code><a class="reference internal" href="../_modules/xmodaler/losses/bce_logits.html#BCEWithLogits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.BCEWithLogits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="xmodaler.losses.BCEWithLogits.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/bce_logits.html#BCEWithLogits.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.BCEWithLogits.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="xmodaler.losses.BCEWithLogits.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">outputs_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/bce_logits.html#BCEWithLogits.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.BCEWithLogits.forward" title="Permalink to this definition">¶</a></dt>
@@ -218,6 +222,12 @@ registered hooks while the latter silently ignores them.</p>
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.losses.</code><code class="sig-name descname">BatchTriplet</code><span class="sig-paren">(</span><em class="sig-param">margin</em>, <em class="sig-param">max_violation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/triplet.html#BatchTriplet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.BatchTriplet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <dl class="method">
+<dt id="xmodaler.losses.BatchTriplet.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">margin</em>, <em class="sig-param">max_violation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/triplet.html#BatchTriplet.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.BatchTriplet.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="xmodaler.losses.BatchTriplet.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">outputs_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/triplet.html#BatchTriplet.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.BatchTriplet.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
@@ -247,6 +257,12 @@ registered hooks while the latter silently ignores them.</p>
 <dt id="xmodaler.losses.CrossEntropy">
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.losses.</code><code class="sig-name descname">CrossEntropy</code><a class="reference internal" href="../_modules/xmodaler/losses/cross_entropy.html#CrossEntropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.CrossEntropy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="xmodaler.losses.CrossEntropy.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/cross_entropy.html#CrossEntropy.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.CrossEntropy.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="xmodaler.losses.CrossEntropy.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">outputs_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/cross_entropy.html#CrossEntropy.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.CrossEntropy.forward" title="Permalink to this definition">¶</a></dt>
@@ -283,6 +299,12 @@ registered hooks while the latter silently ignores them.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="xmodaler.losses.LabelSmoothing.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">label_smoothing</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/label_smoothing.html#LabelSmoothing.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.LabelSmoothing.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="xmodaler.losses.LabelSmoothing.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">outputs_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/label_smoothing.html#LabelSmoothing.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.LabelSmoothing.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
@@ -312,6 +334,12 @@ registered hooks while the latter silently ignores them.</p>
 <dt id="xmodaler.losses.PretrainLosses">
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.losses.</code><code class="sig-name descname">PretrainLosses</code><a class="reference internal" href="../_modules/xmodaler/losses/pretrain_losses.html#PretrainLosses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.PretrainLosses" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="xmodaler.losses.PretrainLosses.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/pretrain_losses.html#PretrainLosses.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.PretrainLosses.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="xmodaler.losses.PretrainLosses.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">batched_inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/pretrain_losses.html#PretrainLosses.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.PretrainLosses.forward" title="Permalink to this definition">¶</a></dt>
@@ -347,6 +375,12 @@ registered hooks while the latter silently ignores them.</p>
 <dt id="xmodaler.losses.RewardCriterion">
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.losses.</code><code class="sig-name descname">RewardCriterion</code><span class="sig-paren">(</span><em class="sig-param">eos_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/reward_criterion.html#RewardCriterion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.RewardCriterion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="xmodaler.losses.RewardCriterion.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">eos_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/reward_criterion.html#RewardCriterion.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.RewardCriterion.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="xmodaler.losses.RewardCriterion.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">outputs_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/losses/reward_criterion.html#RewardCriterion.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.losses.RewardCriterion.forward" title="Permalink to this definition">¶</a></dt>

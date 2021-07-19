@@ -55,7 +55,7 @@ __all__ = [
 
 def default_argument_parser(epilog=None):
     """
-    Create a parser with some common arguments used by detectron2 users.
+    Create a parser with some common arguments used by X-modaler users.
 
     Args:
         epilog (str): epilog passed to ArgumentParser describing the usage.
@@ -118,7 +118,7 @@ def default_setup(cfg, args):
     """
     Perform some basic common setups at the beginning of a job, including:
 
-    1. Set up the detectron2 logger
+    1. Set up the X-modaler logger
     2. Log basic information about environment, cmdline arguments, and config
     3. Backup the config to the output directory
 
@@ -187,7 +187,7 @@ class DefaultTrainer(TrainerBase):
     """
     A trainer with default training logic. It does the following:
 
-    1. Create a :class:`SimpleTrainer` using model, optimizer, dataloader
+    1. Create a :class:`DefaultTrainer` using model, optimizer, dataloader
        defined by the given config. Create a LR scheduler defined by the config.
     2. Load the last checkpoint or `cfg.MODEL.WEIGHTS`, if exists, when
        `resume_or_load` is called.
@@ -197,21 +197,21 @@ class DefaultTrainer(TrainerBase):
     for users who only need the standard training workflow, with standard features.
     It means this class makes *many assumptions* about your training logic that
     may easily become invalid in a new research. In fact, any assumptions beyond those made in the
-    :class:`SimpleTrainer` are too much for research.
+    :class:`DefaultTrainer` are too much for research.
 
     The code of this class has been annotated about restrictive assumptions it makes.
     When they do not work for you, you're encouraged to:
 
     1. Overwrite methods of this class, OR:
-    2. Use :class:`SimpleTrainer`, which only does minimal SGD training and
+    2. Use :class:`DefaultTrainer`, which only does minimal SGD training and
        nothing else. You can then add your own hooks if needed. OR:
-    3. Write your own training loop similar to `tools/plain_train_net.py`.
+    3. Write your own training loop similar to `train_net.py`.
 
     See the :doc:`/tutorials/training` tutorials for more details.
 
     Note that the behavior of this class, like other functions/classes in
     this file, is not stable, since it is meant to represent the "common default behavior".
-    It is only guaranteed to work well with the standard models and training workflow in detectron2.
+    It is only guaranteed to work well with the standard models and training workflow in X-modaler.
     To obtain more stable behavior, write your own training logic with other public APIs.
 
     Examples:
@@ -222,7 +222,7 @@ class DefaultTrainer(TrainerBase):
 
     Attributes:
         scheduler:
-        checkpointer (DetectionCheckpointer):
+        checkpointer (XmodalerCheckpointer):
         cfg (CfgNode):
     """
 

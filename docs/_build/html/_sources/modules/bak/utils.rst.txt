@@ -1,0 +1,16 @@
+================================================
+xmodaler.utils
+================================================
+
+.. toctree::
+
+    collect_env
+    colormap
+    comm
+    env
+    events
+    file_io
+    logger
+    memory
+    registry
+    serialize

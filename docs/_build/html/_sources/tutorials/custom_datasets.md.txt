@@ -24,6 +24,11 @@ class MyDataset:
     ):
         # load dataset and set hyperparameters
         ...
+	
+    @classmethod
+    def from_config(cls, cfg, stage: str = "train"):
+        ...
+        return arguments
 
     def __call__(self, dataset_dict):
         # process a data item for a specific task
@@ -31,6 +36,7 @@ class MyDataset:
         return item_dict
 ```
 The function can do arbitrary things and should return the data dict in either of the following formats:
-* X-modaler’s standard dataset dict using builtin keys defined in `xmodaler/config/constants.py` will make it work with many other builtin features in X-modaler, so it’s recommended to use it when it’s sufficient.
-* Any custom format. You can also return arbitrary dict in your own format by adding extra keys for new tasks. Then you will need to handle them properly downstream as well.
+
+* X-modaler’s standard dataset dict using builtin keys defined by `xmodaler.config.kfg`. This will make it work with many other builtin features in X-modaler, so it’s recommended to use it when it’s sufficient.
+* Any custom format. You can also return arbitrary dict in your own format by adding extra keys to `xmodaler.config.kfg` for new tasks. Then you will need to handle them properly downstream as well.
 

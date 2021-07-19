@@ -1,8 +1,15 @@
 xmodaler.scorer 
 =============================
+.. autofunction:: xmodaler.scorer.build_scorer
 
-.. automodule:: xmodaler.scorer
-    :members:
-    :imported-members:
-    :undoc-members:
-    :show-inheritance:
+.. autoclass:: xmodaler.scorer.BaseScorer
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: xmodaler.scorer.Cider
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:

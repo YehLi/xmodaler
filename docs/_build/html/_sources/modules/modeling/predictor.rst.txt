@@ -1,8 +1,38 @@
 xmodaler.modeling.predictor 
 =============================
 
-.. automodule:: xmodaler.modeling.predictor
-    :members:
-    :imported-members:
-    :undoc-members:
-    :show-inheritance:
+.. autofunction:: xmodaler.modeling.predictor.build_predictor
+
+.. autofunction:: xmodaler.modeling.predictor.build_v_predictor
+
+.. autofunction:: xmodaler.modeling.predictor.add_predictor_config
+
+.. autoclass:: xmodaler.modeling.predictor.BasePredictor
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.predictor.BertPredictionHead
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.predictor.BertVisualPredictionHead
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.predictor.MultiModalPredictor
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.predictor.MultiModalSimilarity
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:

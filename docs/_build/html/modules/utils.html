@@ -1,0 +1,1433 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.utils &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="xmodaler.tokenization" href="tokenization.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/index.html">Notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="checkpoint.html">xmodaler.checkpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">xmodaler.config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html">xmodaler.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="engine.html">xmodaler.engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html">xmodaler.evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functional.html">xmodaler.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses.html">xmodaler.losses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lr_scheduler.html">xmodaler.lr_scheduler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modeling/index.html">xmodaler.modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.html">xmodaler.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scorer.html">xmodaler.scorer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tokenization.html">xmodaler.tokenization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">xmodaler.utils</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">API Documentation</a> &raquo;</li>
+        
+      <li>xmodaler.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/YehLi/xmodaler/blob/master/docs/modules/utils.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="xmodaler-utils">
+<h1>xmodaler.utils<a class="headerlink" href="#xmodaler-utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="xmodaler.utils.collect_env.collect_env_info">
+<code class="sig-prename descclassname">xmodaler.utils.collect_env.</code><code class="sig-name descname">collect_env_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/collect_env.html#collect_env_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.collect_env.collect_env_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.colormap.colormap">
+<code class="sig-prename descclassname">xmodaler.utils.colormap.</code><code class="sig-name descname">colormap</code><span class="sig-paren">(</span><em class="sig-param">rgb=False</em>, <em class="sig-param">maximum=255</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/colormap.html#colormap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.colormap.colormap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rgb</strong> (<em>bool</em>) – whether to return RGB colors or BGR colors.</p></li>
+<li><p><strong>maximum</strong> (<em>int</em>) – either 255 or 1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a float32 array of Nx3 colors, in range [0, 255] or [0, 1]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.colormap.random_color">
+<code class="sig-prename descclassname">xmodaler.utils.colormap.</code><code class="sig-name descname">random_color</code><span class="sig-paren">(</span><em class="sig-param">rgb=False</em>, <em class="sig-param">maximum=255</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/colormap.html#random_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.colormap.random_color" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rgb</strong> (<em>bool</em>) – whether to return RGB colors or BGR colors.</p></li>
+<li><p><strong>maximum</strong> (<em>int</em>) – either 255 or 1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a vector of 3 numbers</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.all_gather">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">all_gather</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">group=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/comm.html#all_gather"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.all_gather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run all_gather on arbitrary picklable data (not necessarily tensors).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – any picklable object</p></li>
+<li><p><strong>group</strong> – a torch process group. By default, will use a group which
+contains all ranks on gloo backend.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of data gathered from each rank</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[data]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.gather">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">gather</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">dst=0</em>, <em class="sig-param">group=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/comm.html#gather"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.gather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run gather on arbitrary picklable data (not necessarily tensors).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – any picklable object</p></li>
+<li><p><strong>dst</strong> (<em>int</em>) – destination rank</p></li>
+<li><p><strong>group</strong> – a torch process group. By default, will use a group which
+contains all ranks on gloo backend.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>on dst, a list of data gathered from each rank. Otherwise,</dt><dd><p>an empty list.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[data]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.get_local_rank">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">get_local_rank</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/xmodaler/utils/comm.html#get_local_rank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.get_local_rank" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The rank of the current process within the local (per-machine) process group.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.get_local_size">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">get_local_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/xmodaler/utils/comm.html#get_local_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.get_local_size" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The size of the per-machine process group,
+i.e. the number of processes per machine.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.get_rank">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">get_rank</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/xmodaler/utils/comm.html#get_rank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.get_rank" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.get_world_size">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">get_world_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="../_modules/xmodaler/utils/comm.html#get_world_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.get_world_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.is_main_process">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">is_main_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/xmodaler/utils/comm.html#is_main_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.is_main_process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.reduce_dict">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">reduce_dict</code><span class="sig-paren">(</span><em class="sig-param">input_dict</em>, <em class="sig-param">average=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/comm.html#reduce_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.reduce_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce the values in the dictionary from all processes so that process with rank
+0 has the reduced results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dict</strong> (<em>dict</em>) – inputs to be reduced. All the values must be scalar CUDA Tensor.</p></li>
+<li><p><strong>average</strong> (<em>bool</em>) – whether to do average or sum</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dict with the same keys as input_dict, after reduction.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.shared_random_seed">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">shared_random_seed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/comm.html#shared_random_seed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.shared_random_seed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>a random number that is the same across all workers.</dt><dd><p>If workers need a shared RNG, they can use this shared seed to
+create one.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p>All workers must call this function, otherwise it will deadlock.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.synchronize">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">synchronize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/comm.html#synchronize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.synchronize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to synchronize (barrier) among all processes when
+using distributed training</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.comm.unwrap_model">
+<code class="sig-prename descclassname">xmodaler.utils.comm.</code><code class="sig-name descname">unwrap_model</code><span class="sig-paren">(</span><em class="sig-param">model</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/comm.html#unwrap_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.comm.unwrap_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.env.seed_all_rng">
+<code class="sig-prename descclassname">xmodaler.utils.env.</code><code class="sig-name descname">seed_all_rng</code><span class="sig-paren">(</span><em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/env.html#seed_all_rng"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.env.seed_all_rng" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the random seed for the RNG in torch, numpy and python.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seed</strong> (<em>int</em>) – if None, will use a strong random seed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.events.get_event_storage">
+<code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">get_event_storage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#get_event_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.get_event_storage" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The <a class="reference internal" href="#xmodaler.utils.events.EventStorage" title="xmodaler.utils.events.EventStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventStorage</span></code></a> object that’s currently being used.
+Throws an error if no <a class="reference internal" href="#xmodaler.utils.events.EventStorage" title="xmodaler.utils.events.EventStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventStorage</span></code></a> is currently enabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.events.JSONWriter">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">JSONWriter</code><span class="sig-paren">(</span><em class="sig-param">json_file</em>, <em class="sig-param">window_size=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#JSONWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.JSONWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xmodaler.utils.events.EventWriter</span></code></p>
+<p>Write scalars to a json file.</p>
+<p>It saves scalars as one json per line (instead of a big json) for easy parsing.</p>
+<p>Examples parsing such a json file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cat metrics.json | jq -s &#39;.[0:2]&#39;
+[
+  {
+    &quot;data_time&quot;: 0.008433341979980469,
+    &quot;iteration&quot;: 19,
+    &quot;loss&quot;: 1.9228371381759644,
+    &quot;loss_box_reg&quot;: 0.050025828182697296,
+    &quot;loss_classifier&quot;: 0.5316952466964722,
+    &quot;loss_mask&quot;: 0.7236229181289673,
+    &quot;loss_rpn_box&quot;: 0.0856662318110466,
+    &quot;loss_rpn_cls&quot;: 0.48198649287223816,
+    &quot;lr&quot;: 0.007173333333333333,
+    &quot;time&quot;: 0.25401854515075684
+  },
+  {
+    &quot;data_time&quot;: 0.007216215133666992,
+    &quot;iteration&quot;: 39,
+    &quot;loss&quot;: 1.282649278640747,
+    &quot;loss_box_reg&quot;: 0.06222952902317047,
+    &quot;loss_classifier&quot;: 0.30682939291000366,
+    &quot;loss_mask&quot;: 0.6970193982124329,
+    &quot;loss_rpn_box&quot;: 0.038663312792778015,
+    &quot;loss_rpn_cls&quot;: 0.1471673548221588,
+    &quot;lr&quot;: 0.007706666666666667,
+    &quot;time&quot;: 0.2490077018737793
+  }
+]
+
+$ cat metrics.json | jq &#39;.loss_mask&#39;
+0.7126231789588928
+0.689423680305481
+0.6776131987571716
+...
+</pre></div>
+</div>
+<dl class="method">
+<dt id="xmodaler.utils.events.JSONWriter.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">json_file</em>, <em class="sig-param">window_size=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#JSONWriter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.JSONWriter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json_file</strong> (<em>str</em>) – path to the json file. New data will be appended if the file exists.</p></li>
+<li><p><strong>window_size</strong> (<em>int</em>) – the window size of median smoothing for the scalars whose
+<cite>smoothing_hint</cite> are True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.JSONWriter.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#JSONWriter.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.JSONWriter.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.JSONWriter.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#JSONWriter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.JSONWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.events.TensorboardXWriter">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">TensorboardXWriter</code><span class="sig-paren">(</span><em class="sig-param">log_dir: str</em>, <em class="sig-param">window_size: int = 20</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#TensorboardXWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.TensorboardXWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xmodaler.utils.events.EventWriter</span></code></p>
+<p>Write all scalars to a tensorboard file.</p>
+<dl class="method">
+<dt id="xmodaler.utils.events.TensorboardXWriter.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">log_dir: str</em>, <em class="sig-param">window_size: int = 20</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#TensorboardXWriter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.TensorboardXWriter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_dir</strong> (<em>str</em>) – the directory to save the output events</p></li>
+<li><p><strong>window_size</strong> (<em>int</em>) – the scalars will be median-smoothed by this window size</p></li>
+<li><p><strong>kwargs</strong> – other arguments passed to <cite>torch.utils.tensorboard.SummaryWriter(…)</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.TensorboardXWriter.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#TensorboardXWriter.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.TensorboardXWriter.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.TensorboardXWriter.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#TensorboardXWriter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.TensorboardXWriter.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.events.CommonMetricPrinter">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">CommonMetricPrinter</code><span class="sig-paren">(</span><em class="sig-param">max_iter: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#CommonMetricPrinter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.CommonMetricPrinter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xmodaler.utils.events.EventWriter</span></code></p>
+<p>Print <strong>common</strong> metrics to the terminal, including
+iteration time, ETA, memory, all losses, and the learning rate.
+It also applies smoothing using a window of 20 elements.</p>
+<p>It’s meant to print common metrics in common ways.
+To print something in more customized ways, please implement a similar printer by yourself.</p>
+<dl class="method">
+<dt id="xmodaler.utils.events.CommonMetricPrinter.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">max_iter: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#CommonMetricPrinter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.CommonMetricPrinter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>max_iter</strong> – the maximum number of iterations to train.
+Used to compute ETA. If not given, ETA will not be printed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.CommonMetricPrinter.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#CommonMetricPrinter.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.CommonMetricPrinter.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.events.EventStorage">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.events.</code><code class="sig-name descname">EventStorage</code><span class="sig-paren">(</span><em class="sig-param">start_iter=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The user-facing class that provides metric storage functionalities.</p>
+<p>In the future we may add support for storing / logging other types of data if needed.</p>
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">start_iter=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>start_iter</strong> (<em>int</em>) – the iteration number to start with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.clear_histograms">
+<code class="sig-name descname">clear_histograms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.clear_histograms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.clear_histograms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all the stored histograms for visualization.
+This should be called after histograms are written to tensorboard.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.clear_images">
+<code class="sig-name descname">clear_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.clear_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.clear_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all the stored images for visualization. This should be called
+after images are written to tensorboard.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.histories">
+<code class="sig-name descname">histories</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.histories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.histories" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the HistoryBuffer for all scalars</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict[name -&gt; HistoryBuffer]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.history">
+<code class="sig-name descname">history</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.history" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the scalar history for name</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>HistoryBuffer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.iter">
+<em class="property">property </em><code class="sig-name descname">iter</code><a class="headerlink" href="#xmodaler.utils.events.EventStorage.iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns:
+int: The current iteration number. When used together with a trainer,</p>
+<blockquote>
+<div><p>this is ensured to be the same as trainer.iter.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.iteration">
+<em class="property">property </em><code class="sig-name descname">iteration</code><a class="headerlink" href="#xmodaler.utils.events.EventStorage.iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.latest">
+<code class="sig-name descname">latest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.latest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.latest" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>mapping from the name of each scalar to the most</dt><dd><p>recent value and the iteration number its added.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict[str -&gt; (float, int)]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.latest_with_smoothing_hint">
+<code class="sig-name descname">latest_with_smoothing_hint</code><span class="sig-paren">(</span><em class="sig-param">window_size=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.latest_with_smoothing_hint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.latest_with_smoothing_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="#xmodaler.utils.events.EventStorage.latest" title="xmodaler.utils.events.EventStorage.latest"><code class="xref py py-meth docutils literal notranslate"><span class="pre">latest()</span></code></a>, but the returned values
+are either the un-smoothed original latest value,
+or a median of the given window_size,
+depend on whether the smoothing_hint is True.</p>
+<p>This provides a default behavior that other writers can use.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.name_scope">
+<code class="sig-name descname">name_scope</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.name_scope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.name_scope" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Yields</dt>
+<dd class="field-odd"><p>A context within which all the events added to this storage
+will be prefixed by the name scope.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.put_histogram">
+<code class="sig-name descname">put_histogram</code><span class="sig-paren">(</span><em class="sig-param">hist_name</em>, <em class="sig-param">hist_tensor</em>, <em class="sig-param">bins=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.put_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.put_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a histogram from a tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hist_name</strong> (<em>str</em>) – The name of the histogram to put into tensorboard.</p></li>
+<li><p><strong>hist_tensor</strong> (<em>torch.Tensor</em>) – A Tensor of arbitrary shape to be converted
+into a histogram.</p></li>
+<li><p><strong>bins</strong> (<em>int</em>) – Number of histogram bins.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.put_image">
+<code class="sig-name descname">put_image</code><span class="sig-paren">(</span><em class="sig-param">img_name</em>, <em class="sig-param">img_tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.put_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.put_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an <cite>img_tensor</cite> associated with <cite>img_name</cite>, to be shown on
+tensorboard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img_name</strong> (<em>str</em>) – The name of the image to put into tensorboard.</p></li>
+<li><p><strong>img_tensor</strong> (<em>torch.Tensor</em><em> or </em><em>numpy.array</em>) – An <cite>uint8</cite> or <cite>float</cite>
+Tensor of shape <cite>[channel, height, width]</cite> where <cite>channel</cite> is
+3. The image format should be RGB. The elements in img_tensor
+can either have values in [0, 1] (float32) or [0, 255] (uint8).
+The <cite>img_tensor</cite> will be visualized in tensorboard.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.put_scalar">
+<code class="sig-name descname">put_scalar</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">value</em>, <em class="sig-param">smoothing_hint=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.put_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.put_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a scalar <cite>value</cite> to the <cite>HistoryBuffer</cite> associated with <cite>name</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>smoothing_hint</strong> (<em>bool</em>) – <p>a ‘hint’ on whether this scalar is noisy and should be
+smoothed when logged. The hint will be accessible through
+<a class="reference internal" href="#xmodaler.utils.events.EventStorage.smoothing_hints" title="xmodaler.utils.events.EventStorage.smoothing_hints"><code class="xref py py-meth docutils literal notranslate"><span class="pre">EventStorage.smoothing_hints()</span></code></a>.  A writer may ignore the hint
+and apply custom smoothing rule.</p>
+<p>It defaults to True because most scalars we save need to be smoothed to
+provide any useful signal.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.put_scalars">
+<code class="sig-name descname">put_scalars</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">smoothing_hint=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.put_scalars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.put_scalars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put multiple scalars from keyword arguments.</p>
+<p class="rubric">Examples</p>
+<p>storage.put_scalars(loss=my_loss, accuracy=my_accuracy, smoothing_hint=True)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.smoothing_hints">
+<code class="sig-name descname">smoothing_hints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.smoothing_hints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.smoothing_hints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>the user-provided hint on whether the scalar</dt><dd><p>is noisy and needs smoothing.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict[name -&gt; bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.events.EventStorage.step">
+<code class="sig-name descname">step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/events.html#EventStorage.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.events.EventStorage.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>User should either: (1) Call this function to increment storage.iter when needed. Or
+(2) Set <cite>storage.iter</cite> to the correct iteration number before each iteration.</p>
+<p>The storage will then be able to associate the new data with an iteration number.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.file_io.PathHandler">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.file_io.</code><code class="sig-name descname">PathHandler</code><span class="sig-paren">(</span><em class="sig-param">async_executor: Optional[concurrent.futures._base.Executor] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/iopath/common/file_io.html#PathHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.file_io.PathHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">iopath.common.event_logger.EventLogger</span></code></p>
+<p>PathHandler is a base class that defines common I/O functionality for a URI
+protocol. It routes I/O for a generic URI which may look like “protocol://<a href="#id1"><span class="problematic" id="id2">*</span></a>”
+or a canonical filepath “/foo/bar/baz”.</p>
+<dl class="method">
+<dt id="xmodaler.utils.file_io.PathHandler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">async_executor: Optional[concurrent.futures._base.Executor] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/iopath/common/file_io.html#PathHandler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.file_io.PathHandler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>When registering a <cite>PathHandler</cite>, the user can optionally pass in a
+<cite>Executor</cite> to run the asynchronous file operations.
+NOTE: For regular non-async operations of <cite>PathManager</cite>, there is
+no need to pass <cite>async_executor</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>async_executor</strong> (optional <cite>Executor</cite>) – <p>Used for async file operations.
+Usage:
+<a href="#id3"><span class="problematic" id="id4">``</span></a><a href="#id5"><span class="problematic" id="id6">`</span></a></p>
+<blockquote>
+<div><p>path_handler = NativePathHandler(async_executor=exe)
+path_manager.register_handler(path_handler)</p>
+</div></blockquote>
+<p><a href="#id7"><span class="problematic" id="id8">``</span></a><a href="#id9"><span class="problematic" id="id10">`</span></a></p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.logger.Counter">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.logger.</code><code class="sig-name descname">Counter</code><span class="sig-paren">(</span><em class="sig-param">**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections.html#Counter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.Counter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>Dict subclass for counting hashable items.  Sometimes called a bag
+or multiset.  Elements are stored as dictionary keys and their counts
+are stored as dictionary values.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;abcdeabcdabcaba&#39;</span><span class="p">)</span>  <span class="c1"># count elements from a string</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>                <span class="c1"># three most common elements</span>
+<span class="go">[(&#39;a&#39;, 5), (&#39;b&#39;, 4), (&#39;c&#39;, 3)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>                       <span class="c1"># list all unique elements</span>
+<span class="go">[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">elements</span><span class="p">()))</span>   <span class="c1"># list elements with repetitions</span>
+<span class="go">&#39;aaaaabbbbcccdde&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>                 <span class="c1"># total of all counts</span>
+<span class="go">15</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>                          <span class="c1"># count of letter &#39;a&#39;</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="s1">&#39;shazam&#39;</span><span class="p">:</span>           <span class="c1"># update counts from an iterable</span>
+<span class="gp">... </span>    <span class="n">c</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>                <span class="c1"># by adding 1 to each element&#39;s count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>                          <span class="c1"># now there are seven &#39;a&#39;</span>
+<span class="go">7</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span>                      <span class="c1"># remove all &#39;b&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span>                          <span class="c1"># now there are zero &#39;b&#39;</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;simsalabim&#39;</span><span class="p">)</span>       <span class="c1"># make another counter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>                     <span class="c1"># add in the second counter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>                          <span class="c1"># now there are nine &#39;a&#39;</span>
+<span class="go">9</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>                       <span class="c1"># empty the counter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span>
+<span class="go">Counter()</span>
+</pre></div>
+</div>
+<p>Note:  If a count is set to zero or reduced to zero, it will remain
+in the counter until the entry is deleted or the counter is cleared:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;aaabbc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">2</span>                     <span class="c1"># reduce the count of &#39;b&#39; by two</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">most_common</span><span class="p">()</span>                 <span class="c1"># &#39;b&#39; is still in, but its count is zero</span>
+<span class="go">[(&#39;a&#39;, 3), (&#39;c&#39;, 1), (&#39;b&#39;, 0)]</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="xmodaler.utils.logger.Counter.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections.html#Counter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.Counter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new, empty Counter object.  And if given, count elements
+from an input iterable.  Or, initialize the count from another mapping
+of elements to their counts.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>                           <span class="c1"># a new, empty counter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;gallahad&#39;</span><span class="p">)</span>                 <span class="c1"># a new counter from an iterable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>           <span class="c1"># a new counter from a mapping</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>                   <span class="c1"># a new counter from keyword args</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.logger.Counter.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections.html#Counter.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.Counter.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a shallow copy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.logger.Counter.elements">
+<code class="sig-name descname">elements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections.html#Counter.elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.Counter.elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator over elements repeating each as many times as its count.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;ABCABC&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">elements</span><span class="p">())</span>
+<span class="go">[&#39;A&#39;, &#39;A&#39;, &#39;B&#39;, &#39;B&#39;, &#39;C&#39;, &#39;C&#39;]</span>
+</pre></div>
+</div>
+<p># Knuth’s example for prime factors of 1836:  2**2 * 3**3 * 17**1
+&gt;&gt;&gt; prime_factors = Counter({2: 2, 3: 3, 17: 1})
+&gt;&gt;&gt; product = 1
+&gt;&gt;&gt; for factor in prime_factors.elements():     # loop over factors
+…     product <a href="#id11"><span class="problematic" id="id12">*</span></a>= factor                       # and multiply them
+&gt;&gt;&gt; product
+1836</p>
+<p>Note, if an element’s count has been set to zero or is a negative
+number, elements() will ignore it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.logger.Counter.fromkeys">
+<em class="property">classmethod </em><code class="sig-name descname">fromkeys</code><span class="sig-paren">(</span><em class="sig-param">iterable</em>, <em class="sig-param">v=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections.html#Counter.fromkeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.Counter.fromkeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new dictionary with keys from iterable and values set to value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.logger.Counter.most_common">
+<code class="sig-name descname">most_common</code><span class="sig-paren">(</span><em class="sig-param">n=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections.html#Counter.most_common"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.Counter.most_common" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the n most common elements and their counts from the most
+common to the least.  If n is None, then list all element counts.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;abcdeabcdabcaba&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">[(&#39;a&#39;, 5), (&#39;b&#39;, 4), (&#39;c&#39;, 3)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.logger.Counter.subtract">
+<code class="sig-name descname">subtract</code><span class="sig-paren">(</span><em class="sig-param">**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections.html#Counter.subtract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.Counter.subtract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like dict.update() but subtracts counts instead of replacing them.
+Counts can be reduced below zero.  Both the inputs and outputs are
+allowed to contain zero and negative counts.</p>
+<p>Source can be an iterable, a dictionary, or another Counter instance.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;which&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="s1">&#39;witch&#39;</span><span class="p">)</span>             <span class="c1"># subtract elements from another iterable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;watch&#39;</span><span class="p">))</span>    <span class="c1"># subtract elements from another counter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span>                          <span class="c1"># 2 in which, minus 1 in witch, minus 1 in watch</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">]</span>                          <span class="c1"># 1 in which, minus 1 in witch, minus 1 in watch</span>
+<span class="go">-1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.logger.Counter.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/collections.html#Counter.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.Counter.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like dict.update() but add counts instead of replacing them.</p>
+<p>Source can be an iterable, a dictionary, or another Counter instance.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;which&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;witch&#39;</span><span class="p">)</span>           <span class="c1"># add elements from another iterable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="s1">&#39;watch&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>                 <span class="c1"># add elements from another counter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span>                      <span class="c1"># four &#39;h&#39; in which, witch, and watch</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.logger.colored">
+<code class="sig-prename descclassname">xmodaler.utils.logger.</code><code class="sig-name descname">colored</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">color=None</em>, <em class="sig-param">on_color=None</em>, <em class="sig-param">attrs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/termcolor.html#colored"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.colored" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colorize text.</p>
+<dl class="simple">
+<dt>Available text colors:</dt><dd><p>red, green, yellow, blue, magenta, cyan, white.</p>
+</dd>
+<dt>Available text highlights:</dt><dd><p>on_red, on_green, on_yellow, on_blue, on_magenta, on_cyan, on_white.</p>
+</dd>
+<dt>Available attributes:</dt><dd><p>bold, dark, underline, blink, reverse, concealed.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>colored(‘Hello, World!’, ‘red’, ‘on_grey’, [‘blue’, ‘blink’])
+colored(‘Hello, World!’, ‘green’)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.logger.create_small_table">
+<code class="sig-prename descclassname">xmodaler.utils.logger.</code><code class="sig-name descname">create_small_table</code><span class="sig-paren">(</span><em class="sig-param">small_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/logger.html#create_small_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.create_small_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a small table using the keys of small_dict as headers. This is only
+suitable for small dictionaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>small_dict</strong> (<em>dict</em>) – a result dictionary of only a few items.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the table as a string.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.logger.log_every_n">
+<code class="sig-prename descclassname">xmodaler.utils.logger.</code><code class="sig-name descname">log_every_n</code><span class="sig-paren">(</span><em class="sig-param">lvl</em>, <em class="sig-param">msg</em>, <em class="sig-param">n=1</em>, <em class="sig-param">*</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/logger.html#log_every_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.log_every_n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log once per n times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lvl</strong> (<em>int</em>) – the logging level</p></li>
+<li><p><strong>msg</strong> (<em>str</em>) – </p></li>
+<li><p><strong>n</strong> (<em>int</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the logger to use. Will use the caller’s module by default.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.logger.log_every_n_seconds">
+<code class="sig-prename descclassname">xmodaler.utils.logger.</code><code class="sig-name descname">log_every_n_seconds</code><span class="sig-paren">(</span><em class="sig-param">lvl</em>, <em class="sig-param">msg</em>, <em class="sig-param">n=1</em>, <em class="sig-param">*</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/logger.html#log_every_n_seconds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.log_every_n_seconds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log no more than once per n seconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lvl</strong> (<em>int</em>) – the logging level</p></li>
+<li><p><strong>msg</strong> (<em>str</em>) – </p></li>
+<li><p><strong>n</strong> (<em>int</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the logger to use. Will use the caller’s module by default.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.logger.log_first_n">
+<code class="sig-prename descclassname">xmodaler.utils.logger.</code><code class="sig-name descname">log_first_n</code><span class="sig-paren">(</span><em class="sig-param">lvl</em>, <em class="sig-param">msg</em>, <em class="sig-param">n=1</em>, <em class="sig-param">*</em>, <em class="sig-param">name=None</em>, <em class="sig-param">key='caller'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/logger.html#log_first_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.log_first_n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log only for the first n times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lvl</strong> (<em>int</em>) – the logging level</p></li>
+<li><p><strong>msg</strong> (<em>str</em>) – </p></li>
+<li><p><strong>n</strong> (<em>int</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of the logger to use. Will use the caller’s module by default.</p></li>
+<li><p><strong>key</strong> (<em>str</em><em> or </em><em>tuple</em><em>[</em><em>str</em><em>]</em>) – the string(s) can be one of “caller” or
+“message”, which defines how to identify duplicated logs.
+For example, if called with <cite>n=1, key=”caller”</cite>, this function
+will only log the first call from the same caller, regardless of
+the message content.
+If called with <cite>n=1, key=”message”</cite>, this function will log the
+same content only once, even if they are called from different places.
+If called with <cite>n=1, key=(“caller”, “message”)</cite>, this function
+will not log only if the same caller has logged the same message before.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.logger.setup_logger">
+<code class="sig-prename descclassname">xmodaler.utils.logger.</code><code class="sig-name descname">setup_logger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/logger.html#setup_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.setup_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the xmodaler logger and set its verbosity level to “DEBUG”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> (<em>str</em>) – a file name or a directory to save log. If None, will not save log file.
+If ends with “.txt” or “.log”, assumed to be a file name.
+Otherwise, logs will be saved to <cite>output/log.txt</cite>.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – the root module name of this logger</p></li>
+<li><p><strong>abbrev_name</strong> (<em>str</em>) – an abbreviation of the module, to avoid long names in logs.
+Set to “” to not log the root module in logs.
+By default, will abbreviate “xmodaler” to “d2” and leave other
+modules unchanged.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a logger</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>logging.Logger</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.logger.tabulate">
+<code class="sig-prename descclassname">xmodaler.utils.logger.</code><code class="sig-name descname">tabulate</code><span class="sig-paren">(</span><em class="sig-param">tabular_data</em>, <em class="sig-param">headers=()</em>, <em class="sig-param">tablefmt='simple'</em>, <em class="sig-param">floatfmt='g'</em>, <em class="sig-param">numalign='default'</em>, <em class="sig-param">stralign='default'</em>, <em class="sig-param">missingval=''</em>, <em class="sig-param">showindex='default'</em>, <em class="sig-param">disable_numparse=False</em>, <em class="sig-param">colalign=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tabulate.html#tabulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.logger.tabulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format a fixed width table for pretty printing.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">2.34</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">56</span><span class="p">,</span> <span class="s2">&quot;8.999&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;10001&quot;</span><span class="p">]]))</span>
+<span class="go">---  ---------</span>
+<span class="go">  1      2.34</span>
+<span class="go">-56      8.999</span>
+<span class="go">  2  10001</span>
+<span class="go">---  ---------</span>
+</pre></div>
+</div>
+<p>The first required argument (<cite>tabular_data</cite>) can be a
+list-of-lists (or another iterable of iterables), a list of named
+tuples, a dictionary of iterables, an iterable of dictionaries,
+a two-dimensional NumPy array, NumPy record array, or a Pandas’
+dataframe.</p>
+<p>To print nice column headers, supply the second argument (<cite>headers</cite>):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>headers</cite> can be an explicit list of column headers</p></li>
+<li><p>if <cite>headers=”firstrow”</cite>, then the first row of data is used</p></li>
+<li><p>if <cite>headers=”keys”</cite>, then dictionary keys or column indices are used</p></li>
+</ul>
+</div></blockquote>
+<p>Otherwise a headerless table is produced.</p>
+<p>If the number of headers is less than the number of columns, they
+are supposed to be names of the last columns. This is consistent
+with the plain-text format of R and Pandas’ dataframes.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span><span class="s2">&quot;age&quot;</span><span class="p">],[</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span><span class="s2">&quot;F&quot;</span><span class="p">,</span><span class="mi">24</span><span class="p">],[</span><span class="s2">&quot;Bob&quot;</span><span class="p">,</span><span class="s2">&quot;M&quot;</span><span class="p">,</span><span class="mi">19</span><span class="p">]],</span>
+<span class="gp">... </span>      <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;firstrow&quot;</span><span class="p">))</span>
+<span class="go">       sex      age</span>
+<span class="go">-----  -----  -----</span>
+<span class="go">Alice  F         24</span>
+<span class="go">Bob    M         19</span>
+</pre></div>
+</div>
+<p>By default, pandas.DataFrame data have an additional column called
+row index. To add a similar column to all other types of data,
+use <cite>showindex=”always”</cite> or <cite>showindex=True</cite>. To suppress row indices
+for all types of data, pass <cite>showindex=”never” or `showindex=False</cite>.
+To add a custom row index column, pass <cite>showindex=some_iterable</cite>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;F&quot;</span><span class="p">,</span><span class="mi">24</span><span class="p">],[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span><span class="mi">19</span><span class="p">]],</span> <span class="n">showindex</span><span class="o">=</span><span class="s2">&quot;always&quot;</span><span class="p">))</span>
+<span class="go">-  -  --</span>
+<span class="go">0  F  24</span>
+<span class="go">1  M  19</span>
+<span class="go">-  -  --</span>
+</pre></div>
+</div>
+<p><cite>tabulate</cite> tries to detect column types automatically, and aligns
+the values properly. By default it aligns decimal points of the
+numbers (or flushes integer numbers to the right), and flushes
+everything else to the left. Possible column alignments
+(<cite>numalign</cite>, <cite>stralign</cite>) are: “right”, “center”, “left”, “decimal”
+(only for <cite>numalign</cite>), and None (to disable alignment).</p>
+<p><cite>floatfmt</cite> is a format specification used for columns which
+contain numeric data with a decimal point. This can also be
+a list or tuple of format strings, one per column.</p>
+<p><cite>None</cite> values are replaced with a <cite>missingval</cite> string (like
+<cite>floatfmt</cite>, this can also be a list of values for different
+columns):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+<span class="gp">... </span>                <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mf">3.14</span><span class="p">],</span>
+<span class="gp">... </span>                <span class="p">[</span><span class="s2">&quot;other&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">2.7</span><span class="p">]],</span> <span class="n">missingval</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">))</span>
+<span class="go">-----  --  ----</span>
+<span class="go">spam    1  ?</span>
+<span class="go">eggs   42  3.14</span>
+<span class="go">other   ?  2.7</span>
+<span class="go">-----  --  ----</span>
+</pre></div>
+</div>
+<p>Various plain-text table formats (<cite>tablefmt</cite>) are supported:
+‘plain’, ‘simple’, ‘grid’, ‘pipe’, ‘orgtbl’, ‘rst’, ‘mediawiki’,
+‘latex’, ‘latex_raw’, ‘latex_booktabs’, ‘latex_longtable’ and tsv.
+Variable <a href="#id13"><span class="problematic" id="id14">`</span></a>tabulate_formats`contains the list of currently supported formats.</p>
+<p>“plain” format doesn’t use any pseudographics to draw tables,
+it separates columns with a double space:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>                <span class="p">[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="s2">&quot;plain&quot;</span><span class="p">))</span>
+<span class="go">strings      numbers</span>
+<span class="go">spam         41.9999</span>
+<span class="go">eggs        451</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;plain&quot;</span><span class="p">))</span>
+<span class="go">spam   41.9999</span>
+<span class="go">eggs  451</span>
+</pre></div>
+</div>
+<p>“simple” format is like Pandoc simple_tables:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>                <span class="p">[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="s2">&quot;simple&quot;</span><span class="p">))</span>
+<span class="go">strings      numbers</span>
+<span class="go">---------  ---------</span>
+<span class="go">spam         41.9999</span>
+<span class="go">eggs        451</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">))</span>
+<span class="go">----  --------</span>
+<span class="go">spam   41.9999</span>
+<span class="go">eggs  451</span>
+<span class="go">----  --------</span>
+</pre></div>
+</div>
+<p>“grid” is similar to tables produced by Emacs table.el package or
+Pandoc grid_tables:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>               <span class="p">[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="s2">&quot;grid&quot;</span><span class="p">))</span>
+<span class="go">+-----------+-----------+</span>
+<span class="go">| strings   |   numbers |</span>
+<span class="go">+===========+===========+</span>
+<span class="go">| spam      |   41.9999 |</span>
+<span class="go">+-----------+-----------+</span>
+<span class="go">| eggs      |  451      |</span>
+<span class="go">+-----------+-----------+</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">))</span>
+<span class="go">+------+----------+</span>
+<span class="go">| spam |  41.9999 |</span>
+<span class="go">+------+----------+</span>
+<span class="go">| eggs | 451      |</span>
+<span class="go">+------+----------+</span>
+</pre></div>
+</div>
+<p>“fancy_grid” draws a grid using box-drawing characters:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>               <span class="p">[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="s2">&quot;fancy_grid&quot;</span><span class="p">))</span>
+<span class="go">╒═══════════╤═══════════╕</span>
+<span class="go">│ strings   │   numbers │</span>
+<span class="go">╞═══════════╪═══════════╡</span>
+<span class="go">│ spam      │   41.9999 │</span>
+<span class="go">├───────────┼───────────┤</span>
+<span class="go">│ eggs      │  451      │</span>
+<span class="go">╘═══════════╧═══════════╛</span>
+</pre></div>
+</div>
+<p>“pipe” is like tables in PHP Markdown Extra extension or Pandoc
+pipe_tables:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>               <span class="p">[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="s2">&quot;pipe&quot;</span><span class="p">))</span>
+<span class="go">| strings   |   numbers |</span>
+<span class="go">|:----------|----------:|</span>
+<span class="go">| spam      |   41.9999 |</span>
+<span class="go">| eggs      |  451      |</span>
+</pre></div>
+</div>
+<p>“presto” is like tables produce by the Presto CLI:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>               <span class="p">[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="s2">&quot;presto&quot;</span><span class="p">))</span>
+<span class="go"> strings   |   numbers</span>
+<span class="go">-----------+-----------</span>
+<span class="go"> spam      |   41.9999</span>
+<span class="go"> eggs      |  451</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;pipe&quot;</span><span class="p">))</span>
+<span class="go">|:-----|---------:|</span>
+<span class="go">| spam |  41.9999 |</span>
+<span class="go">| eggs | 451      |</span>
+</pre></div>
+</div>
+<p>“orgtbl” is like tables in Emacs org-mode and orgtbl-mode. They
+are slightly different from “pipe” format by not using colons to
+define column alignment, and using a “+” sign to indicate line
+intersections:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>               <span class="p">[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="s2">&quot;orgtbl&quot;</span><span class="p">))</span>
+<span class="go">| strings   |   numbers |</span>
+<span class="go">|-----------+-----------|</span>
+<span class="go">| spam      |   41.9999 |</span>
+<span class="go">| eggs      |  451      |</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;orgtbl&quot;</span><span class="p">))</span>
+<span class="go">| spam |  41.9999 |</span>
+<span class="go">| eggs | 451      |</span>
+</pre></div>
+</div>
+<p>“rst” is like a simple table format from reStructuredText; please
+note that reStructuredText accepts also “grid” tables:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>               <span class="p">[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="s2">&quot;rst&quot;</span><span class="p">))</span>
+<span class="go">=========  =========</span>
+<span class="go">strings      numbers</span>
+<span class="go">=========  =========</span>
+<span class="go">spam         41.9999</span>
+<span class="go">eggs        451</span>
+<span class="go">=========  =========</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;rst&quot;</span><span class="p">))</span>
+<span class="go">====  ========</span>
+<span class="go">spam   41.9999</span>
+<span class="go">eggs  451</span>
+<span class="go">====  ========</span>
+</pre></div>
+</div>
+<p>“mediawiki” produces a table markup used in Wikipedia and on other
+MediaWiki-based sites:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>               <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;firstrow&quot;</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;mediawiki&quot;</span><span class="p">))</span>
+<span class="go">{| class=&quot;wikitable&quot; style=&quot;text-align: left;&quot;</span>
+<span class="go">|+ &lt;!-- caption --&gt;</span>
+<span class="go">|-</span>
+<span class="go">! strings   !! align=&quot;right&quot;|   numbers</span>
+<span class="go">|-</span>
+<span class="go">| spam      || align=&quot;right&quot;|   41.9999</span>
+<span class="go">|-</span>
+<span class="go">| eggs      || align=&quot;right&quot;|  451</span>
+<span class="go">|}</span>
+</pre></div>
+</div>
+<p>“html” produces HTML markup as an html.escape’d str
+with a ._repr_html_ method so that Jupyter Lab and Notebook display the HTML
+and a .str property so that the raw HTML remains accessible
+the unsafehtml table format can be used if an unescaped HTML format is required:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;strings&quot;</span><span class="p">,</span> <span class="s2">&quot;numbers&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span>
+<span class="gp">... </span>               <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;firstrow&quot;</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;html&quot;</span><span class="p">))</span>
+<span class="go">&lt;table&gt;</span>
+<span class="go">&lt;thead&gt;</span>
+<span class="go">&lt;tr&gt;&lt;th&gt;strings  &lt;/th&gt;&lt;th style=&quot;text-align: right;&quot;&gt;  numbers&lt;/th&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;/thead&gt;</span>
+<span class="go">&lt;tbody&gt;</span>
+<span class="go">&lt;tr&gt;&lt;td&gt;spam     &lt;/td&gt;&lt;td style=&quot;text-align: right;&quot;&gt;  41.9999&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;tr&gt;&lt;td&gt;eggs     &lt;/td&gt;&lt;td style=&quot;text-align: right;&quot;&gt; 451     &lt;/td&gt;&lt;/tr&gt;</span>
+<span class="go">&lt;/tbody&gt;</span>
+<span class="go">&lt;/table&gt;</span>
+</pre></div>
+</div>
+<p>“latex” produces a tabular environment of LaTeX document markup:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;latex&quot;</span><span class="p">))</span>
+<span class="go">\begin{tabular}{lr}</span>
+<span class="go">\hline</span>
+<span class="go"> spam &amp;  41.9999 \\</span>
+<span class="go"> eggs &amp; 451      \\</span>
+<span class="go">\hline</span>
+<span class="go">\end{tabular}</span>
+</pre></div>
+</div>
+<p>“latex_raw” is similar to “latex”, but doesn’t escape special characters,
+such as backslash and underscore, so LaTeX commands may embedded into
+cells’ values:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam$_9$&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">emph</span><span class="si">{eggs}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;latex_raw&quot;</span><span class="p">))</span>
+<span class="go">\begin{tabular}{lr}</span>
+<span class="go">\hline</span>
+<span class="go"> spam$_9$    &amp;  41.9999 \\</span>
+<span class="go"> \emph{eggs} &amp; 451      \\</span>
+<span class="go">\hline</span>
+<span class="go">\end{tabular}</span>
+</pre></div>
+</div>
+<p>“latex_booktabs” produces a tabular environment of LaTeX document markup
+using the booktabs.sty package:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;latex_booktabs&quot;</span><span class="p">))</span>
+<span class="go">\begin{tabular}{lr}</span>
+<span class="go">\toprule</span>
+<span class="go"> spam &amp;  41.9999 \\</span>
+<span class="go"> eggs &amp; 451      \\</span>
+<span class="go">\bottomrule</span>
+<span class="go">\end{tabular}</span>
+</pre></div>
+</div>
+<p>“latex_longtable” produces a tabular environment that can stretch along
+multiple pages, using the longtable package for LaTeX.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">([[</span><span class="s2">&quot;spam&quot;</span><span class="p">,</span> <span class="mf">41.9999</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;eggs&quot;</span><span class="p">,</span> <span class="s2">&quot;451.0&quot;</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;latex_longtable&quot;</span><span class="p">))</span>
+<span class="go">\begin{longtable}{lr}</span>
+<span class="go">\hline</span>
+<span class="go"> spam &amp;  41.9999 \\</span>
+<span class="go"> eggs &amp; 451      \\</span>
+<span class="go">\hline</span>
+<span class="go">\end{longtable}</span>
+</pre></div>
+</div>
+<p>By default, anything which can be parsed as a number is a number.
+This ensures numbers represented as strings are aligned properly.
+This can lead to weird results for particular strings such as
+specific git SHAs e.g. “42992e1” will be parsed into the number
+429920 and aligned as such.</p>
+<p>To completely disable number parsing (and alignment), use
+<cite>disable_numparse=True</cite>. For more fine grained control, a list column
+indices is used to disable number parsing only on those columns
+e.g. <cite>disable_numparse=[0, 2]</cite> would disable number parsing only on the
+first and third columns.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.memory.retry_if_cuda_oom">
+<code class="sig-prename descclassname">xmodaler.utils.memory.</code><code class="sig-name descname">retry_if_cuda_oom</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/memory.html#retry_if_cuda_oom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.memory.retry_if_cuda_oom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a function retry itself after encountering
+pytorch’s CUDA OOM error.
+It will first retry after calling <cite>torch.cuda.empty_cache()</cite>.</p>
+<p>If that still fails, it will then retry by trying to convert inputs to CPUs.
+In this case, it expects the function to dispatch to CPU implementation.
+The return values may become CPU tensors as well and it’s user’s
+responsibility to convert it back to CUDA tensor if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func</strong> – a stateless callable that takes tensor-like objects as arguments</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a callable which retries <cite>func</cite> if OOM is encountered.</p>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">retry_if_cuda_oom</span><span class="p">(</span><span class="n">some_torch_function</span><span class="p">)(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">)</span>
+<span class="c1"># output may be on CPU even if inputs are on GPU</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ol class="arabic simple">
+<li><p>When converting inputs to CPU, it will only look at each argument and check
+if it has <cite>.device</cite> and <cite>.to</cite> for conversion. Nested structures of tensors
+are not supported.</p></li>
+<li><p>Since the function might be called more than once, it has to be
+stateless.</p></li>
+</ol>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.registry.Registry">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.registry.</code><code class="sig-name descname">Registry</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fvcore/common/registry.html#Registry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.registry.Registry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code></p>
+<p>The registry that provides name -&gt; object mapping, to support third-party
+users’ custom modules.</p>
+<p>To create a registry (e.g. a backbone registry):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">BACKBONE_REGISTRY</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span><span class="s1">&#39;BACKBONE&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To register an object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@BACKBONE_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">MyBackbone</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Or:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">BACKBONE_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">MyBackbone</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="xmodaler.utils.registry.Registry.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/fvcore/common/registry.html#Registry.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.registry.Registry.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – the name of this registry</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.registry.Registry.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/fvcore/common/registry.html#Registry.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.registry.Registry.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.utils.registry.Registry.register">
+<code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">obj: Any = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/fvcore/common/registry.html#Registry.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.registry.Registry.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register the given object under the the name <cite>obj.__name__</cite>.
+Can be used as either a decorator or not. See docstring of this class for usage.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="xmodaler.utils.registry.locate">
+<code class="sig-prename descclassname">xmodaler.utils.registry.</code><code class="sig-name descname">locate</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/xmodaler/utils/registry.html#locate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.registry.locate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Locate and return an object <code class="docutils literal notranslate"><span class="pre">x</span></code> using an input string <code class="docutils literal notranslate"><span class="pre">{x.__module__}.{x.__qualname__}</span></code>,
+such as “module.submodule.class_name”.</p>
+<p>Raise Exception if it cannot be found.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.utils.serialize.PicklableWrapper">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.utils.serialize.</code><code class="sig-name descname">PicklableWrapper</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/serialize.html#PicklableWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.serialize.PicklableWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Wrap an object to make it more picklable, note that it uses
+heavy weight serialization libraries that are slower than pickle.
+It’s best to use it only on closures (which are usually not picklable).</p>
+<p>This is a simplified version of
+<a class="reference external" href="https://github.com/joblib/joblib/blob/master/joblib/externals/loky/cloudpickle_wrapper.py">https://github.com/joblib/joblib/blob/master/joblib/externals/loky/cloudpickle_wrapper.py</a></p>
+<dl class="method">
+<dt id="xmodaler.utils.serialize.PicklableWrapper.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/utils/serialize.html#PicklableWrapper.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.utils.serialize.PicklableWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="tokenization.html" class="btn btn-neutral float-left" title="xmodaler.tokenization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

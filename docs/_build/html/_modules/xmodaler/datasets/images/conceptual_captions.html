@@ -190,7 +190,7 @@
 
 <div class="viewcode-block" id="ConceptualCaptionsDataset"><a class="viewcode-back" href="../../../../modules/datasets.html#xmodaler.datasets.ConceptualCaptionsDataset">[docs]</a><span class="nd">@DATASETS_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">ConceptualCaptionsDataset</span><span class="p">:</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="ConceptualCaptionsDataset.__init__"><a class="viewcode-back" href="../../../../modules/datasets.html#xmodaler.datasets.ConceptualCaptionsDataset.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">stage</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -207,7 +207,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">max_feat_num</span> <span class="o">=</span> <span class="n">max_feat_num</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">feats_folder</span> <span class="o">=</span> <span class="n">feats_folder</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">images_ids_file</span> <span class="o">=</span><span class="n">images_ids_file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span></div>
         
 <div class="viewcode-block" id="ConceptualCaptionsDataset.from_config"><a class="viewcode-back" href="../../../../modules/datasets.html#xmodaler.datasets.ConceptualCaptionsDataset.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">stage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">):</span>
@@ -245,7 +245,7 @@
                 <span class="p">})</span>  
         <span class="k">return</span> <span class="n">datalist</span></div>
         
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="ConceptualCaptionsDataset.__call__"><a class="viewcode-back" href="../../../../modules/datasets.html#xmodaler.datasets.ConceptualCaptionsDataset.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_dict</span><span class="p">):</span>
         <span class="n">dataset_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">dataset_dict</span><span class="p">)</span>
         <span class="n">image_id</span> <span class="o">=</span> <span class="n">dataset_dict</span><span class="p">[</span><span class="s1">&#39;image_id&#39;</span><span class="p">]</span>
         <span class="n">caption</span> <span class="o">=</span> <span class="n">dataset_dict</span><span class="p">[</span><span class="s2">&quot;caption&quot;</span><span class="p">]</span>
@@ -292,7 +292,7 @@
         <span class="p">}</span>
 
         <span class="n">dict_as_tensor</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ret</span></div>
+        <span class="k">return</span> <span class="n">ret</span></div></div>
 
 </pre></div>
 

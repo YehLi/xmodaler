@@ -9,16 +9,13 @@ In X-modaler, the following interfaces are supported:
 
 As an example, a UpDown model can be built in the following ways:
 ```
-# users only need to pass a config
-model = build_model(cfg)
+cfg = ... # read the config
+model = build_model(cfg) # users only need to pass a config
 ```
 
 If you only need the standard behavior, the [Beginner’s Tutorial](getting_started.md) should suffice. If you need to extend X-modaler to your own needs, see the following tutorials for more details:
 
-X-modaler includes a few standard datasets. To use custom ones, see Use [Custom Datasets](custom_datasets.md).
-
-X-modaler contains the standard logic that creates a data loader for training/testing from a dataset, but you can write your own as well. See Use [Custom Data Loaders](custom_loaders.md).
-
-X-modaler implements several state-of-the-art visoin-and-language models, and provide ways for you to overwrite their behaviors. See [Use Models](use_models.md) and [Write Models](write_models.md).
-
-X-modaler provides a default training loop that is good for common training tasks. You can customize it with hooks, or write your own loop instead. See [Training](training.md).
+* X-modaler includes a few standard datasets. To use custom ones, see Use [Custom Datasets](custom_datasets.md).
+* X-modaler contains the standard logic that creates a data loader for training/testing from a dataset, but you can write your own as well. See Use [DataLoader](custom_loaders.md).
+* X-modaler implements several state-of-the-art models for visoin-and-language tasks, and provides ways for you to overwrite their behaviors. See [Use Models](use_models.md) and [Write Models](write_models.md).
+* X-modaler provides a default training loop that is good for common training tasks. You can customize it with hooks, or write your own loop instead. See [Training](training.md).

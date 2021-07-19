@@ -176,7 +176,7 @@
 
 <div class="viewcode-block" id="SALSTMDecoder"><a class="viewcode-back" href="../../../../modules/modeling/decoder.html#xmodaler.modeling.decoder.SALSTMDecoder">[docs]</a><span class="nd">@DECODER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">SALSTMDecoder</span><span class="p">(</span><span class="n">Decoder</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="SALSTMDecoder.__init__"><a class="viewcode-back" href="../../../../modules/modeling/decoder.html#xmodaler.modeling.decoder.SALSTMDecoder.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -199,7 +199,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">p_att_feats</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">att_embed_size</span><span class="p">)</span>
 
         <span class="n">in_dim</span> <span class="o">=</span> <span class="n">token_embed_dim</span> <span class="o">+</span> <span class="n">visual_embed_dim</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTMCell</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTMCell</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SALSTMDecoder.from_config"><a class="viewcode-back" href="../../../../modules/modeling/decoder.html#xmodaler.modeling.decoder.SALSTMDecoder.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>

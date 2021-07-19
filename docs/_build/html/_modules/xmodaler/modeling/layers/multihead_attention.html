@@ -313,12 +313,12 @@
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_o</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>  <span class="c1"># (b_s, nq, d_model)</span>
         <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">att</span>
 
-<div class="viewcode-block" id="MultiHeadAttentionMemory"><a class="viewcode-back" href="../../../../modules/modeling/layers/multihead_attention.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttentionMemory">[docs]</a><span class="k">class</span> <span class="nc">MultiHeadAttentionMemory</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiHeadAttentionMemory"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttentionMemory">[docs]</a><span class="k">class</span> <span class="nc">MultiHeadAttentionMemory</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Multi-head attention layer with Dropout and Layer Normalization.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="MultiHeadAttentionMemory.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttentionMemory.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
         <span class="n">d_model</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
@@ -339,14 +339,14 @@
         <span class="p">)</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">d_model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">d_model</span><span class="p">)</span></div>
 
         <span class="c1"># self.can_be_stateful = can_be_stateful</span>
         <span class="c1"># if self.can_be_stateful:</span>
         <span class="c1">#    self.register_state(&#39;running_keys&#39;, torch.zeros((0, d_model)))</span>
         <span class="c1">#    self.register_state(&#39;running_values&#39;, torch.zeros((0, d_model)))</span>
 
-<div class="viewcode-block" id="MultiHeadAttentionMemory.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/multihead_attention.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttentionMemory.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attention_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiHeadAttentionMemory.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttentionMemory.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attention_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># if self.can_be_stateful and self._is_stateful:</span>
         <span class="c1">#    self.running_keys = torch.cat([self.running_keys, keys], 1)</span>
         <span class="c1">#    keys = self.running_keys</span>
@@ -366,12 +366,12 @@
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span><span class="p">(</span><span class="n">queries</span> <span class="o">+</span> <span class="n">out</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span></div></div>
 
-<div class="viewcode-block" id="MultiHeadAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers/multihead_attention.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttention">[docs]</a><span class="k">class</span> <span class="nc">MultiHeadAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiHeadAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttention">[docs]</a><span class="k">class</span> <span class="nc">MultiHeadAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Multi-head attention layer with Dropout and Layer Normalization.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="MultiHeadAttention.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttention.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
         <span class="n">d_model</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
@@ -394,12 +394,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">d_model</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">can_be_stateful</span> <span class="o">=</span> <span class="n">can_be_stateful</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">can_be_stateful</span> <span class="o">=</span> <span class="n">can_be_stateful</span></div>
         <span class="c1"># if self.can_be_stateful:</span>
         <span class="c1">#     self.register_state(&#39;running_keys&#39;, torch.zeros((0, d_model)))</span>
         <span class="c1">#     self.register_state(&#39;running_values&#39;, torch.zeros((0, d_model)))</span>
 
-<div class="viewcode-block" id="MultiHeadAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/multihead_attention.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attention_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MultiHeadAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.multihead_attention.MultiHeadAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attention_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># if self.can_be_stateful and self._is_stateful:</span>
         <span class="c1">#    self.running_keys = torch.cat([self.running_keys, keys], 1)</span>
         <span class="c1">#    keys = self.running_keys</span>

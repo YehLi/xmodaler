@@ -190,8 +190,8 @@
 <span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">configurable</span>
 <span class="kn">from</span> <span class="nn">..layers.create_act</span> <span class="kn">import</span> <span class="n">get_activation</span>
 
-<div class="viewcode-block" id="BertSelfAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertSelfAttention">[docs]</a><span class="k">class</span> <span class="nc">BertSelfAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertSelfAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertSelfAttention">[docs]</a><span class="k">class</span> <span class="nc">BertSelfAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertSelfAttention.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertSelfAttention.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -214,9 +214,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_head_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_head_size</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">attention_probs_dropout_prob</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">attention_probs_dropout_prob</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BertSelfAttention.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertSelfAttention.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertSelfAttention.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertSelfAttention.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;hidden_size&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">HIDDEN_SIZE</span><span class="p">,</span>
@@ -224,7 +224,7 @@
             <span class="s2">&quot;attention_probs_dropout_prob&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">ATTENTION_PROBS_DROPOUT_PROB</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertSelfAttention.transpose_for_scores"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertSelfAttention.transpose_for_scores">[docs]</a>    <span class="k">def</span> <span class="nf">transpose_for_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="BertSelfAttention.transpose_for_scores"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertSelfAttention.transpose_for_scores">[docs]</a>    <span class="k">def</span> <span class="nf">transpose_for_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">new_x_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_attention_heads</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attention_head_size</span><span class="p">,</span>
@@ -236,7 +236,7 @@
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="n">shape_list</span><span class="p">)</span></div>
         <span class="c1">#return x.permute(0, 2, 1, 3)</span>
 
-<div class="viewcode-block" id="BertSelfAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertSelfAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">history_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BertSelfAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertSelfAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">history_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">mixed_query_layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">history_states</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>            
@@ -275,8 +275,8 @@
         
         <span class="k">return</span> <span class="n">context_layer</span><span class="p">,</span> <span class="n">attention_probs</span></div></div>
 
-<div class="viewcode-block" id="BertSelfOutput"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertSelfOutput">[docs]</a><span class="k">class</span> <span class="nc">BertSelfOutput</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertSelfOutput"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertSelfOutput">[docs]</a><span class="k">class</span> <span class="nc">BertSelfOutput</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertSelfOutput.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertSelfOutput.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -287,9 +287,9 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">BertSelfOutput</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dense</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">LayerNorm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">layer_norm_eps</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hidden_dropout_prob</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">hidden_dropout_prob</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BertSelfOutput.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertSelfOutput.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertSelfOutput.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertSelfOutput.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;hidden_size&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">HIDDEN_SIZE</span><span class="p">,</span>
@@ -297,14 +297,14 @@
             <span class="s2">&quot;hidden_dropout_prob&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">HIDDEN_DROPOUT_PROB</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertSelfOutput.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertSelfOutput.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">):</span>
+<div class="viewcode-block" id="BertSelfOutput.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertSelfOutput.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">):</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_states</span> <span class="o">+</span> <span class="n">input_tensor</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">hidden_states</span></div></div>
 
-<div class="viewcode-block" id="BertAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertAttention">[docs]</a><span class="k">class</span> <span class="nc">BertAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertAttention">[docs]</a><span class="k">class</span> <span class="nc">BertAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertAttention.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertAttention.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -313,22 +313,22 @@
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BertAttention</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">self</span> <span class="o">=</span> <span class="n">bert_self_attention</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">bert_self_output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">bert_self_output</span></div>
 
-<div class="viewcode-block" id="BertAttention.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertAttention.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertAttention.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertAttention.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;bert_self_attention&quot;</span><span class="p">:</span> <span class="n">BertSelfAttention</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
             <span class="s2">&quot;bert_self_output&quot;</span><span class="p">:</span> <span class="n">BertSelfOutput</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">history_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BertAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">history_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">self_output</span><span class="p">,</span> <span class="n">attention_probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">self</span><span class="p">(</span><span class="n">input_tensor</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">history_states</span><span class="p">)</span>
         <span class="n">attention_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">self_output</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">attention_output</span><span class="p">,</span> <span class="n">attention_probs</span></div></div>
 
-<div class="viewcode-block" id="BertIntermediate"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertIntermediate">[docs]</a><span class="k">class</span> <span class="nc">BertIntermediate</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertIntermediate"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertIntermediate">[docs]</a><span class="k">class</span> <span class="nc">BertIntermediate</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertIntermediate.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertIntermediate.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -340,9 +340,9 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">BertIntermediate</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dense</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">intermediate_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">intermediate_act_fn</span> <span class="o">=</span> <span class="n">get_activation</span><span class="p">(</span><span class="n">hidden_act</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">intermediate_drop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">intermediate_drop</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BertIntermediate.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertIntermediate.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertIntermediate.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertIntermediate.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;hidden_size&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">HIDDEN_SIZE</span><span class="p">,</span>
@@ -351,14 +351,14 @@
             <span class="s2">&quot;intermediate_drop&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">INTERMEDIATE_DROP</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertIntermediate.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertIntermediate.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+<div class="viewcode-block" id="BertIntermediate.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertIntermediate.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intermediate_act_fn</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">hidden_states</span></div></div>
 
-<div class="viewcode-block" id="BertOutput"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertOutput">[docs]</a><span class="k">class</span> <span class="nc">BertOutput</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertOutput"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertOutput">[docs]</a><span class="k">class</span> <span class="nc">BertOutput</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertOutput.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertOutput.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -370,9 +370,9 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">BertOutput</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dense</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">intermediate_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">LayerNorm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">layer_norm_eps</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">ffn_dropout_prob</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">ffn_dropout_prob</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BertOutput.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertOutput.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertOutput.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertOutput.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;hidden_size&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">HIDDEN_SIZE</span><span class="p">,</span>
@@ -381,14 +381,14 @@
             <span class="s2">&quot;ffn_dropout_prob&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">FFN_DROPOUT_PROB</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertOutput.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertOutput.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">):</span>
+<div class="viewcode-block" id="BertOutput.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertOutput.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">):</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_states</span> <span class="o">+</span> <span class="n">input_tensor</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">hidden_states</span></div></div>
 
-<div class="viewcode-block" id="BertXAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertXAttention">[docs]</a><span class="k">class</span> <span class="nc">BertXAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertXAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertXAttention">[docs]</a><span class="k">class</span> <span class="nc">BertXAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertXAttention.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertXAttention.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -410,9 +410,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_head_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_head_size</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">attention_probs_dropout_prob</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">attention_probs_dropout_prob</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BertXAttention.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertXAttention.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertXAttention.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertXAttention.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;hidden_size&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">HIDDEN_SIZE</span><span class="p">,</span>
@@ -420,7 +420,7 @@
             <span class="s2">&quot;attention_probs_dropout_prob&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">ATTENTION_PROBS_DROPOUT_PROB</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertXAttention.transpose_for_scores"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertXAttention.transpose_for_scores">[docs]</a>    <span class="k">def</span> <span class="nf">transpose_for_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="BertXAttention.transpose_for_scores"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertXAttention.transpose_for_scores">[docs]</a>    <span class="k">def</span> <span class="nf">transpose_for_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">new_x_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_attention_heads</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attention_head_size</span><span class="p">,</span>
@@ -431,7 +431,7 @@
         <span class="n">shape_list</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">shape_list</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">shape_list</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="n">shape_list</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="n">shape_list</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BertXAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertXAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">):</span>
+<div class="viewcode-block" id="BertXAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertXAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">):</span>
         <span class="n">mixed_query_layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="n">mixed_key_layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="n">mixed_value_layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -464,8 +464,8 @@
 
         <span class="k">return</span> <span class="n">context_layer</span><span class="p">,</span> <span class="n">attention_probs</span></div></div>
 
-<div class="viewcode-block" id="BertCrossAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertCrossAttention">[docs]</a><span class="k">class</span> <span class="nc">BertCrossAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertCrossAttention"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertCrossAttention">[docs]</a><span class="k">class</span> <span class="nc">BertCrossAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertCrossAttention.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertCrossAttention.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -474,23 +474,23 @@
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BertCrossAttention</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">self</span> <span class="o">=</span> <span class="n">bert_cross_attention</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">bert_self_output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">bert_self_output</span></div>
 
-<div class="viewcode-block" id="BertCrossAttention.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertCrossAttention.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertCrossAttention.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertCrossAttention.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;bert_cross_attention&quot;</span><span class="p">:</span> <span class="n">BertXAttention</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
             <span class="s2">&quot;bert_self_output&quot;</span><span class="p">:</span> <span class="n">BertSelfOutput</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
         <span class="p">}</span> </div>
 
-<div class="viewcode-block" id="BertCrossAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertCrossAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">q_attention_mask</span><span class="p">):</span>
+<div class="viewcode-block" id="BertCrossAttention.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertCrossAttention.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">q_attention_mask</span><span class="p">):</span>
         <span class="n">x_output</span><span class="p">,</span> <span class="n">attention_probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">self</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">)</span>
         <span class="n">attention_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">x_output</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">attention_output</span><span class="p">,</span> <span class="n">attention_probs</span></div></div>
 
 
-<div class="viewcode-block" id="BertLayer"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertLayer">[docs]</a><span class="k">class</span> <span class="nc">BertLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertLayer"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertLayer">[docs]</a><span class="k">class</span> <span class="nc">BertLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertLayer.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertLayer.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -501,9 +501,9 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">BertLayer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attention</span> <span class="o">=</span> <span class="n">bert_attention</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">intermediate</span> <span class="o">=</span> <span class="n">bert_intermediate</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">bert_output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">bert_output</span></div>
 
-<div class="viewcode-block" id="BertLayer.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertLayer.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertLayer.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertLayer.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;bert_attention&quot;</span><span class="p">:</span> <span class="n">BertAttention</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
@@ -511,14 +511,14 @@
             <span class="s2">&quot;bert_output&quot;</span><span class="p">:</span> <span class="n">BertOutput</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertLayer.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertLayer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">history_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BertLayer.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertLayer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">history_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">attention_output</span><span class="p">,</span> <span class="n">attention_probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">,</span> <span class="n">history_states</span><span class="p">)</span>
         <span class="n">intermediate_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intermediate</span><span class="p">(</span><span class="n">attention_output</span><span class="p">)</span>
         <span class="n">layer_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">intermediate_output</span><span class="p">,</span> <span class="n">attention_output</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">layer_output</span><span class="p">,</span> <span class="n">attention_probs</span></div></div>
 
-<div class="viewcode-block" id="BertUnderstandingLayer"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertUnderstandingLayer">[docs]</a><span class="k">class</span> <span class="nc">BertUnderstandingLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertUnderstandingLayer"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertUnderstandingLayer">[docs]</a><span class="k">class</span> <span class="nc">BertUnderstandingLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertUnderstandingLayer.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertUnderstandingLayer.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -531,9 +531,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">v_intermediate</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">bert_intermediate</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">v_output</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">bert_output</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_intermediate</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">bert_intermediate</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">t_output</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">bert_output</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_output</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">bert_output</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BertUnderstandingLayer.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertUnderstandingLayer.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertUnderstandingLayer.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertUnderstandingLayer.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;bert_attention&quot;</span><span class="p">:</span> <span class="n">BertAttention</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
@@ -541,7 +541,7 @@
             <span class="s2">&quot;bert_output&quot;</span><span class="p">:</span> <span class="n">BertOutput</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertUnderstandingLayer.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertUnderstandingLayer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_tensor1</span><span class="p">,</span> <span class="n">attention_mask1</span><span class="p">,</span> <span class="n">input_tensor2</span><span class="p">,</span> <span class="n">attention_mask2</span><span class="p">):</span>
+<div class="viewcode-block" id="BertUnderstandingLayer.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertUnderstandingLayer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_tensor1</span><span class="p">,</span> <span class="n">attention_mask1</span><span class="p">,</span> <span class="n">input_tensor2</span><span class="p">,</span> <span class="n">attention_mask2</span><span class="p">):</span>
         <span class="n">att_len</span> <span class="o">=</span> <span class="n">attention_mask1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">feats</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">input_tensor1</span><span class="p">,</span> <span class="n">input_tensor2</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">attention_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">attention_mask1</span><span class="p">,</span> <span class="n">attention_mask2</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -558,8 +558,8 @@
 
         <span class="k">return</span> <span class="n">v_feats</span><span class="p">,</span> <span class="n">t_feats</span></div></div>
 
-<div class="viewcode-block" id="BertGenerationLayer"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertGenerationLayer">[docs]</a><span class="k">class</span> <span class="nc">BertGenerationLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertGenerationLayer"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertGenerationLayer">[docs]</a><span class="k">class</span> <span class="nc">BertGenerationLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertGenerationLayer.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertGenerationLayer.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -572,9 +572,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">self_attn</span> <span class="o">=</span> <span class="n">bert_attention</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_att</span> <span class="o">=</span> <span class="n">bert_cross_attention</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">intermediate</span> <span class="o">=</span> <span class="n">bert_intermediate</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">bert_output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">bert_output</span></div>
 
-<div class="viewcode-block" id="BertGenerationLayer.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertGenerationLayer.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertGenerationLayer.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertGenerationLayer.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;bert_attention&quot;</span><span class="p">:</span> <span class="n">BertAttention</span><span class="p">(</span><span class="n">cfg</span><span class="p">),</span>
@@ -583,7 +583,7 @@
             <span class="s2">&quot;bert_output&quot;</span><span class="p">:</span> <span class="n">BertOutput</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertGenerationLayer.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertGenerationLayer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang_feats</span><span class="p">,</span> <span class="n">v_feats</span><span class="p">,</span> <span class="n">lang_attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_history_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BertGenerationLayer.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertGenerationLayer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lang_feats</span><span class="p">,</span> <span class="n">v_feats</span><span class="p">,</span> <span class="n">lang_attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_attention_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_history_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">self_attn</span><span class="p">(</span><span class="n">lang_feats</span><span class="p">,</span> <span class="n">lang_attention_mask</span><span class="p">,</span> <span class="n">t_history_states</span><span class="p">)</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_att</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">v_feats</span><span class="p">,</span> <span class="n">v_feats</span><span class="p">,</span> <span class="n">v_attention_mask</span><span class="p">,</span> <span class="n">lang_attention_mask</span><span class="p">)</span>
         <span class="n">intermediate_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intermediate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -591,8 +591,8 @@
 
         <span class="k">return</span> <span class="n">layer_output</span></div></div>
 
-<div class="viewcode-block" id="BertPooler"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertPooler">[docs]</a><span class="k">class</span> <span class="nc">BertPooler</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertPooler"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertPooler">[docs]</a><span class="k">class</span> <span class="nc">BertPooler</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertPooler.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertPooler.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span> 
@@ -600,22 +600,22 @@
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BertPooler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dense</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="BertPooler.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertPooler.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertPooler.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertPooler.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;hidden_size&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">HIDDEN_SIZE</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertPooler.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertPooler.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+<div class="viewcode-block" id="BertPooler.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertPooler.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
         <span class="n">first_token_tensor</span> <span class="o">=</span> <span class="n">hidden_states</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
         <span class="n">pooled_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">first_token_tensor</span><span class="p">)</span>
         <span class="n">pooled_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">pooled_output</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pooled_output</span></div></div>
 
-<div class="viewcode-block" id="BertPredictionHeadTransform"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertPredictionHeadTransform">[docs]</a><span class="k">class</span> <span class="nc">BertPredictionHeadTransform</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="BertPredictionHeadTransform"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertPredictionHeadTransform">[docs]</a><span class="k">class</span> <span class="nc">BertPredictionHeadTransform</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BertPredictionHeadTransform.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertPredictionHeadTransform.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -626,9 +626,9 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">BertPredictionHeadTransform</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dense</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transform_act_fn</span> <span class="o">=</span> <span class="n">get_activation</span><span class="p">(</span><span class="n">hidden_act</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">LayerNorm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">layer_norm_eps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LayerNorm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">layer_norm_eps</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BertPredictionHeadTransform.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertPredictionHeadTransform.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BertPredictionHeadTransform.from_config"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertPredictionHeadTransform.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;hidden_size&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">BERT</span><span class="o">.</span><span class="n">HIDDEN_SIZE</span><span class="p">,</span>
@@ -636,7 +636,7 @@
             <span class="s2">&quot;layer_norm_eps&quot;</span><span class="p">:</span> <span class="mf">1e-12</span><span class="p">,</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="BertPredictionHeadTransform.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/bert.html#xmodaler.modeling.layers.bert.BertPredictionHeadTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
+<div class="viewcode-block" id="BertPredictionHeadTransform.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.bert.BertPredictionHeadTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_states</span><span class="p">):</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_act_fn</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
         <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>

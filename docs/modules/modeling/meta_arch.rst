@@ -1,8 +1,30 @@
 xmodaler.modeling.meta_arch 
 =============================
 
-.. automodule:: xmodaler.modeling.meta_arch
-    :members:
-    :imported-members:
-    :undoc-members:
-    :show-inheritance:
+.. autofunction:: xmodaler.modeling.meta_arch.build_model
+
+.. autofunction:: xmodaler.modeling.meta_arch.add_config
+
+.. autoclass:: xmodaler.modeling.meta_arch.base_enc_dec.BaseEncoderDecoder
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: xmodaler.modeling.meta_arch.RnnAttEncoderDecoder
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.meta_arch.TransformerEncoderDecoder
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.meta_arch.BiTransformerEncoderDecoder
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:

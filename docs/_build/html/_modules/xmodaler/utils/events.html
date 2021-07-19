@@ -181,7 +181,7 @@
 <span class="n">_CURRENT_STORAGE_STACK</span> <span class="o">=</span> <span class="p">[]</span>
 
 
-<div class="viewcode-block" id="get_event_storage"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.get_event_storage">[docs]</a><span class="k">def</span> <span class="nf">get_event_storage</span><span class="p">():</span>
+<div class="viewcode-block" id="get_event_storage"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.get_event_storage">[docs]</a><span class="k">def</span> <span class="nf">get_event_storage</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        The :class:`EventStorage` object that&#39;s currently being used.</span>
@@ -205,7 +205,7 @@
         <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="JSONWriter"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.JSONWriter">[docs]</a><span class="k">class</span> <span class="nc">JSONWriter</span><span class="p">(</span><span class="n">EventWriter</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONWriter"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.JSONWriter">[docs]</a><span class="k">class</span> <span class="nc">JSONWriter</span><span class="p">(</span><span class="n">EventWriter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write scalars to a json file.</span>
 
@@ -249,7 +249,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_file</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONWriter.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.JSONWriter.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_file</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            json_file (str): path to the json file. New data will be appended if the file exists.</span>
@@ -258,9 +258,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_file_handle</span> <span class="o">=</span> <span class="n">PathManager</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_window_size</span> <span class="o">=</span> <span class="n">window_size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="JSONWriter.write"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.JSONWriter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONWriter.write"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.JSONWriter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">storage</span> <span class="o">=</span> <span class="n">get_event_storage</span><span class="p">()</span>
         <span class="n">to_save</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
 
@@ -282,16 +282,16 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="JSONWriter.close"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.JSONWriter.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONWriter.close"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.JSONWriter.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_file_handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="TensorboardXWriter"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.TensorboardXWriter">[docs]</a><span class="k">class</span> <span class="nc">TensorboardXWriter</span><span class="p">(</span><span class="n">EventWriter</span><span class="p">):</span>
+<div class="viewcode-block" id="TensorboardXWriter"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.TensorboardXWriter">[docs]</a><span class="k">class</span> <span class="nc">TensorboardXWriter</span><span class="p">(</span><span class="n">EventWriter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write all scalars to a tensorboard file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TensorboardXWriter.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.TensorboardXWriter.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            log_dir (str): the directory to save the output events</span>
@@ -303,9 +303,9 @@
         <span class="kn">from</span> <span class="nn">torch.utils.tensorboard</span> <span class="kn">import</span> <span class="n">SummaryWriter</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="n">SummaryWriter</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="TensorboardXWriter.write"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.TensorboardXWriter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TensorboardXWriter.write"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.TensorboardXWriter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">storage</span> <span class="o">=</span> <span class="n">get_event_storage</span><span class="p">()</span>
         <span class="n">new_last_write</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">iter</span><span class="p">)</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">latest_with_smoothing_hint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_window_size</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -331,12 +331,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">add_histogram_raw</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
             <span class="n">storage</span><span class="o">.</span><span class="n">clear_histograms</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TensorboardXWriter.close"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.TensorboardXWriter.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TensorboardXWriter.close"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.TensorboardXWriter.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_writer&quot;</span><span class="p">):</span>  <span class="c1"># doesn&#39;t exist when the code fails at import</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="CommonMetricPrinter"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.CommonMetricPrinter">[docs]</a><span class="k">class</span> <span class="nc">CommonMetricPrinter</span><span class="p">(</span><span class="n">EventWriter</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonMetricPrinter"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.CommonMetricPrinter">[docs]</a><span class="k">class</span> <span class="nc">CommonMetricPrinter</span><span class="p">(</span><span class="n">EventWriter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print **common** metrics to the terminal, including</span>
 <span class="sd">    iteration time, ETA, memory, all losses, and the learning rate.</span>
@@ -346,7 +346,7 @@
 <span class="sd">    To print something in more customized ways, please implement a similar printer by yourself.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonMetricPrinter.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.CommonMetricPrinter.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            max_iter: the maximum number of iterations to train.</span>
@@ -354,7 +354,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (step, time) of last call to write(). Used to compute ETA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (step, time) of last call to write(). Used to compute ETA</span></div>
 
     <span class="k">def</span> <span class="nf">_get_eta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -376,7 +376,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">())</span>
             <span class="k">return</span> <span class="n">eta_string</span>
 
-<div class="viewcode-block" id="CommonMetricPrinter.write"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.CommonMetricPrinter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonMetricPrinter.write"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.CommonMetricPrinter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">torch</span>
 
         <span class="n">storage</span> <span class="o">=</span> <span class="n">get_event_storage</span><span class="p">()</span>
@@ -429,14 +429,14 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="EventStorage"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage">[docs]</a><span class="k">class</span> <span class="nc">EventStorage</span><span class="p">:</span>
+<div class="viewcode-block" id="EventStorage"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage">[docs]</a><span class="k">class</span> <span class="nc">EventStorage</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The user-facing class that provides metric storage functionalities.</span>
 
 <span class="sd">    In the future we may add support for storing / logging other types of data if needed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_iter</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_iter</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            start_iter (int): the iteration number to start with</span>
@@ -447,9 +447,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">=</span> <span class="n">start_iter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vis_data</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_histograms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_histograms</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="EventStorage.put_image"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.put_image">[docs]</a>    <span class="k">def</span> <span class="nf">put_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_name</span><span class="p">,</span> <span class="n">img_tensor</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.put_image"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.put_image">[docs]</a>    <span class="k">def</span> <span class="nf">put_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_name</span><span class="p">,</span> <span class="n">img_tensor</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add an `img_tensor` associated with `img_name`, to be shown on</span>
 <span class="sd">        tensorboard.</span>
@@ -464,7 +464,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vis_data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">img_name</span><span class="p">,</span> <span class="n">img_tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EventStorage.put_scalar"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.put_scalar">[docs]</a>    <span class="k">def</span> <span class="nf">put_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">smoothing_hint</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.put_scalar"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.put_scalar">[docs]</a>    <span class="k">def</span> <span class="nf">put_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">smoothing_hint</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a scalar `value` to the `HistoryBuffer` associated with `name`.</span>
 
@@ -491,7 +491,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_smoothing_hints</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">smoothing_hint</span></div>
 
-<div class="viewcode-block" id="EventStorage.put_scalars"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.put_scalars">[docs]</a>    <span class="k">def</span> <span class="nf">put_scalars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">smoothing_hint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.put_scalars"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.put_scalars">[docs]</a>    <span class="k">def</span> <span class="nf">put_scalars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">smoothing_hint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Put multiple scalars from keyword arguments.</span>
 
@@ -502,7 +502,7 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">put_scalar</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">smoothing_hint</span><span class="o">=</span><span class="n">smoothing_hint</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventStorage.put_histogram"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.put_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">put_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hist_name</span><span class="p">,</span> <span class="n">hist_tensor</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.put_histogram"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.put_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">put_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hist_name</span><span class="p">,</span> <span class="n">hist_tensor</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a histogram from a tensor.</span>
 
@@ -534,7 +534,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_histograms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hist_params</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EventStorage.history"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.history">[docs]</a>    <span class="k">def</span> <span class="nf">history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.history"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.history">[docs]</a>    <span class="k">def</span> <span class="nf">history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            HistoryBuffer: the scalar history for name</span>
@@ -544,14 +544,14 @@
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;No history metric available for </span><span class="si">{}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">ret</span></div>
 
-<div class="viewcode-block" id="EventStorage.histories"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.histories">[docs]</a>    <span class="k">def</span> <span class="nf">histories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.histories"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.histories">[docs]</a>    <span class="k">def</span> <span class="nf">histories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            dict[name -&gt; HistoryBuffer]: the HistoryBuffer for all scalars</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span></div>
 
-<div class="viewcode-block" id="EventStorage.latest"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.latest">[docs]</a>    <span class="k">def</span> <span class="nf">latest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.latest"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.latest">[docs]</a>    <span class="k">def</span> <span class="nf">latest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            dict[str -&gt; (float, int)]: mapping from the name of each scalar to the most</span>
@@ -559,7 +559,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_latest_scalars</span></div>
 
-<div class="viewcode-block" id="EventStorage.latest_with_smoothing_hint"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.latest_with_smoothing_hint">[docs]</a>    <span class="k">def</span> <span class="nf">latest_with_smoothing_hint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.latest_with_smoothing_hint"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.latest_with_smoothing_hint">[docs]</a>    <span class="k">def</span> <span class="nf">latest_with_smoothing_hint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Similar to :meth:`latest`, but the returned values</span>
 <span class="sd">        are either the un-smoothed original latest value,</span>
@@ -576,7 +576,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="EventStorage.smoothing_hints"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.smoothing_hints">[docs]</a>    <span class="k">def</span> <span class="nf">smoothing_hints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.smoothing_hints"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.smoothing_hints">[docs]</a>    <span class="k">def</span> <span class="nf">smoothing_hints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            dict[name -&gt; bool]: the user-provided hint on whether the scalar</span>
@@ -584,7 +584,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smoothing_hints</span></div>
 
-<div class="viewcode-block" id="EventStorage.step"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.step"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        User should either: (1) Call this function to increment storage.iter when needed. Or</span>
 <span class="sd">        (2) Set `storage.iter` to the correct iteration number before each iteration.</span>
@@ -619,7 +619,7 @@
         <span class="k">assert</span> <span class="n">_CURRENT_STORAGE_STACK</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span>
         <span class="n">_CURRENT_STORAGE_STACK</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
 
-<div class="viewcode-block" id="EventStorage.name_scope"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.name_scope">[docs]</a>    <span class="nd">@contextmanager</span>
+<div class="viewcode-block" id="EventStorage.name_scope"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.name_scope">[docs]</a>    <span class="nd">@contextmanager</span>
     <span class="k">def</span> <span class="nf">name_scope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Yields:</span>
@@ -631,14 +631,14 @@
         <span class="k">yield</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_prefix</span> <span class="o">=</span> <span class="n">old_prefix</span></div>
 
-<div class="viewcode-block" id="EventStorage.clear_images"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.clear_images">[docs]</a>    <span class="k">def</span> <span class="nf">clear_images</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.clear_images"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.clear_images">[docs]</a>    <span class="k">def</span> <span class="nf">clear_images</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete all the stored images for visualization. This should be called</span>
 <span class="sd">        after images are written to tensorboard.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vis_data</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="EventStorage.clear_histograms"><a class="viewcode-back" href="../../../modules/utils/events.html#xmodaler.utils.events.EventStorage.clear_histograms">[docs]</a>    <span class="k">def</span> <span class="nf">clear_histograms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EventStorage.clear_histograms"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.clear_histograms">[docs]</a>    <span class="k">def</span> <span class="nf">clear_histograms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete all the stored histograms for visualization.</span>
 <span class="sd">        This should be called after histograms are written to tensorboard.</span>

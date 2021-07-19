@@ -172,7 +172,7 @@
 <span class="sd">        Linearly increases learning rate schedule from 0 to 1 over `warmup_steps` training steps.</span>
 <span class="sd">        Keeps learning rate schedule equal to 1. after warmup_steps.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="WarmupConstantSchedule.__init__"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupConstantSchedule.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -180,7 +180,7 @@
         <span class="n">warmup_steps</span><span class="p">,</span> 
         <span class="n">last_epoch</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span> <span class="o">=</span> <span class="n">warmup_steps</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupConstantSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupConstantSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WarmupConstantSchedule.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupConstantSchedule.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>
@@ -201,7 +201,7 @@
 <span class="sd">        Linearly increases learning rate from 0 to 1 over `warmup_steps` training steps.</span>
 <span class="sd">        Linearly decreases learning rate from 1. to 0. over remaining `t_total - warmup_steps` steps.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="WarmupLinearSchedule.__init__"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupLinearSchedule.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -214,7 +214,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span> <span class="o">=</span> <span class="n">warmup_steps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">=</span> <span class="n">t_total</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_lr</span> <span class="o">=</span> <span class="n">min_lr</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupLinearSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupLinearSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WarmupLinearSchedule.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupLinearSchedule.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>
@@ -238,7 +238,7 @@
 <span class="sd">        Decreases learning rate from 1. to 0. over remaining `t_total - warmup_steps` steps following a cosine curve.</span>
 <span class="sd">        If `cycles` (default=0.5) is different from default, learning rate follows cosine function after warmup.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="WarmupCosineSchedule.__init__"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineSchedule.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -253,7 +253,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">=</span> <span class="n">t_total</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cycles</span> <span class="o">=</span> <span class="n">cycles</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_lr</span> <span class="o">=</span> <span class="n">min_lr</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupCosineSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupCosineSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WarmupCosineSchedule.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineSchedule.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>
@@ -280,7 +280,7 @@
 <span class="sd">        If `cycles` (default=1.) is different from default, learning rate follows `cycles` times a cosine decaying</span>
 <span class="sd">        learning rate (with hard restarts).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="WarmupCosineWithHardRestartsSchedule.__init__"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineWithHardRestartsSchedule.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
@@ -293,7 +293,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">warmup_steps</span> <span class="o">=</span> <span class="n">warmup_steps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_total</span> <span class="o">=</span> <span class="n">t_total</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cycles</span> <span class="o">=</span> <span class="n">cycles</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupCosineWithHardRestartsSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupCosineWithHardRestartsSchedule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_lambda</span><span class="p">,</span> <span class="n">last_epoch</span><span class="o">=</span><span class="n">last_epoch</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WarmupCosineWithHardRestartsSchedule.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupCosineWithHardRestartsSchedule.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>
@@ -316,7 +316,7 @@
 
 <div class="viewcode-block" id="WarmupMultiStepLR"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupMultiStepLR">[docs]</a><span class="nd">@LR_SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">WarmupMultiStepLR</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">_LRScheduler</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="WarmupMultiStepLR.__init__"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupMultiStepLR.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -344,7 +344,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">warmup_factor</span> <span class="o">=</span> <span class="n">warmup_factor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">warmup_iters</span> <span class="o">=</span> <span class="n">warmup_iters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">warmup_method</span> <span class="o">=</span> <span class="n">warmup_method</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupMultiStepLR</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">last_epoch</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmupMultiStepLR</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">last_epoch</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WarmupMultiStepLR.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.WarmupMultiStepLR.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>

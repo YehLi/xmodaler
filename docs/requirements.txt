@@ -17,3 +17,4 @@ jsonlines
 pycocotools
 torchvision
 pycocoevalcap
+omegaconf

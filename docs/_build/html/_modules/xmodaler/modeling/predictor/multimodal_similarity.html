@@ -178,7 +178,7 @@
 
 <div class="viewcode-block" id="MultiModalSimilarity"><a class="viewcode-back" href="../../../../modules/modeling/predictor.html#xmodaler.modeling.predictor.MultiModalSimilarity">[docs]</a><span class="nd">@PREDICTOR_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">MultiModalSimilarity</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="MultiModalSimilarity.__init__"><a class="viewcode-back" href="../../../../modules/modeling/predictor.html#xmodaler.modeling.predictor.MultiModalSimilarity.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -203,7 +203,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">u_pooler</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pooler</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">v_pooler</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
             <span class="p">[</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pooler</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v_num_hidden_layers</span><span class="p">)]</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
         
 <div class="viewcode-block" id="MultiModalSimilarity.from_config"><a class="viewcode-back" href="../../../../modules/modeling/predictor.html#xmodaler.modeling.predictor.MultiModalSimilarity.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>

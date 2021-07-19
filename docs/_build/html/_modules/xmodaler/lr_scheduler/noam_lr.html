@@ -163,7 +163,7 @@
 
 <div class="viewcode-block" id="NoamLR"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.NoamLR">[docs]</a><span class="nd">@LR_SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">NoamLR</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">_LRScheduler</span><span class="p">):</span>
-    <span class="nd">@configurable</span>
+<div class="viewcode-block" id="NoamLR.__init__"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.NoamLR.__init__">[docs]</a>    <span class="nd">@configurable</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -177,7 +177,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">warmup</span> <span class="o">=</span> <span class="n">warmup</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="o">=</span> <span class="n">factor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="n">model_size</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">NoamLR</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">last_epoch</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NoamLR</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">last_epoch</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NoamLR.from_config"><a class="viewcode-back" href="../../../modules/lr_scheduler.html#xmodaler.lr_scheduler.NoamLR.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">data_size</span><span class="p">):</span>

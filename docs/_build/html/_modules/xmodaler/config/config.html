@@ -180,9 +180,9 @@
 <span class="sd">       When attempting to merge an old config, it will convert the old config automatically.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="CfgNode._open_cfg"><a class="viewcode-back" href="../../../modules/config.html#xmodaler.config.CfgNode._open_cfg">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_open_cfg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">PathManager</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PathManager</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CfgNode.load_from_file_tmp"><a class="viewcode-back" href="../../../modules/config.html#xmodaler.config.CfgNode.load_from_file_tmp">[docs]</a>    <span class="k">def</span> <span class="nf">load_from_file_tmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">allow_unsafe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">PathManager</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Config file &#39;</span><span class="si">{cfg_filename}</span><span class="s2">&#39; does not exist!&quot;</span>
@@ -261,7 +261,7 @@
 <span class="sd">    Get a copy of the default config.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        a detectron2 CfgNode instance.</span>
+<span class="sd">        a X-modaler CfgNode instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">.defaults</span> <span class="kn">import</span> <span class="n">_C</span>
 
@@ -275,7 +275,7 @@
 <span class="sd">    Assume that the given &quot;cfg&quot; has the key &quot;KEY&quot;, after calling</span>
 <span class="sd">    `set_global_cfg(cfg)`, the key can be accessed by:</span>
 <span class="sd">    ::</span>
-<span class="sd">        from detectron2.config import global_cfg</span>
+<span class="sd">        from xmodaler.config import global_cfg</span>
 <span class="sd">        print(global_cfg.KEY)</span>
 
 <span class="sd">    By using a hacky global config, you can access these configs anywhere,</span>
@@ -287,7 +287,7 @@
     <span class="n">global_cfg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="configurable"><a class="viewcode-back" href="../../../modules/modeling/layers/bert.html#xmodaler.config.configurable">[docs]</a><span class="k">def</span> <span class="nf">configurable</span><span class="p">(</span><span class="n">init_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">from_config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="configurable"><a class="viewcode-back" href="../../../modules/config.html#xmodaler.config.configurable">[docs]</a><span class="k">def</span> <span class="nf">configurable</span><span class="p">(</span><span class="n">init_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">from_config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorate a function or a class&#39;s __init__ method so that it can be called</span>
 <span class="sd">    with a :class:`CfgNode` object using a :func:`from_config` function that translates</span>

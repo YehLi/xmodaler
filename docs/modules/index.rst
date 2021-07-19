@@ -16,4 +16,4 @@ API Documentation
     optim
     scorer
     tokenization
-    utils/index
+    utils

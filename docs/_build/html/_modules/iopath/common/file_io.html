@@ -302,7 +302,7 @@
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="PathHandler"><a class="viewcode-back" href="../../../modules/utils/file_io.html#xmodaler.utils.file_io.PathHandler">[docs]</a><span class="k">class</span> <span class="nc">PathHandler</span><span class="p">(</span><span class="n">EventLogger</span><span class="p">):</span>
+<div class="viewcode-block" id="PathHandler"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.file_io.PathHandler">[docs]</a><span class="k">class</span> <span class="nc">PathHandler</span><span class="p">(</span><span class="n">EventLogger</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    PathHandler is a base class that defines common I/O functionality for a URI</span>
 <span class="sd">    protocol. It routes I/O for a generic URI which may look like &quot;protocol://*&quot;</span>
@@ -311,7 +311,7 @@
 
     <span class="n">_strict_kwargs_check</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="PathHandler.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.file_io.PathHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">async_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">Executor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -337,7 +337,7 @@
 
             <span class="n">setup_handler_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-            <span class="k">pass</span>
+            <span class="k">pass</span></div>
 
     <span class="k">def</span> <span class="nf">_check_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1027,7 +1027,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_local_path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">direct_url</span><span class="p">),</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="PathManager"><a class="viewcode-back" href="../../../modules/utils/file_io.html#xmodaler.utils.file_io.PathManager">[docs]</a><span class="k">class</span> <span class="nc">PathManager</span><span class="p">:</span>
+<div class="viewcode-block" id="PathManager"><a class="viewcode-back" href="../../../modules/bak/file_io.html#xmodaler.utils.file_io.PathManager">[docs]</a><span class="k">class</span> <span class="nc">PathManager</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for users to open generic paths or translate generic paths to file names.</span>
 

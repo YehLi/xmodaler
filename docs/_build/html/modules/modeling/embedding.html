@@ -106,7 +106,7 @@
 <li class="toctree-l3"><a class="reference internal" href="decoder.html">xmodaler.modeling.decoder</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">xmodaler.modeling.embedding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="encoder.html">xmodaler.modeling.encoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="layers/index.html">xmodaler.modeling.layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="layers.html">xmodaler.modeling.layers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="meta_arch.html">xmodaler.modeling.meta_arch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="predictor.html">xmodaler.modeling.predictor</a></li>
 </ul>
@@ -114,7 +114,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../optim.html">xmodaler.optim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../scorer.html">xmodaler.scorer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tokenization.html">xmodaler.tokenization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">xmodaler.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html">xmodaler.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -190,10 +190,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-xmodaler.modeling.embedding">
-<span id="xmodaler-modeling-embedding"></span><h1>xmodaler.modeling.embedding<a class="headerlink" href="#module-xmodaler.modeling.embedding" title="Permalink to this headline">¶</a></h1>
-<p>&#64;author: Yehao Li
-&#64;contact: <a class="reference external" href="mailto:yehaoli&#46;sysu&#37;&#52;&#48;gmail&#46;com">yehaoli<span>&#46;</span>sysu<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
+  <div class="section" id="xmodaler-modeling-embedding">
+<h1>xmodaler.modeling.embedding<a class="headerlink" href="#xmodaler-modeling-embedding" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="xmodaler.modeling.embedding.build_embeddings">
 <code class="sig-prename descclassname">xmodaler.modeling.embedding.</code><code class="sig-name descname">build_embeddings</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/build.html#build_embeddings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.build_embeddings" title="Permalink to this definition">¶</a></dt>
@@ -203,6 +201,22 @@
 <dt id="xmodaler.modeling.embedding.TokenBaseEmbedding">
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.modeling.embedding.</code><code class="sig-name descname">TokenBaseEmbedding</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">dim: int</em>, <em class="sig-param">vocab_size: int</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/token_embed.html#TokenBaseEmbedding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.TokenBaseEmbedding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="xmodaler.modeling.embedding.TokenBaseEmbedding.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">dim: int</em>, <em class="sig-param">vocab_size: int</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/token_embed.html#TokenBaseEmbedding.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.TokenBaseEmbedding.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.modeling.embedding.TokenBaseEmbedding._forward">
+<code class="sig-name descname">_forward</code><span class="sig-paren">(</span><em class="sig-param">input_ids</em>, <em class="sig-param">token_type_ids=None</em>, <em class="sig-param">time_step=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/token_embed.html#TokenBaseEmbedding._forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.TokenBaseEmbedding._forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="xmodaler.modeling.embedding.TokenBaseEmbedding._is_full_backward_hook">
+<code class="sig-name descname">_is_full_backward_hook</code><em class="property"> = None</em><a class="headerlink" href="#xmodaler.modeling.embedding.TokenBaseEmbedding._is_full_backward_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="xmodaler.modeling.embedding.TokenBaseEmbedding.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">batched_inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/token_embed.html#TokenBaseEmbedding.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.TokenBaseEmbedding.forward" title="Permalink to this definition">¶</a></dt>
@@ -234,6 +248,17 @@ registered hooks while the latter silently ignores them.</p>
 <em class="property">class </em><code class="sig-prename descclassname">xmodaler.modeling.embedding.</code><code class="sig-name descname">VisualBaseEmbedding</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">in_dim: int</em>, <em class="sig-param">out_dim: int</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/visual_embed.html#VisualBaseEmbedding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.VisualBaseEmbedding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <dl class="method">
+<dt id="xmodaler.modeling.embedding.VisualBaseEmbedding.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">in_dim: int</em>, <em class="sig-param">out_dim: int</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/visual_embed.html#VisualBaseEmbedding.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.VisualBaseEmbedding.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="xmodaler.modeling.embedding.VisualBaseEmbedding._is_full_backward_hook">
+<code class="sig-name descname">_is_full_backward_hook</code><em class="property"> = None</em><a class="headerlink" href="#xmodaler.modeling.embedding.VisualBaseEmbedding._is_full_backward_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="xmodaler.modeling.embedding.VisualBaseEmbedding.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">batched_inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/visual_embed.html#VisualBaseEmbedding.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.VisualBaseEmbedding.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
@@ -255,6 +280,78 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="attribute">
 <dt id="xmodaler.modeling.embedding.VisualBaseEmbedding.training">
 <code class="sig-name descname">training</code><em class="property"> = None</em><a class="headerlink" href="#xmodaler.modeling.embedding.VisualBaseEmbedding.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.modeling.embedding.position_embedding.SinusoidEncoding">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.modeling.embedding.position_embedding.</code><code class="sig-name descname">SinusoidEncoding</code><span class="sig-paren">(</span><em class="sig-param">dim</em>, <em class="sig-param">max_len</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/position_embedding.html#SinusoidEncoding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.SinusoidEncoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="xmodaler.modeling.embedding.position_embedding.SinusoidEncoding.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">dim</em>, <em class="sig-param">max_len</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/position_embedding.html#SinusoidEncoding.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.SinusoidEncoding.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="xmodaler.modeling.embedding.position_embedding.SinusoidEncoding._is_full_backward_hook">
+<code class="sig-name descname">_is_full_backward_hook</code><em class="property"> = None</em><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.SinusoidEncoding._is_full_backward_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.modeling.embedding.position_embedding.SinusoidEncoding.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/position_embedding.html#SinusoidEncoding.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.SinusoidEncoding.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="xmodaler.modeling.embedding.position_embedding.SinusoidEncoding.training">
+<code class="sig-name descname">training</code><em class="property"> = None</em><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.SinusoidEncoding.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.modeling.embedding.position_embedding.</code><code class="sig-name descname">NNEmbeddingEncoding</code><span class="sig-paren">(</span><em class="sig-param">dim</em>, <em class="sig-param">max_len</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/position_embedding.html#NNEmbeddingEncoding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="method">
+<dt id="xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">dim</em>, <em class="sig-param">max_len</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/position_embedding.html#NNEmbeddingEncoding.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding._is_full_backward_hook">
+<code class="sig-name descname">_is_full_backward_hook</code><em class="property"> = None</em><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding._is_full_backward_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/xmodaler/modeling/embedding/position_embedding.html#NNEmbeddingEncoding.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding.training">
+<code class="sig-name descname">training</code><em class="property"> = None</em><a class="headerlink" href="#xmodaler.modeling.embedding.position_embedding.NNEmbeddingEncoding.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

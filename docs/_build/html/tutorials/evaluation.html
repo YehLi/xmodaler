@@ -188,7 +188,6 @@
 <h2>Custom evaluators<a class="headerlink" href="#custom-evaluators" title="Permalink to this headline">¶</a></h2>
 <p>X-modaler includes a few evaluator that computes metrics using standard dataset-specific APIs (e.g., COCO Captions). You can also implement your own evaluator that performs some other jobs using the inputs/outputs pairs:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xmodaler.evaluation.build</span> <span class="kn">import</span> <span class="n">EVALUATION_REGISTRY</span>
-
 <span class="nd">@EVALUATION_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">MyEvaler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">annfile</span><span class="p">):</span>

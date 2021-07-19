@@ -168,12 +168,12 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PositionWiseFeedForward&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="PositionWiseFeedForward"><a class="viewcode-back" href="../../../../modules/modeling/layers/positionwise_feedforward.html#xmodaler.modeling.layers.positionwise_feedforward.PositionWiseFeedForward">[docs]</a><span class="k">class</span> <span class="nc">PositionWiseFeedForward</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="PositionWiseFeedForward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.positionwise_feedforward.PositionWiseFeedForward">[docs]</a><span class="k">class</span> <span class="nc">PositionWiseFeedForward</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Position-wise feed forward layer</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="PositionWiseFeedForward.__init__"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.positionwise_feedforward.PositionWiseFeedForward.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="o">*</span><span class="p">,</span>
         <span class="n">d_model</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
@@ -187,9 +187,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_ff</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span> <span class="k">if</span> <span class="n">dropout</span> <span class="o">&gt;</span> <span class="mf">0.</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dropout_2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span> <span class="k">if</span> <span class="n">dropout</span> <span class="o">&gt;</span> <span class="mf">0.</span> <span class="k">else</span> <span class="kc">None</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">d_model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">d_model</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PositionWiseFeedForward.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers/positionwise_feedforward.html#xmodaler.modeling.layers.positionwise_feedforward.PositionWiseFeedForward.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<div class="viewcode-block" id="PositionWiseFeedForward.forward"><a class="viewcode-back" href="../../../../modules/modeling/layers.html#xmodaler.modeling.layers.positionwise_feedforward.PositionWiseFeedForward.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
         <span class="c1"># if self.identity_map_reordering:</span>
         <span class="c1">#    out = self.layer_norm(input)</span>
         <span class="c1">#    out = self.fc2(self.dropout_2(F.relu(self.fc1(out))))</span>

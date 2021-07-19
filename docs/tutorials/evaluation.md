@@ -7,7 +7,6 @@ Evaluation is a process that takes a number of inputs/outputs pairs and aggregat
 X-modaler includes a few evaluator that computes metrics using standard dataset-specific APIs (e.g., COCO Captions). You can also implement your own evaluator that performs some other jobs using the inputs/outputs pairs:
 ```
 from xmodaler.evaluation.build import EVALUATION_REGISTRY
-
 @EVALUATION_REGISTRY.register()
 class MyEvaler(object):
     def __init__(self, cfg, annfile):

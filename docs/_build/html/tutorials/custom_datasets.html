@@ -204,6 +204,11 @@
     <span class="p">):</span>
         <span class="c1"># load dataset and set hyperparameters</span>
         <span class="o">...</span>
+	
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">stage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="k">return</span> <span class="n">arguments</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_dict</span><span class="p">):</span>
         <span class="c1"># process a data item for a specific task</span>
@@ -213,8 +218,8 @@
 </div>
 <p>The function can do arbitrary things and should return the data dict in either of the following formats:</p>
 <ul class="simple">
-<li><p>X-modaler’s standard dataset dict using builtin keys defined in <code class="docutils literal notranslate"><span class="pre">xmodaler/config/constants.py</span></code> will make it work with many other builtin features in X-modaler, so it’s recommended to use it when it’s sufficient.</p></li>
-<li><p>Any custom format. You can also return arbitrary dict in your own format by adding extra keys for new tasks. Then you will need to handle them properly downstream as well.</p></li>
+<li><p>X-modaler’s standard dataset dict using builtin keys defined by <code class="docutils literal notranslate"><span class="pre">xmodaler.config.kfg</span></code>. This will make it work with many other builtin features in X-modaler, so it’s recommended to use it when it’s sufficient.</p></li>
+<li><p>Any custom format. You can also return arbitrary dict in your own format by adding extra keys to <code class="docutils literal notranslate"><span class="pre">xmodaler.config.kfg</span></code> for new tasks. Then you will need to handle them properly downstream as well.</p></li>
 </ul>
 </div>
 </div>
