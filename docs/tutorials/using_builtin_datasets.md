@@ -1,6 +1,6 @@
 # Use Builtin Datasets
 
-A dataset can be used by wrapping it into a torch Dataset. This document explains how to setup the builtin datasets so they can be used by X-modaler.
+A dataset can be used by wrapping it into a torch Dataset. This document explains how to setup the builtin datasets so they can be used by X-modaler. The annotations for builtin datasets can be downloaded [here](https://drive.google.com/drive/folders/1vx9n7tAIt8su0y_3tsPJGvMPBMm8JLCZ).
 
 X-modaler has builtin support for a few datasets (e.g., MSCOCO or MSVD). The corresponding dataset wrappers are provided in `xmodaler/datasets`:
 ```
