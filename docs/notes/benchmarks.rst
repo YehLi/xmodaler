@@ -35,5 +35,5 @@ Video Captioning on MSR-VTT
    :header: Model, BLEU@1, BLEU@2, BLEU@3, BLEU@4, METEOR, ROUGE-L, CIDEr-D, SPICE
    :widths: auto
 
-   `MP-LSTM <https://drive.google.com/drive/folders/1NV-BmnSTWQ9eUpXV_ywkTV5EywC2JFJ>`_, 72.8, 60.2, 48.8, 38.6, 25.8, 58.3, 40.1, 5.6
+   `MP-LSTM <https://drive.google.com/drive/folders/1NV-BmnSTWQ9eUpXV_ywkTV5EywC2JFJj>`_, 72.8, 60.2, 48.8, 38.6, 25.8, 58.3, 40.1, 5.6
    `TA <https://drive.google.com/drive/folders/1B6qlzrlNA8cMxD-utsBGVU2i7xqukyLY>`_, 72.3, 60.3, 49.3, 39.3, 25.8, 58.8, 41.5, 5.6
