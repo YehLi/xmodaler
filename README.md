@@ -1,5 +1,5 @@
 # X-modaler
-X-modaler is a versatile and high-performance codebase for cross-modal analytics. This codebase unifies comprehensive high-quality modules in state-of-the-art vision-language techniques, which are organized in a standardized and user-friendly fashion.
+[X-modaler](https://xmodaler.readthedocs.io/en/latest/) is a versatile and high-performance codebase for cross-modal analytics. This codebase unifies comprehensive high-quality modules in state-of-the-art vision-language techniques, which are organized in a standardized and user-friendly fashion.
 
 ## Installation
 See [installation instructions](https://xmodaler.readthedocs.io/en/latest/tutorials/installation.html).
@@ -29,8 +29,6 @@ python train_net.py --num-gpus 4 \
 python train_net.py --num-gpus 4 \
  	--config-file configs/image_caption/updown_rl.yaml
 ```
-
-More about our [documentation](https://xmodaler.readthedocs.io/en/latest/)
 
 ## API Documentation
 * xmodaler.checkpoint
