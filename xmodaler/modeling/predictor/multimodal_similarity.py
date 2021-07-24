@@ -41,7 +41,7 @@ class MultiModalSimilarity(nn.Module):
             use_bn = pooler_bn
         )
         
-        self.u_pooler = copy.copy(pooler)
+        self.t_pooler = copy.copy(pooler)
         self.v_pooler = nn.ModuleList(
             [copy.copy(pooler) for _ in range(self.v_num_hidden_layers)]
         )
@@ -79,7 +79,7 @@ class MultiModalSimilarity(nn.Module):
             vfeats = vfeats + self.v_pooler[i](vfeats_arr[i], ext_vmasks)
         vfeats = vfeats / np.sqrt(self.v_num_hidden_layers)
         vfeats = F.normalize(vfeats, p=2, dim=1)
-        u_tfeats = self.u_pooler(u_tfeats, ext_u_tmasks)
+        u_tfeats = self.t_pooler(u_tfeats, ext_u_tmasks)
         u_tfeats = F.normalize(u_tfeats, p=2, dim=1)
 
         if self.training:

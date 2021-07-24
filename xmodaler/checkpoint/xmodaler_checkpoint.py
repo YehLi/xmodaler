@@ -8,7 +8,8 @@ import os
 import pickle
 import torch
 from typing import Any
-from fvcore.common.checkpoint import Checkpointer, PeriodicCheckpointer
+from fvcore.common.checkpoint import Checkpointer, PeriodicCheckpointer, _IncompatibleKeys
+from fvcore.common.checkpoint import get_missing_parameters_message, get_unexpected_parameters_message
 from torch.nn.parallel import DistributedDataParallel
 
 import xmodaler.utils.comm as comm
@@ -118,3 +119,22 @@ class XmodalerCheckpointer(Checkpointer):
                 except ValueError:
                     pass
         return incompatible
+
+    def _log_incompatible_keys(self, incompatible: _IncompatibleKeys) -> None:
+        """
+        Log information about the incompatible keys returned by ``_load_model``.
+        """
+        for k, shape_checkpoint, shape_model in incompatible.incorrect_shapes:
+            self.logger.warning(
+                "Skip loading parameter '{}' to the model due to incompatible "
+                "shapes: {} in the checkpoint but {} in the "
+                "model! You might want to double check if this is expected.".format(
+                    k, shape_checkpoint, shape_model
+                )
+            )
+        if incompatible.missing_keys:
+            self.logger.info(get_missing_parameters_message(incompatible.missing_keys))
+        if incompatible.unexpected_keys:
+            self.logger.info(
+                get_unexpected_parameters_message(incompatible.unexpected_keys)
+            )

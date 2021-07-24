@@ -80,15 +80,7 @@ class BertVisualPredictionHead(nn.Module):
     ):
         super(BertVisualPredictionHead, self).__init__()
         self.transform = transform
-
-        # The output weights are the same as the input embeddings, but there is
-        # an output-only bias for each token.
-        self.decoder = nn.Linear(hidden_size, v_target_size, bias=False)
-
-        self.bias = nn.Parameter(torch.zeros(v_target_size))
-
-        # Need a link between the two variables so that the bias is correctly resized with `resize_token_embeddings`
-        self.decoder.bias = self.bias
+        self.decoder = nn.Linear(hidden_size, v_target_size)
 
     @classmethod
     def from_config(cls, cfg):

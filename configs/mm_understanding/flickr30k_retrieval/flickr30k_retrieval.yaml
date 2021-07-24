@@ -23,13 +23,16 @@ DATALOADER:
 ######################################### MODEL #########################################
 MODEL:
   MAX_SEQ_LEN: 30
+  META_ARCHITECTURE: 'BiTransformerEncoderDecoder'
+  ENCODER: 'TwoStreamBertEncoder'
   DECODER: ''
   PREDICTOR: 'MultiModalSimilarity'
+  WEIGHTS: '/export1/open_source/convert/TDEN.pth'
 
 ######################################### BERT #########################################
   BERT:
-    NUM_HIDDEN_LAYERS: 2
-    V_NUM_HIDDEN_LAYERS: 2
+    NUM_HIDDEN_LAYERS: 12
+    V_NUM_HIDDEN_LAYERS: 6
     NUM_UNDERSTANDING_LAYERS: 0
     NUM_GENERATION_LAYERS: 0
 

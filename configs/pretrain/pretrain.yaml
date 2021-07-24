@@ -28,12 +28,13 @@ SCHEDULED_SAMPLING:
 ######################################### MODEL #########################################
 MODEL:
   VOCAB_SIZE: 30522 # include <BOS>/<EOS>
-  META_ARCHITECTURE: 'TransformerEncoderDecoder'
+  META_ARCHITECTURE: 'TDENPretrain'
   ENCODER: 'TwoStreamBertEncoder'
   DECODER: 'DecoupleBertDecoder'
   PREDICTOR: 'BertPredictionHead'
   V_PREDICTOR: 'BertVisualPredictionHead'
   MAX_SEQ_LEN: 36
+  WEIGHTS: '../convert/TDEN.pth'
 
 ######################################### BERT #########################################
   BERT:
@@ -46,10 +47,10 @@ MODEL:
     FFN_DROPOUT_PROB: 0.1
     ATTENTION_PROBS_DROPOUT_PROB: 0.1
     V_TARGET_SIZE: 1601
-    NUM_HIDDEN_LAYERS: 2
-    V_NUM_HIDDEN_LAYERS: 2
-    NUM_UNDERSTANDING_LAYERS: 2
-    NUM_GENERATION_LAYERS: 2
+    NUM_HIDDEN_LAYERS: 12
+    V_NUM_HIDDEN_LAYERS: 6
+    NUM_UNDERSTANDING_LAYERS: 6
+    NUM_GENERATION_LAYERS: 6
 
 #################################### Token embedding ####################################
   TOKEN_EMBED:
@@ -71,7 +72,13 @@ MODEL:
     ACTIVATION: 'none'
     USE_NORM: True
     DROPOUT: 0.1
-  
+######################################### MM_PREDICTOR #########################################
+  MM_PREDICTOR:
+    POOLER_INPUT_SIZE: 768
+    POOLER_OUTPUT_SIZE: 1024
+    POOLER_BN: True
+    POOLER_DROPOUT: 0.1
+    
 ####################################### Optimizer #######################################
 SOLVER:
   NAME: 'Adam'
