@@ -16,7 +16,7 @@ from ..predictor import MultiModalSimilarity
 from .transformer_enc_dec import TransformerEncoderDecoder
 from .build import META_ARCH_REGISTRY
 
-__all__ = ["BiTransformerTDEN", "TDENPretrain"]
+__all__ = ["TDENBiTransformer", "TDENPretrain"]
 
 @META_ARCH_REGISTRY.register()
 class TDENBiTransformer(TransformerEncoderDecoder):

@@ -31,7 +31,7 @@ VOCAB_FILES_NAMES = {'vocab_file': 'vocab.txt'}
 PRETRAINED_VOCAB_FILES_MAP = {
     'vocab_file':
     {
-        'bert-base-uncased': "../bert-base-uncased-vocab.txt",
+        'bert-base-uncased': "../pretrain/BERT/bert-base-uncased-vocab.txt",
         'bert-large-uncased': "https://s3.amazonaws.com/models.huggingface.co/bert/bert-large-uncased-vocab.txt",
         'bert-base-cased': "https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-cased-vocab.txt",
         'bert-large-cased': "https://s3.amazonaws.com/models.huggingface.co/bert/bert-large-cased-vocab.txt",
