@@ -35,7 +35,7 @@ class PeriodicEpochCheckpointer(PeriodicCheckpointer):
 
         if (iteration + 1) % self.period == 0:
             self.checkpointer.save(
-                "{}_Epoch_{:05d}_Iter_{:07d}".format(self.file_prefix, epoch+1, iteration), **additional_state
+                "{}_Epoch_{:05d}_Iter_{:07d}".format(self.file_prefix, epoch, iteration), **additional_state
             )
 
             if self.max_to_keep is not None:

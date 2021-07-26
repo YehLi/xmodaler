@@ -18,15 +18,25 @@ from pycocoevalcap.eval import COCOEvalCap
 
 @EVALUATION_REGISTRY.register()
 class COCOEvaler(object):
-    def __init__(self, cfg, annfile):
+    def __init__(self, cfg, annfile, output_dir):
         super(COCOEvaler, self).__init__()
         self.coco = COCO(annfile)
         if not os.path.exists(kfg.TEMP_DIR):
             os.mkdir(kfg.TEMP_DIR)
 
-    def eval(self, result):
+        if output_dir is not None:
+            self.output_dir = os.path.join(output_dir, 'results')
+            if not os.path.exists(self.output_dir):
+                os.mkdir(self.output_dir)
+        else:
+            self.output_dir = None
+
+    def eval(self, results, epoch):
+        if self.output_dir is not None:
+            json.dump(results, open(os.path.join(self.output_dir, str(epoch) + '.json'), "w"))
+
         in_file = tempfile.NamedTemporaryFile(mode='w', delete=False, dir=kfg.TEMP_DIR)
-        json.dump(result, in_file)
+        json.dump(results, in_file)
         in_file.close()
 
         cocoRes = self.coco.loadRes(in_file.name)

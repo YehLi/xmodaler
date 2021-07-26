@@ -14,7 +14,7 @@ from .build import EVALUATION_REGISTRY
 
 @EVALUATION_REGISTRY.register()
 class VQAEvaler(object):
-    def __init__(self, cfg, annfile):
+    def __init__(self, cfg, annfile, output_dir):
         super(VQAEvaler, self).__init__()
         answers_val = pickle.load(open(annfile, "rb"))
         label2ans_path = os.path.join(cfg.DATALOADER.ANNO_FOLDER, "trainval_label2ans.pkl")
@@ -28,14 +28,26 @@ class VQAEvaler(object):
                     label_str = self.label2ans[label]
                     self.id2label[quesid][label_str] = datum['scores'][i]
 
-    def eval(self, results):
-        if 'answer' not in results[0]:
-            return { "accuracy": 0.0 }
+        if output_dir is not None:
+            self.output_dir = os.path.join(output_dir, 'results')
+            if not os.path.exists(self.output_dir):
+                os.mkdir(self.output_dir)
+        else:
+            self.output_dir = None
+
+    def eval(self, results, epoch):
+        for res in results:
+            res['answer'] = self.label2ans[res['answer']]
+        if self.output_dir is not None:
+            json.dump(results, open(os.path.join(self.output_dir, str(epoch) + '.json'), "w"))
 
         accuracy = 0.
         for result in results:
             quesid = result['question_id']
             ans = result['answer']
+            if quesid not in self.id2label:
+                return { "accuracy": 0.0 }
+
             datum = self.id2label[quesid]
             if ans in datum:
                 accuracy += datum[ans]

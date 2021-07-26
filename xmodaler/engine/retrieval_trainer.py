@@ -24,7 +24,7 @@ class RetrievalTrainer(DefaultTrainer):
         super(RetrievalTrainer, self).__init__(cfg)
 
     @classmethod
-    def test(cls, cfg, model, test_data_loader, evaluator):
+    def test(cls, cfg, model, test_data_loader, evaluator, epoch):
         model.eval()
 
         ids = []

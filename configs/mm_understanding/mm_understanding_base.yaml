@@ -5,7 +5,7 @@ ENGINE:
 ######################################### MODEL #########################################
 MODEL:
   VOCAB_SIZE: 30522 # include <BOS>/<EOS>
-  META_ARCHITECTURE: 'BiTransformerEncoderDecoder'
+  META_ARCHITECTURE: 'TDENBiTransformer'
   ENCODER: 'TwoStreamBertEncoder'
   DECODER: 'DecoupleBertDecoder'
   PREDICTOR: 'MultiModalPredictor'

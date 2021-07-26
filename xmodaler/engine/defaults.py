@@ -247,12 +247,12 @@ class DefaultTrainer(TrainerBase):
         self.test_data_loader = self.build_test_loader(cfg)
         
         if (self.val_data_loader is not None) and (len(cfg.INFERENCE.VAL_ANNFILE) > 0):
-            self.val_evaluator = build_evaluation(cfg, cfg.INFERENCE.VAL_ANNFILE)
+            self.val_evaluator = build_evaluation(cfg, cfg.INFERENCE.VAL_ANNFILE, None)
         else:
             self.val_evaluator = None
 
         if (self.test_data_loader is not None) and (len(cfg.INFERENCE.TEST_ANNFILE) > 0):
-            self.test_evaluator = build_evaluation(cfg, cfg.INFERENCE.TEST_ANNFILE)
+            self.test_evaluator = build_evaluation(cfg, cfg.INFERENCE.TEST_ANNFILE, cfg.OUTPUT_DIR)
         else:
             self.test_evaluator = None
 
@@ -311,21 +311,35 @@ class DefaultTrainer(TrainerBase):
         if comm.is_main_process():
             ret.append(hooks.PeriodicCheckpointer(self.checkpointer, cfg.SOLVER.CHECKPOINT_PERIOD * self.iters_per_epoch))
 
-        def test_and_save_results():
-            eval_results = self.test(self.cfg, self.model, self.test_data_loader, self.test_evaluator)
+        def test_and_save_results(epoch):
+            eval_results = self.test(self.cfg, self.model, self.test_data_loader, self.test_evaluator, epoch)
             return eval_results
 
-        def val_and_save_results():
-            eval_results = self.test(self.cfg, self.model, self.val_data_loader, self.val_evaluator)
+        def val_and_save_results(epoch):
+            eval_results = self.test(self.cfg, self.model, self.val_data_loader, self.val_evaluator, epoch)
             return eval_results
 
         # Do evaluation after checkpointer, because then if it fails,
         # we can use the saved checkpoint to debug.
         if self.val_data_loader is not None:
-            ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, val_and_save_results, self.iters_per_epoch, 'val'))
+            ret.append(
+                hooks.EvalHook(
+                    eval_period = cfg.SOLVER.EVAL_PERIOD, 
+                    eval_start = cfg.INFERENCE.VAL_EVAL_START,
+                    eval_function = val_and_save_results, 
+                    iters_per_epoch = self.iters_per_epoch,
+                    stage = 'val'
+                ))
 
         if self.test_data_loader is not None:
-            ret.append(hooks.EvalHook(cfg.SOLVER.EVAL_PERIOD, test_and_save_results, self.iters_per_epoch, 'test'))
+            ret.append(
+                hooks.EvalHook(
+                    eval_period = cfg.SOLVER.EVAL_PERIOD, 
+                    eval_start = cfg.INFERENCE.TEST_EVAL_START,
+                    eval_function = test_and_save_results, 
+                    iters_per_epoch = self.iters_per_epoch,
+                    stage = 'test'
+                ))
 
         if comm.is_main_process():
             # Here the default print/log frequency of each writer is used.
@@ -432,7 +446,7 @@ class DefaultTrainer(TrainerBase):
                 storage.put_scalars(**metrics_dict)
 
     @classmethod
-    def test(cls, cfg, model, test_data_loader, evaluator):
+    def test(cls, cfg, model, test_data_loader, evaluator, epoch):
         model.eval()
         results = []
         with torch.no_grad():
@@ -450,7 +464,7 @@ class DefaultTrainer(TrainerBase):
                     results.append({cfg.INFERENCE.ID_KEY: int(id), cfg.INFERENCE.VALUE: output})
 
         if evaluator is not None:
-            eval_res = evaluator.eval(results)
+            eval_res = evaluator.eval(results, epoch)
         model.train()
         return eval_res
 

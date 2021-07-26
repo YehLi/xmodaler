@@ -13,7 +13,7 @@ from .build import EVALUATION_REGISTRY
 
 @EVALUATION_REGISTRY.register()
 class RetrievalEvaler(object):
-    def __init__(self, cfg, annfile):
+    def __init__(self, cfg, annfile, output_dir):
         super(RetrievalEvaler, self).__init__()
 
     def eval(self, vfeats, tfeats, labels):

@@ -164,7 +164,6 @@ class VQADataset:
         question_id = dataset_dict["question_id"]
         
         image_path = os.path.join(self.feats_folder, image_id + ".npz")
-        #image_path = os.path.join(self.feats_folder, "565546.npz")
         features, image_locations = read_np_bbox(image_path, self.max_feat_num)
 
         question = np.array(dataset_dict["question"])

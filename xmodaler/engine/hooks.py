@@ -214,7 +214,7 @@ class PeriodicCheckpointer(_PeriodicCheckpointer, HookBase):
 
     def after_step(self):
         # No way to use **kwargs
-        self.step(iteration = self.trainer.iter, epoch=self.trainer.iter // self.trainer.iters_per_epoch)
+        self.step(iteration = self.trainer.iter, epoch=(self.trainer.iter+1) // self.trainer.iters_per_epoch)
 
 
 class LRScheduler(HookBase):
@@ -334,7 +334,7 @@ class EvalHook(HookBase):
     It is executed every ``eval_period`` iterations and after the last iteration.
     """
 
-    def __init__(self, eval_period, eval_function, iters_per_epoch, stage):
+    def __init__(self, eval_period, eval_start, eval_function, iters_per_epoch, stage):
         """
         Args:
             eval_period (int): the period to run `eval_function`. Set to 0 to
@@ -350,12 +350,12 @@ class EvalHook(HookBase):
         self._period = eval_period * iters_per_epoch
         self._func = eval_function
         self._stage = stage
-        self._iters_per_epoch = iters_per_epoch
+        self._eval_start = eval_start
 
-    def _do_eval(self):
+    def _do_eval(self, epoch):
         
         if comm.is_main_process():
-            results = self._func()
+            results = self._func(epoch)
             if results:
                 assert isinstance(results, dict), "Eval function must return a dict. Got {} instead.".format(results)
                 flattened_results = flatten_results_dict(results)
@@ -370,7 +370,7 @@ class EvalHook(HookBase):
                 self.trainer.storage.put_scalars(**flattened_results, smoothing_hint=False)
 
                 logger = logging.getLogger(__name__)
-                epoch = (self.trainer.iter + 1) // self._iters_per_epoch
+                epoch = (self.trainer.iter + 1) // self.trainer.iters_per_epoch
                 logger.info('############################## {}: {} ##############################'.format(self._stage, epoch))
                 for k, v in flattened_results.items():
                     logger.info("{}: {}".format(k, v)) 
@@ -382,13 +382,16 @@ class EvalHook(HookBase):
 
     def after_step(self):
         next_iter = self.trainer.iter + 1
-        if self._period > 0 and next_iter % self._period == 0:
-            self._do_eval()
+        epoch = int(next_iter // self.trainer.iters_per_epoch)
+        if (self._period > 0) and (next_iter % self._period == 0) and (epoch > self._eval_start):
+            self._do_eval(epoch)
 
     def after_train(self):
+        next_iter = self.trainer.iter + 1
+        epoch = int(next_iter // self.trainer.iters_per_epoch)
         # This condition is to prevent the eval from running after a failed training
         if self.trainer.iter + 1 >= self.trainer.max_iter:
-            self._do_eval()
+            self._do_eval(epoch)
         # func is likely a closure that holds reference to the trainer
         # therefore we clean it to avoid circular reference in the end
         del self._func

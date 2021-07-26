@@ -8,9 +8,9 @@ DATASETS:
 
 ###################################### DATALOADER ######################################
 DATALOADER:
-  TRAIN_BATCH_SIZE: 8
+  TRAIN_BATCH_SIZE: 24
   TEST_BATCH_SIZE: 32
-  NUM_WORKERS: 0
+  NUM_WORKERS: 4
   FEATS_FOLDER: '../open_source_dataset/VQA/features/up_down'
   ANNO_FOLDER: '../open_source_dataset/VQA'
   SEQ_PER_SAMPLE:  1
@@ -19,13 +19,17 @@ DATALOADER:
 ######################################### MODEL #########################################
 MODEL:
   MAX_SEQ_LEN: 23
+  WEIGHTS: '../pretrain/TDEN/TDEN.pth'
 
 ######################################### BERT #########################################
   BERT:
-    NUM_HIDDEN_LAYERS: 2
-    V_NUM_HIDDEN_LAYERS: 2
-    NUM_UNDERSTANDING_LAYERS: 2
-    NUM_GENERATION_LAYERS: 2
+    NUM_HIDDEN_LAYERS: 12
+    V_NUM_HIDDEN_LAYERS: 6
+    NUM_UNDERSTANDING_LAYERS: 6
+    NUM_GENERATION_LAYERS: 6
+    LAYER_DROP: 0.3
+    V_LAYER_DROP: 0.3
+    U_LAYER_DROP: 0.1
 
 ######################################### MM_PREDICTOR #########################################
   MM_PREDICTOR:
@@ -38,10 +42,10 @@ MODEL:
 ####################################### Optimizer #######################################
 SOLVER:
   NAME: 'Adam'
-  EPOCH: 10
+  EPOCH: 20
   CHECKPOINT_PERIOD: 1
   EVAL_PERIOD: 1
-  BASE_LR: 0.0005
+  BASE_LR: 0.00005
   BIAS_LR_FACTOR: 1.0
   WEIGHT_DECAY: 0.0
   WEIGHT_DECAY_NORM: 0.0
@@ -49,17 +53,18 @@ SOLVER:
   MOMENTUM: 0.0
   DAMPENING: 0.0
   NESTEROV: 0.0
-  BETAS: [0.9, 0.999]
+  BETAS: [0.9, 0.98]
   EPS: 1e-8
-  GRAD_CLIP: 0.1
+  GRAD_CLIP: -1.0
   GRAD_CLIP_TYPE: 'value'
   NORM_TYPE: 2.0
   
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
-  NAME: 'StepLR'
-  STEP_SIZE: 3
-  GAMMA: 0.1
+  NAME: 'WarmupMultiStepLR'
+  STEPS: [10, 12]
+  GAMMA: 0.2
+  WARMUP: 4
 
 ####################################### losses ####################################### 
 LOSSES:
@@ -73,3 +78,5 @@ INFERENCE:
   VAL_ANNFILE: '../open_source_dataset/VQA/val_target.pkl'
   TEST_ANNFILE: ''
   GENERATION_MODE: False
+  VAL_EVAL_START: -1
+  TEST_EVAL_START: 10

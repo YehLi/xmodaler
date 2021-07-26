@@ -322,6 +322,10 @@ _C.INFERENCE.TEST_ANNFILE = 'captions_test5k.json'
 
 _C.INFERENCE.GENERATION_MODE = True
 
+_C.INFERENCE.VAL_EVAL_START = -1
+
+_C.INFERENCE.TEST_EVAL_START = -1
+
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #
