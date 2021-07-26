@@ -1,16 +1,61 @@
-_BASE_: "base_att_image_caption.yaml"
+####################################### DATASETS #######################################
+DATASETS:
+  TRAIN: 'MSCoCoDataset'
+  VAL: 'MSCoCoDataset'
+  TEST: 'MSCoCoDataset'
 
+  ###################################### DATALOADER ######################################
+DATALOADER:
+  TRAIN_BATCH_SIZE: 8
+  TEST_BATCH_SIZE: 32
+  NUM_WORKERS: 4
+  FEATS_FOLDER: '../open_source_dataset/mscoco_dataset/features/up_down'
+  ANNO_FOLDER:  '../open_source_dataset/mscoco_dataset'
+  SEQ_PER_SAMPLE:  5
+  MAX_FEAT_NUM: 50
+
+  ######################################### Engine #########################################
+ENGINE:
+  NAME: 'DefaultTrainer'
+
+######################################### Scheduled sampling #########################################
+SCHEDULED_SAMPLING:
+  START_EPOCH: 9999
+  INC_EVERY_EPOCH: 5
+  INC_PROB: 0.00
+  MAX_PROB: 0.00
+
+######################################### MODEL #########################################
 MODEL:
-  META_ARCHITECTURE: 'CnnEncoderDecoder'
+  VOCAB_SIZE: 10200 # include <BOS>/<EOS>
+  META_ARCHITECTURE: 'TransformerEncoderDecoder'
   ENCODER: 'MemoryAugmentedEncoder'
+  ENCODER_DIM: 512
   DECODER: 'MeshedDecoder'
   DECODER_DIM: 512
+  PREDICTOR: 'BasePredictor'
+  PRED_DROPOUT: 0.5
+  MAX_SEQ_LEN: 20
 
+#################################### Token embedding ####################################
   TOKEN_EMBED:
-    POSITION: 'SinusoidEncoding'
-    POSITION_MAX_LEN: 512
+    NAME: 'TokenBaseEmbedding'
     DIM: 512
+    ACTIVATION: 'none'
+    USE_NORM: True
+    DROPOUT: 0.1
+    POSITION: 'SinusoidEncoding'
 
+#################################### Visual embedding ####################################
+  VISUAL_EMBED:
+    NAME: 'MeshedMemoryVisualEmbedding'
+    IN_DIM: 2048
+    OUT_DIM: 512
+    ACTIVATION: 'relu'
+    USE_NORM: True
+    DROPOUT: 0.5
+
+####################################### MESHED_MEORY ############################################
   MESHEDMEORY:
     ENCODER:
       DIM_MODEL: 512
@@ -25,3 +70,60 @@ MODEL:
       NUM_ATT_HEAD: 8
       DIM_FEEDFORWARD: 2048
       DROPOUT: 0.1
+
+####################################### Optimizer #######################################
+SOLVER:
+  NAME: 'Adam'
+  EPOCH: 50
+  CHECKPOINT_PERIOD: 1
+  EVAL_PERIOD: 1
+  BASE_LR: 0.0005
+  BIAS_LR_FACTOR: 1.0
+  WEIGHT_DECAY: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+  WEIGHT_DECAY_BIAS: 0.0
+  MOMENTUM: 0.9
+  DAMPENING: 0.0
+  NESTEROV: 0.0
+  BETAS: [0.9, 0.999]
+  EPS: 1e-8
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: 'value'
+  NORM_TYPE: 2.0
+
+####################################### lr scheduler ####################################### 
+LR_SCHEDULER:
+  NAME: 'NoamLR'
+  MODEL_SIZE: 512
+  FACTOR: 1.0
+  WARMUP: 10000
+
+####################################### losses ####################################### 
+LOSSES:
+  NAMES: ['CrossEntropy']
+
+####################################### scorer ####################################### 
+SCORER:
+  NAME: 'BaseScorer'
+  TYPES: ['Cider']
+  WEIGHTS: [1.0]
+  GT_PATH: '../open_source_dataset/mscoco_dataset/mscoco_train_gts.pkl'
+  CIDER_CACHED: '../open_source_dataset/mscoco_dataset/mscoco_train_cider.pkl'
+  EOS_ID: 0
+
+####################################### decode strategy ####################################### 
+DECODE_STRATEGY:
+  NAME: 'BeamSearcher'
+  BEAM_SIZE: 5
+
+####################################### evaluation ####################################### 
+INFERENCE:
+  NAME: 'COCOEvaler'
+  VOCAB: '../open_source_dataset/mscoco_dataset/vocabulary.txt'
+  ID_KEY: 'image_id'
+  VALUE: 'caption'
+  VAL_ANNFILE: '../open_source_dataset/mscoco_dataset/captions_val5k.json'
+  TEST_ANNFILE: '../open_source_dataset/mscoco_dataset/captions_test5k.json'
+  GENERATION_MODE: True
+
+  
