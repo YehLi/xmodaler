@@ -1,7 +1,8 @@
-torch>=1.9.0
+torch>=1.8.0
 fvcore
 pycocotools
 omegaconf
 cloudpickle
 torchvision
 tensorboard
+jsonlines
