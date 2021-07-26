@@ -3,7 +3,7 @@
 @author: Yehao Li
 @contact: yehaoli.sysu@gmail.com
 """
-import copy
+import random
 import torch
 from torch import nn
 
@@ -24,28 +24,36 @@ class DecoupleBertDecoder(Decoder):
         *,
        num_understanding_layers: int,
        num_generation_layers: int,
-       bert_understanding_layer: BertUnderstandingLayer,
-       bert_generation_layer: BertGenerationLayer
+       u_layer_drop: float,
+       g_layer_drop: float,
+       bert_understanding_layers,
+       bert_generation_layers
     ):
         super(DecoupleBertDecoder, self).__init__()
         self.num_understanding_layers = num_understanding_layers
         self.num_generation_layers = num_generation_layers
+        self.u_layer_drop = u_layer_drop
+        self.g_layer_drop = g_layer_drop
         if self.num_understanding_layers > 0:
-            self.u_layers = nn.ModuleList(
-                [copy.copy(bert_understanding_layer) for _ in range(self.num_understanding_layers)]
-            )
+            self.u_layers = bert_understanding_layers
         if self.num_generation_layers > 0:
-            self.g_layers = nn.ModuleList(
-                [copy.copy(bert_generation_layer) for _ in range(self.num_generation_layers)]
-            )
+            self.g_layers = bert_generation_layers
         
     @classmethod
     def from_config(cls, cfg):
+        bert_understanding_layers = nn.ModuleList(
+            [BertUnderstandingLayer(cfg) for _ in range(cfg.MODEL.BERT.NUM_UNDERSTANDING_LAYERS)]
+        )
+        bert_generation_layers = nn.ModuleList(
+            [BertGenerationLayer(cfg) for _ in range(cfg.MODEL.BERT.NUM_GENERATION_LAYERS)]
+        )
         return {
             "num_understanding_layers": cfg.MODEL.BERT.NUM_UNDERSTANDING_LAYERS,
             "num_generation_layers": cfg.MODEL.BERT.NUM_GENERATION_LAYERS,
-            "bert_understanding_layer": BertUnderstandingLayer(cfg),
-            "bert_generation_layer": BertGenerationLayer(cfg),
+            "u_layer_drop": cfg.MODEL.BERT.U_LAYER_DROP,
+            "g_layer_drop": cfg.MODEL.BERT.G_LAYER_DROP,
+            "bert_understanding_layers": bert_understanding_layers,
+            "bert_generation_layers": bert_generation_layers,
         }
 
     @classmethod
@@ -74,9 +82,14 @@ class DecoupleBertDecoder(Decoder):
             vfeats_arr = []
             u_tfeats_arr = []
             for layer_module in self.u_layers:
-                vfeats, u_tfeats = layer_module(vfeats, ext_vmasks, u_tfeats, ext_u_tmasks)
-                vfeats_arr.append(vfeats)
-                u_tfeats_arr.append(u_tfeats)
+                dropout_probability = random.uniform(0, 1)
+                if self.training and (dropout_probability < self.u_layer_drop):
+                    vfeats_arr.append(vfeats)
+                    u_tfeats_arr.append(u_tfeats)
+                else:
+                    vfeats, u_tfeats = layer_module(vfeats, ext_vmasks, u_tfeats, ext_u_tmasks)
+                    vfeats_arr.append(vfeats)
+                    u_tfeats_arr.append(u_tfeats)
             ret.update({ kfg.U_HIDDEN_STATES: u_tfeats_arr, kfg.ATT_FEATS: vfeats_arr })
 
         if kfg.G_TOKEN_EMBED in batched_inputs:

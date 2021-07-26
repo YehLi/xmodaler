@@ -68,4 +68,4 @@ class BatchTriplet(nn.Module):
             triplet_num = len(cost_s) + len(cost_im)
             loss = cost_s.mean() + cost_im.mean()
 
-        return { 'BatchTriplet Loss': loss, "Triplet_num": triplet_num }
+        return { 'BatchTriplet Loss': loss }

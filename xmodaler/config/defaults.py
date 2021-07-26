@@ -174,11 +174,19 @@ _C.MODEL.BERT.V_TARGET_SIZE = 0
 
 _C.MODEL.BERT.NUM_HIDDEN_LAYERS = 12
 
+_C.MODEL.BERT.LAYER_DROP = 0.0
+
 _C.MODEL.BERT.V_NUM_HIDDEN_LAYERS = 6
+
+_C.MODEL.BERT.V_LAYER_DROP = 0.0
 
 _C.MODEL.BERT.NUM_UNDERSTANDING_LAYERS = 6
 
+_C.MODEL.BERT.U_LAYER_DROP = 0.0
+
 _C.MODEL.BERT.NUM_GENERATION_LAYERS = 6
+
+_C.MODEL.BERT.G_LAYER_DROP = 0.0
 
 # ----------------------------------------------------------------------------
 # Solver
@@ -250,9 +258,9 @@ _C.LR_SCHEDULER.WARMUP = 0 # epoch, for WarmupXXX; iteration, for Noam
 
 _C.LR_SCHEDULER.MIN_LR = 0.00001 
 
-_C.LR_SCHEDULER.MILESTONES = (3,) # for WarmupMultiStep only
+_C.LR_SCHEDULER.STEPS = (3,) # for WarmupMultiStep only
 
-_C.LR_SCHEDULER.WARMUP_FACTOR = 1.0 / 3 # for WarmupMultiStep only
+_C.LR_SCHEDULER.WARMUP_FACTOR = 0.0 # for WarmupMultiStep only
 
 _C.LR_SCHEDULER.WARMUP_METHOD = "linear" # for WarmupMultiStep only
 

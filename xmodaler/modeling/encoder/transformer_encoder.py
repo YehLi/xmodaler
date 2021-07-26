@@ -3,7 +3,6 @@
 @author: Yehao Li
 @contact: yehaoli.sysu@gmail.com
 """
-import copy
 import torch
 from torch import nn
 
@@ -22,19 +21,20 @@ class TransformerEncoder(nn.Module):
         self,
         *,
         num_hidden_layers: int,
-        bert_layer: BertLayer,
+        bert_layers,
     ):
         super(TransformerEncoder, self).__init__()
         self.num_hidden_layers = num_hidden_layers
-        self.layers = nn.ModuleList(
-            [copy.copy(bert_layer) for _ in range(self.num_hidden_layers)]
-        )
+        self.layers = bert_layers
 
     @classmethod
     def from_config(cls, cfg):
+        bert_layers = nn.ModuleList(
+            [BertLayer(cfg) for _ in range(cfg.MODEL.BERT.NUM_HIDDEN_LAYERS)]
+        )
         return {
             "num_hidden_layers": cfg.MODEL.BERT.NUM_HIDDEN_LAYERS,
-            "bert_layer": BertLayer(cfg),
+            "bert_layers": bert_layers,
         }
 
     @classmethod

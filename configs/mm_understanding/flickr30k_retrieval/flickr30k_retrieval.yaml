@@ -23,7 +23,7 @@ DATALOADER:
 ######################################### MODEL #########################################
 MODEL:
   MAX_SEQ_LEN: 30
-  META_ARCHITECTURE: 'TDENBiTransformer'
+  META_ARCHITECTURE: 'TDENRetrieval'
   ENCODER: 'TwoStreamBertEncoder'
   DECODER: ''
   PREDICTOR: 'MultiModalSimilarity'
@@ -43,6 +43,9 @@ MODEL:
     V_NUM_HIDDEN_LAYERS: 6
     NUM_UNDERSTANDING_LAYERS: 0
     NUM_GENERATION_LAYERS: 0
+
+    LAYER_DROP: 0.1
+    V_LAYER_DROP: 0.1
 
 ######################################### MM_PREDICTOR #########################################
   MM_PREDICTOR:
@@ -95,9 +98,10 @@ SOLVER:
   
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
-  NAME: 'StepLR'
-  STEP_SIZE: 30
+  NAME: 'WarmupMultiStepLR'
+  STEPS: [30, 60]
   GAMMA: 0.1
+  WARMUP: 10
 
 ####################################### losses ####################################### 
 LOSSES:

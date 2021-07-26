@@ -3,7 +3,6 @@
 @author: Yehao Li
 @contact: yehaoli.sysu@gmail.com
 """
-import copy
 import torch
 from torch import nn
 
@@ -23,20 +22,21 @@ class TransformerDecoder(Decoder):
         self,
         *,
        num_generation_layers: int,
-       bert_generation_layer: BertGenerationLayer
+       bert_generation_layers
     ):
         super(TransformerDecoder, self).__init__()
         self.num_generation_layers = num_generation_layers
         if self.num_generation_layers > 0:
-            self.g_layers = nn.ModuleList(
-                [copy.copy(bert_generation_layer) for _ in range(self.num_generation_layers)]
-            )
+            self.g_layers = bert_generation_layers
 
     @classmethod
     def from_config(cls, cfg):
+        bert_generation_layers = nn.ModuleList(
+            [BertGenerationLayer(cfg) for _ in range(cfg.MODEL.BERT.NUM_GENERATION_LAYERS)]
+        )
         return {
             "num_generation_layers": cfg.MODEL.BERT.NUM_GENERATION_LAYERS,
-            "bert_generation_layer": BertGenerationLayer(cfg),
+            "bert_generation_layers": bert_generation_layers,
         }
 
     @classmethod

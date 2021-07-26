@@ -3,7 +3,6 @@
 @author: Yehao Li
 @contact: yehaoli.sysu@gmail.com
 """
-import copy
 import numpy as np
 import torch
 from torch import nn
@@ -33,21 +32,28 @@ class MultiModalSimilarity(nn.Module):
         super(MultiModalSimilarity, self).__init__()
         self.num_hidden_layers = num_hidden_layers
         self.v_num_hidden_layers = v_num_hidden_layers
-
-        pooler = AttentionPooler(
+        
+        self.t_pooler = AttentionPooler(
             hidden_size = pooler_input_size, 
             output_size = pooler_output_size,
             dropout = pooler_dropout,
             use_bn = pooler_bn
         )
-        
-        self.t_pooler = copy.copy(pooler)
+
         self.v_pooler = nn.ModuleList(
-            [copy.copy(pooler) for _ in range(self.v_num_hidden_layers)]
+            [
+                AttentionPooler(
+                    hidden_size = pooler_input_size, 
+                    output_size = pooler_output_size,
+                    dropout = pooler_dropout,
+                    use_bn = pooler_bn
+                ) for _ in range(self.v_num_hidden_layers)
+            ]
         )
         
     @classmethod
     def from_config(cls, cfg):
+
         return {
             "pooler_input_size": cfg.MODEL.MM_PREDICTOR.POOLER_INPUT_SIZE,
             "pooler_output_size": cfg.MODEL.MM_PREDICTOR.POOLER_OUTPUT_SIZE,

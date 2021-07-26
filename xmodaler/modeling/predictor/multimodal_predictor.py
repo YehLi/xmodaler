@@ -3,7 +3,6 @@
 @author: Yehao Li
 @contact: yehaoli.sysu@gmail.com
 """
-import copy
 import torch
 from torch import nn
 
@@ -32,18 +31,24 @@ class MultiModalPredictor(nn.Module):
         super(MultiModalPredictor, self).__init__()
         self.num_understanding_layers = num_understanding_layers
         self.num_generation_layers = num_generation_layers
-
-        pooler = AttentionPooler(
-            hidden_size = pooler_input_size, 
-            output_size = pooler_output_size,
-            dropout = pooler_dropout,
-            use_bn = pooler_bn
-        )
         
         if self.num_understanding_layers > 0:
-            self.u_pooler = copy.copy(pooler)
+            self.u_pooler = AttentionPooler(
+                hidden_size = pooler_input_size, 
+                output_size = pooler_output_size,
+                dropout = pooler_dropout,
+                use_bn = pooler_bn
+            )
             self.v_pooler = nn.ModuleList(
-                [copy.copy(pooler) for _ in range(self.num_understanding_layers)]
+                [
+                    AttentionPooler(
+                        hidden_size = pooler_input_size, 
+                        output_size = pooler_output_size,
+                        dropout = pooler_dropout,
+                        use_bn = pooler_bn
+                    )
+                    for _ in range(self.num_understanding_layers)
+                ]
             )
             self.u_logits = nn.Sequential(
                 nn.LayerNorm(pooler_output_size),
@@ -51,7 +56,12 @@ class MultiModalPredictor(nn.Module):
             )
         
         if self.num_generation_layers > 0:
-            self.g_pooler = copy.copy(pooler)
+            self.g_pooler = AttentionPooler(
+                hidden_size = pooler_input_size, 
+                output_size = pooler_output_size,
+                dropout = pooler_dropout,
+                use_bn = pooler_bn
+            )
             self.g_logits = nn.Sequential(
                 nn.LayerNorm(pooler_output_size),
                 nn.Linear(pooler_output_size, labels_num)

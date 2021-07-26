@@ -189,9 +189,10 @@ class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
 
     @classmethod
     def from_config(cls, cfg, optimizer, data_size):
+        steps = [step * data_size for step in cfg.LR_SCHEDULER.STEPS]
         return {
             "optimizer": optimizer,
-            "milestones": cfg.LR_SCHEDULER.MILESTONES,
+            "milestones": steps,
             "gamma": cfg.LR_SCHEDULER.GAMMA,
             "warmup_factor": cfg.LR_SCHEDULER.WARMUP_FACTOR,
             "warmup_iters": cfg.LR_SCHEDULER.WARMUP * data_size,

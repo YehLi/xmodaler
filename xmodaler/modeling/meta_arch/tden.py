@@ -78,6 +78,51 @@ class TDENBiTransformer(TransformerEncoderDecoder):
         }
 
 @META_ARCH_REGISTRY.register()
+class TDENRetrieval(TransformerEncoderDecoder):
+    @configurable
+    def __init__(
+        self,
+        *,
+        vocab_size,
+        max_seq_len,
+        token_embed,
+        visual_embed,
+        encoder,
+        decoder,
+        predictor,
+        greedy_decoder,
+        beam_searcher,
+        v_predictor,
+    ):
+        super().__init__(
+            vocab_size=vocab_size,
+            max_seq_len=max_seq_len,
+            token_embed=token_embed,
+            visual_embed=visual_embed,
+            encoder=encoder,
+            decoder=decoder,
+            predictor=predictor,
+            greedy_decoder=greedy_decoder,
+            beam_searcher=beam_searcher,
+            v_predictor=v_predictor
+        )
+        self.similarity_predictor = predictor
+        self.predictor = None
+
+    @classmethod
+    def from_config(cls, cfg):
+        ret = super().from_config(cfg)
+        ret.update({ "v_predictor": None })
+        return ret
+
+    def _forward(self, batched_inputs):
+        inputs = super()._forward(batched_inputs)
+        scores = self.similarity_predictor(inputs)
+        inputs.update(scores)
+        return inputs
+
+
+@META_ARCH_REGISTRY.register()
 class TDENPretrain(TransformerEncoderDecoder):
     @configurable
     def __init__(

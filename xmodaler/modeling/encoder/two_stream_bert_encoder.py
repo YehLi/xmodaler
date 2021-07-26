@@ -3,7 +3,7 @@
 @author: Yehao Li
 @contact: yehaoli.sysu@gmail.com
 """
-import copy
+import random
 import torch
 from torch import nn
 
@@ -23,25 +23,35 @@ class TwoStreamBertEncoder(nn.Module):
         *,
         num_hidden_layers: int,
         v_num_hidden_layers: int,
-        bert_layer: BertLayer,
+        layer_drop: float,
+        v_layer_drop: float,
+        bert_layers,
+        v_bert_layers
     ):
         super(TwoStreamBertEncoder, self).__init__()
         self.num_hidden_layers = num_hidden_layers
         self.v_num_hidden_layers = v_num_hidden_layers
+        self.layer_drop = layer_drop
+        self.v_layer_drop = v_layer_drop
 
-        self.layers = nn.ModuleList(
-            [copy.copy(bert_layer) for _ in range(self.num_hidden_layers)]
-        )
-        self.v_layers = nn.ModuleList(
-            [copy.copy(bert_layer) for _ in range(self.v_num_hidden_layers)]
-        )
+        self.layers = bert_layers
+        self.v_layers = v_bert_layers
         
     @classmethod
     def from_config(cls, cfg):
+        bert_layers = nn.ModuleList(
+            [BertLayer(cfg) for _ in range(cfg.MODEL.BERT.NUM_HIDDEN_LAYERS)]
+        )
+        v_bert_layers = nn.ModuleList(
+            [BertLayer(cfg) for _ in range(cfg.MODEL.BERT.V_NUM_HIDDEN_LAYERS)]
+        )
         return {
             "num_hidden_layers": cfg.MODEL.BERT.NUM_HIDDEN_LAYERS,
             "v_num_hidden_layers": cfg.MODEL.BERT.V_NUM_HIDDEN_LAYERS,
-            "bert_layer": BertLayer(cfg),
+            "layer_drop": cfg.MODEL.BERT.LAYER_DROP,
+            "v_layer_drop": cfg.MODEL.BERT.V_LAYER_DROP,
+            "bert_layers": bert_layers,
+            "v_bert_layers": v_bert_layers,
         }
 
     @classmethod
@@ -56,8 +66,12 @@ class TwoStreamBertEncoder(nn.Module):
 
             vfeats_arr = []
             for layer_module in self.v_layers:
-                vfeats, _ = layer_module(vfeats, ext_vmasks)
-                vfeats_arr.append(vfeats)
+                dropout_probability = random.uniform(0, 1)
+                if self.training and (dropout_probability < self.v_layer_drop):
+                    vfeats_arr.append(vfeats)
+                else:
+                    vfeats, _ = layer_module(vfeats, ext_vmasks)
+                    vfeats_arr.append(vfeats)
             ret.update({ kfg.ATT_FEATS: vfeats_arr })
 
         elif mode == 't':
@@ -67,8 +81,12 @@ class TwoStreamBertEncoder(nn.Module):
 
                 u_tfeats_arr = []
                 for layer_module in self.layers:
-                    u_tfeats, _ = layer_module(u_tfeats, ext_u_tmasks)
-                    u_tfeats_arr.append(u_tfeats)
+                    dropout_probability = random.uniform(0, 1)
+                    if self.training and (dropout_probability < self.layer_drop):
+                        u_tfeats_arr.append(u_tfeats)
+                    else:
+                        u_tfeats, _ = layer_module(u_tfeats, ext_u_tmasks)
+                        u_tfeats_arr.append(u_tfeats)
                 ret.update({ kfg.U_TOKEN_EMBED: u_tfeats_arr })
 
             if kfg.G_TOKEN_EMBED in batched_inputs:
@@ -77,8 +95,12 @@ class TwoStreamBertEncoder(nn.Module):
 
                 g_tfeats_arr = []
                 for layer_module in self.layers:
-                    g_tfeats, _ = layer_module(g_tfeats, ext_g_tmasks)
-                    g_tfeats_arr.append(g_tfeats)
+                    dropout_probability = random.uniform(0, 1)
+                    if self.training and (dropout_probability < self.layer_drop):
+                        g_tfeats_arr.append(g_tfeats)
+                    else:
+                        g_tfeats, _ = layer_module(g_tfeats, ext_g_tmasks)
+                        g_tfeats_arr.append(g_tfeats)
                 ret.update({ kfg.G_TOKEN_EMBED: g_tfeats_arr })
 
         return ret
