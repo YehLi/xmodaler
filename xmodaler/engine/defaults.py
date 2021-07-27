@@ -246,12 +246,12 @@ class DefaultTrainer(TrainerBase):
         self.val_data_loader = self.build_val_loader(cfg)
         self.test_data_loader = self.build_test_loader(cfg)
         
-        if (self.val_data_loader is not None) and (len(cfg.INFERENCE.VAL_ANNFILE) > 0):
+        if self.val_data_loader is not None:
             self.val_evaluator = build_evaluation(cfg, cfg.INFERENCE.VAL_ANNFILE, None)
         else:
             self.val_evaluator = None
 
-        if (self.test_data_loader is not None) and (len(cfg.INFERENCE.TEST_ANNFILE) > 0):
+        if self.test_data_loader is not None:
             self.test_evaluator = build_evaluation(cfg, cfg.INFERENCE.TEST_ANNFILE, cfg.OUTPUT_DIR)
         else:
             self.test_evaluator = None
@@ -465,6 +465,8 @@ class DefaultTrainer(TrainerBase):
 
         if evaluator is not None:
             eval_res = evaluator.eval(results, epoch)
+        else:
+            eval_res = ''
         model.train()
         return eval_res
 

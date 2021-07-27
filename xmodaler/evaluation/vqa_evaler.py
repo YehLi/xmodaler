@@ -16,12 +16,13 @@ from .build import EVALUATION_REGISTRY
 class VQAEvaler(object):
     def __init__(self, cfg, annfile, output_dir):
         super(VQAEvaler, self).__init__()
-        answers_val = pickle.load(open(annfile, "rb"))
         label2ans_path = os.path.join(cfg.DATALOADER.ANNO_FOLDER, "trainval_label2ans.pkl")
         self.label2ans = pickle.load(open(label2ans_path, "rb"))
 
         self.id2label = {}
-        for datum in answers_val:
+        if len(annfile) > 0:
+            answers_val = pickle.load(open(annfile, "rb"))
+            for datum in answers_val:
                 quesid = datum['question_id']
                 self.id2label[quesid] = {}
                 for i, label in enumerate(datum['labels']):
