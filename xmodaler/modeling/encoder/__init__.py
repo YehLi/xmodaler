@@ -9,5 +9,6 @@ from .updown_encoder import UpDownEncoder
 from .transformer_encoder import TransformerEncoder
 from .memory_augmented_encoder import MemoryAugmentedEncoder
 from .two_stream_bert_encoder import TwoStreamBertEncoder
+from .lowrank_bilinear_encoder import LowRankBilinearEncoder
 
 __all__ = list(globals().keys())
