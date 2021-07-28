@@ -1,0 +1,78 @@
+_BASE_: "base_att_image_caption.yaml"
+
+###################################### DATALOADER ######################################
+DATALOADER:
+  TRAIN_BATCH_SIZE: 10
+  NUM_WORKERS: 0
+
+######################################### Scheduled sampling #########################################
+SCHEDULED_SAMPLING:
+  START_EPOCH: 6
+  INC_EVERY_EPOCH: 5
+  INC_PROB: 0.05
+  MAX_PROB: 0.5
+
+######################################### MODEL #########################################
+MODEL:
+  ENCODER: 'LowRankBilinearEncoder'
+  DECODER: 'XLANDecoder'
+
+#################################### Token embedding ####################################
+  TOKEN_EMBED:
+    ACTIVATION: 'celu'
+    ELU_ALPHA: 1.3
+
+#################################### Visual embedding ####################################
+  VISUAL_EMBED:
+    ACTIVATION: 'celu'
+    ELU_ALPHA: 1.3
+
+####################################### BILINEAR LAN ############################################
+  BILINEAR:
+    DIM: 1024
+    HEAD: 8
+    BIFEAT_EMB_ACT: 'relu'
+    ACT: 'celu'
+    ELU_ALPHA: 1.3
+    ENCODE:
+      ATT_MID_DIM: [128, 64, 128]
+      ATT_MID_DROPOUT: 0.1
+      DROPOUT: 0.5
+      BIFEAT_EMB_DROPOUT: 0.3
+      LAYERS: 4
+    DECODE:
+      ATT_MID_DIM: [128, 64, 128]
+      ATT_MID_DROPOUT: 0.1
+      DROPOUT: 0.5
+      LAYERS: 1
+
+####################################### Optimizer #######################################
+SOLVER:
+  NAME: 'Adam'
+  EPOCH: 70
+  CHECKPOINT_PERIOD: 1
+  EVAL_PERIOD: 1
+  BASE_LR: 0.0005
+  BIAS_LR_FACTOR: 1.0
+  WEIGHT_DECAY: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+  WEIGHT_DECAY_BIAS: 0.0
+  MOMENTUM: 0.9
+  DAMPENING: 0.0
+  NESTEROV: 0.0
+  BETAS: [0.9, 0.98]
+  EPS: 1.0e-9
+  GRAD_CLIP: 0.5
+  GRAD_CLIP_TYPE: 'norm'
+  NORM_TYPE: 2.0
+  
+####################################### lr scheduler ####################################### 
+LR_SCHEDULER:
+  NAME: 'NoamLR'
+  MODEL_SIZE: 1024
+  FACTOR: 1.0
+  WARMUP: 10000
+
+####################################### losses ####################################### 
+LOSSES:
+  NAMES: ['CrossEntropy']
