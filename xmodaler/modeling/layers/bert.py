@@ -23,7 +23,6 @@ Original copyright of Hugging Face team code below, modifications by Yehao Li, C
 # tests directory-specific settings - this file is run automatically
 # by pytest before any tests are run
 
-import copy
 import math
 import torch
 from torch import nn
@@ -364,22 +363,26 @@ class BertUnderstandingLayer(nn.Module):
         self,
         *,
         bert_attention,
-        bert_intermediate,
-        bert_output
+        v_bert_intermediate,
+        v_bert_output,
+        t_bert_intermediate,
+        t_bert_output,
     ):
         super(BertUnderstandingLayer, self).__init__()
         self.biattention = bert_attention
-        self.v_intermediate = copy.copy(bert_intermediate)
-        self.v_output = copy.copy(bert_output)
-        self.t_intermediate = copy.copy(bert_intermediate)
-        self.t_output = copy.copy(bert_output)
+        self.v_intermediate = v_bert_intermediate
+        self.v_output = v_bert_output
+        self.t_intermediate = t_bert_intermediate
+        self.t_output = t_bert_output
 
     @classmethod
     def from_config(cls, cfg):
         return {
             "bert_attention": BertAttention(cfg),
-            "bert_intermediate": BertIntermediate(cfg),
-            "bert_output": BertOutput(cfg)
+            "v_bert_intermediate": BertIntermediate(cfg),
+            "v_bert_output": BertOutput(cfg),
+            "t_bert_intermediate": BertIntermediate(cfg),
+            "t_bert_output": BertOutput(cfg)
         }
 
     def forward(self, input_tensor1, attention_mask1, input_tensor2, attention_mask2):
