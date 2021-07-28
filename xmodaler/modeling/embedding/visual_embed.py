@@ -45,7 +45,7 @@ class VisualBaseEmbedding(nn.Module):
             act_kwargs = {}
             if activation_name in { "elu", "celu" }:
                 act_kwargs["alpha"] = cfg.MODEL.VISUAL_EMBED.ELU_ALPHA
-            embeddings_act = activation(act_kwargs)
+            embeddings_act = activation(**act_kwargs)
             kwargs['embeddings_act'] = embeddings_act
 
         if cfg.MODEL.VISUAL_EMBED.DROPOUT > 0:
