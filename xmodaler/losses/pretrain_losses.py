@@ -9,18 +9,23 @@ import torch.nn.functional as F
 from xmodaler.config import configurable
 from xmodaler.config import kfg
 from .build import LOSSES_REGISTRY
+from .triplet import BatchTriplet
 
 @LOSSES_REGISTRY.register()
 class PretrainLosses(nn.Module):
     @configurable
-    def __init__(self):
+    def __init__(self, margin, max_violation):
         super(PretrainLosses, self).__init__()
         self.xe_loss = nn.CrossEntropyLoss(ignore_index=-1)
         self.kl_loss = nn.KLDivLoss(reduction="none")
+        self.triplet_loss = BatchTriplet(margin, max_violation)
 
     @classmethod
     def from_config(cls, cfg):
-        return {} 
+        return {
+            "margin": cfg.LOSSES.MARGIN,
+            "max_violation": cfg.LOSSES.MAX_VIOLATION
+        }
 
     def select_logits_targets_by_mask(self, tensor, target, mask):
         tensor = tensor[mask, :]
@@ -29,6 +34,12 @@ class PretrainLosses(nn.Module):
 
     def forward(self, batched_inputs):
         ret = {}
+
+        if kfg.OUTPUT in batched_inputs:
+            triplet_loss = self.triplet_loss(batched_inputs)
+            triplet_loss['BatchTriplet Loss'] /= len(batched_inputs[kfg.IDS])
+            ret.update(triplet_loss)
+
         if kfg.V_LOGITS in batched_inputs:
             v_logits = batched_inputs[kfg.V_LOGITS]
             v_logits = v_logits[:, 1:, :].reshape(-1, v_logits.size(-1))

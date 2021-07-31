@@ -171,3 +171,43 @@ class TDENPretrain(TransformerEncoderDecoder):
     def add_config(cls, cfg, tmp_cfg):
         super().add_config(cfg, tmp_cfg)
         MultiModalSimilarity.add_config(cfg)
+
+    def _forward(self, batched_inputs):
+        inputs = batched_inputs
+        masks = self.get_extended_attention_mask(batched_inputs)
+        inputs.update(masks)
+
+        ve_out = self.visual_embed(batched_inputs)
+        inputs.update(ve_out)
+
+        if self.encoder is not None:
+            encoder_out_v = self.encoder(inputs, mode='v')
+            inputs.update(encoder_out_v)
+
+        if self.decoder is not None:
+            inputs = self.decoder.preprocess(inputs)
+
+        te_out = self.token_embed(batched_inputs)
+        inputs.update(te_out)
+        
+        if self.encoder is not None:
+            encoder_out_t = self.encoder(inputs, mode='t')
+            inputs.update(encoder_out_t)
+
+        if inputs["tden_pretrain_similarity"] == True:
+            scores = self.similarity_predictor(inputs)
+            inputs.update(scores)
+        
+        if self.decoder is not None:
+            decoder_out = self.decoder(inputs)
+            inputs.update(decoder_out)
+
+        if self.predictor is not None:
+            tlogits = self.predictor(inputs)
+            inputs.update(tlogits)
+
+        if self.v_predictor is not None:
+            vlogits = self.v_predictor(inputs)
+            inputs.update(vlogits)
+        return inputs
+

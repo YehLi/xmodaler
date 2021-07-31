@@ -90,7 +90,7 @@ class TransformerEncoderDecoder(BaseEncoderDecoder):
             kfg.EXT_ATT_MASKS: ext_vmasks
         }
 
-    def _forward(self, batched_inputs):        
+    def _forward(self, batched_inputs):
         inputs = batched_inputs
         masks = self.get_extended_attention_mask(batched_inputs)
         inputs.update(masks)

@@ -8,7 +8,7 @@ from xmodaler.config import configurable
 from .build import LR_SCHEDULER_REGISTRY
 
 @LR_SCHEDULER_REGISTRY.register()
-class WarmupConstantSchedule(LambdaLR):
+class WarmupConstant(LambdaLR):
     """ Linear warmup and then constant.
         Linearly increases learning rate schedule from 0 to 1 over `warmup_steps` training steps.
         Keeps learning rate schedule equal to 1. after warmup_steps.
@@ -21,7 +21,7 @@ class WarmupConstantSchedule(LambdaLR):
         warmup_steps, 
         last_epoch=-1):
         self.warmup_steps = warmup_steps
-        super(WarmupConstantSchedule, self).__init__(optimizer, self.lr_lambda, last_epoch=last_epoch)
+        super(WarmupConstant, self).__init__(optimizer, self.lr_lambda, last_epoch=last_epoch)
 
     @classmethod
     def from_config(cls, cfg, optimizer, data_size):
@@ -37,7 +37,7 @@ class WarmupConstantSchedule(LambdaLR):
         return 1.
 
 @LR_SCHEDULER_REGISTRY.register()
-class WarmupLinearSchedule(LambdaLR):
+class WarmupLinear(LambdaLR):
     """ Linear warmup and then linear decay.
         Linearly increases learning rate from 0 to 1 over `warmup_steps` training steps.
         Linearly decreases learning rate from 1. to 0. over remaining `t_total - warmup_steps` steps.
@@ -55,7 +55,7 @@ class WarmupLinearSchedule(LambdaLR):
         self.warmup_steps = warmup_steps
         self.t_total = t_total
         self.min_lr = min_lr
-        super(WarmupLinearSchedule, self).__init__(optimizer, self.lr_lambda, last_epoch=last_epoch)
+        super(WarmupLinear, self).__init__(optimizer, self.lr_lambda, last_epoch=last_epoch)
 
     @classmethod
     def from_config(cls, cfg, optimizer, data_size):
@@ -73,7 +73,7 @@ class WarmupLinearSchedule(LambdaLR):
         return max(self.min_lr, float(self.t_total - step) / float(max(1.0, self.t_total - self.warmup_steps)))
 
 @LR_SCHEDULER_REGISTRY.register()
-class WarmupCosineSchedule(LambdaLR):
+class WarmupCosine(LambdaLR):
     """ Linear warmup and then cosine decay.
         Linearly increases learning rate from 0 to 1 over `warmup_steps` training steps.
         Decreases learning rate from 1. to 0. over remaining `t_total - warmup_steps` steps following a cosine curve.
@@ -94,7 +94,7 @@ class WarmupCosineSchedule(LambdaLR):
         self.t_total = t_total
         self.cycles = cycles
         self.min_lr = min_lr
-        super(WarmupCosineSchedule, self).__init__(optimizer, self.lr_lambda, last_epoch=last_epoch)
+        super(WarmupCosine, self).__init__(optimizer, self.lr_lambda, last_epoch=last_epoch)
 
     @classmethod
     def from_config(cls, cfg, optimizer, data_size):
@@ -115,7 +115,7 @@ class WarmupCosineSchedule(LambdaLR):
         return max(self.min_lr, 0.5 * (1. + math.cos(math.pi * float(self.cycles) * 2.0 * progress)))
 
 @LR_SCHEDULER_REGISTRY.register()
-class WarmupCosineWithHardRestartsSchedule(LambdaLR):
+class WarmupCosineWithHardRestarts(LambdaLR):
     """ Linear warmup and then cosine cycles with hard restarts.
         Linearly increases learning rate from 0 to 1 over `warmup_steps` training steps.
         If `cycles` (default=1.) is different from default, learning rate follows `cycles` times a cosine decaying
@@ -134,7 +134,7 @@ class WarmupCosineWithHardRestartsSchedule(LambdaLR):
         self.warmup_steps = warmup_steps
         self.t_total = t_total
         self.cycles = cycles
-        super(WarmupCosineWithHardRestartsSchedule, self).__init__(optimizer, self.lr_lambda, last_epoch=last_epoch)
+        super(WarmupCosineWithHardRestarts, self).__init__(optimizer, self.lr_lambda, last_epoch=last_epoch)
 
     @classmethod
     def from_config(cls, cfg, optimizer, data_size):
