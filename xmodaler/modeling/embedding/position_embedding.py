@@ -47,7 +47,10 @@ class NNEmbeddingEncoding(nn.Module):
         self.position_embeddings = nn.Embedding(max_len, dim)
 
     def forward(self, x):
-        x_size = x.size(1)
-        position_ids = torch.arange(x_size, dtype=torch.long, device=x.device)
-        position_embeddings = self.position_embeddings(position_ids)
+        if isinstance(x, int):
+            position_embeddings = self.position_embeddings(torch.tensor([x], dtype=torch.long).cuda())
+        else:
+            x_size = x.size(1)
+            position_ids = torch.arange(x_size, dtype=torch.long, device=x.device)
+            position_embeddings = self.position_embeddings(position_ids)
         return position_embeddings

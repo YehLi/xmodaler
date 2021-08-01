@@ -144,6 +144,12 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
             vmasks = vmasks.reshape(-1, max_feats_num)
             ret.update({ kfg.ATT_FEATS: vfeats, kfg.ATT_MASKS: vmasks })
 
+            if kfg.ATT_FEATS_LOC in batched_inputs[0]:
+                vfeats_loc_dim = vfeats_loc.size(-1)
+                vfeats_loc = vfeats_loc.unsqueeze(1).expand(batch_size, repeat_num, max_feats_num, vfeats_loc_dim)
+                vfeats_loc = vfeats_loc.reshape(-1, max_feats_num, vfeats_loc_dim)
+                ret.update({ kfg.ATT_FEATS_LOC: vfeats_loc })
+
         dict_to_cuda(ret)
         if kfg.IDS in batched_inputs[0]:
             ids = [x[kfg.IDS]  for x in batched_inputs ]

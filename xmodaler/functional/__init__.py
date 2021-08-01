@@ -21,7 +21,8 @@ from .func_feats import (
 )
 
 from .func_caption import (
-    decode_sequence
+    decode_sequence,
+    decode_sequence_bert
 )
 
 from .func_pretrain import (

@@ -10,6 +10,7 @@ from .build import (
 
 from .common import DatasetFromList, MapDataset
 from .images.mscoco import MSCoCoDataset
+from .images.mscoco_bert import MSCoCoBertDataset
 from .images.conceptual_captions import ConceptualCaptionsDataset
 from .images.vqa import VQADataset
 from .images.flickr30k import Flickr30kDataset

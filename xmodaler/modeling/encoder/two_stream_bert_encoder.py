@@ -1,7 +1,7 @@
 # Copyright 2021 JD.com, Inc., JD AI
 """
-@author: Yehao Li
-@contact: yehaoli.sysu@gmail.com
+@author: Yehao Li, Jianjie Luo
+@contact: yehaoli.sysu@gmail.com, jianjieluo.sysu@gmail.com
 """
 import random
 import torch
@@ -92,14 +92,31 @@ class TwoStreamBertEncoder(nn.Module):
             if kfg.G_TOKEN_EMBED in batched_inputs:
                 g_tfeats = batched_inputs[kfg.G_TOKEN_EMBED]
                 ext_g_tmasks = batched_inputs[kfg.EXT_G_TOKENS_MASKS]
+                if len(g_tfeats.size()) == 2:
+                    g_tfeats = g_tfeats.unsqueeze(1)
+
+                history_states = batched_inputs.get(kfg.ENC_HISTORY_STATES, None)
+                if kfg.TIME_STEP in batched_inputs:
+                    time_step = batched_inputs[kfg.TIME_STEP]
+                    ext_g_tmasks = ext_g_tmasks[:,:, time_step:time_step+1, 0:time_step+1]
+                    if kfg.ENC_HISTORY_STATES not in batched_inputs:
+                        shape = list(g_tfeats.size())
+                        shape[1] = 0
+                        history_states = [g_tfeats.new(torch.Size(shape))] * self.num_hidden_layers
+                        batched_inputs[kfg.ENC_HISTORY_STATES] = history_states
+                else:
+                    history_states = [None] * self.num_hidden_layers
 
                 g_tfeats_arr = []
-                for layer_module in self.layers:
+                for i, layer_module in enumerate(self.layers):
+                    if history_states[i] is not None:
+                        history_states[i] = torch.cat([history_states[i], g_tfeats], dim=1)
+
                     dropout_probability = random.uniform(0, 1)
                     if self.training and (dropout_probability < self.layer_drop):
                         g_tfeats_arr.append(g_tfeats)
                     else:
-                        g_tfeats, _ = layer_module(g_tfeats, ext_g_tmasks)
+                        g_tfeats, _ = layer_module(g_tfeats, ext_g_tmasks, history_states[i])
                         g_tfeats_arr.append(g_tfeats)
                 ret.update({ kfg.G_TOKEN_EMBED: g_tfeats_arr })
 

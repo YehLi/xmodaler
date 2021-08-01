@@ -86,6 +86,8 @@ class BeamSearcher(DecodeStrategy):
  
             if kfg.HISTORY_STATES in inputs:
                 expand_keys = [kfg.HISTORY_STATES]
+                if kfg.ENC_HISTORY_STATES in inputs:
+                    expand_keys.append(kfg.ENC_HISTORY_STATES)
             else:
                 expand_keys = [kfg.G_HIDDEN_STATES, kfg.G_CELL_STATES]
 
@@ -116,10 +118,13 @@ class BeamSearcher(DecodeStrategy):
                     kfg.ATT_MASKS, 
                     kfg.EXT_ATT_MASKS, 
                     kfg.P_ATT_FEATS, 
-                    kfg.EXT_G_TOKENS_MASKS 
+                    kfg.EXT_G_TOKENS_MASKS,
+                    kfg.G_TOKENS_TYPE
                 }
                 for key in expand_keys:
                     if key in inputs:
+                        if isinstance(inputs[key], list):
+                            inputs[key] = inputs[key][-1] # usually is ATT_FEATS in TDEN
                         tensor = expand_tensor(inputs[key], beam_size)
                         inputs.update({ key: tensor })
 

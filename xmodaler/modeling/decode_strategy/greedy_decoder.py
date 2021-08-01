@@ -16,6 +16,7 @@ from .build import DECODE_STRATEGY_REGISTRY
 class GreedyDecoder(DecodeStrategy):
 
     def _forward(self, batched_inputs, model):
+        batch_size = batched_inputs[kfg.ATT_FEATS].size(0)
         is_sample = batched_inputs.get(kfg.DECODE_BY_SAMPLE, False)
 
         inputs = batched_inputs
@@ -29,7 +30,6 @@ class GreedyDecoder(DecodeStrategy):
         inputs.update(encoder_out_v)
         inputs = model.decoder.preprocess(inputs)
 
-        batch_size = inputs[kfg.ATT_FEATS].size(0)
         sents = Variable(torch.zeros((batch_size, self.max_seq_len), dtype=torch.long).cuda())
         logprobs = Variable(torch.zeros(batch_size, self.max_seq_len).cuda())
         wt = Variable(torch.zeros(batch_size, dtype=torch.long).cuda())
