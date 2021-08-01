@@ -10,5 +10,6 @@ from .transformer_encoder import TransformerEncoder
 from .memory_augmented_encoder import MemoryAugmentedEncoder
 from .two_stream_bert_encoder import TwoStreamBertEncoder
 from .lowrank_bilinear_encoder import LowRankBilinearEncoder
+from .tdconved_encoder import TDConvEDEncoder
 
 __all__ = list(globals().keys())
