@@ -12,4 +12,5 @@ from .hooks import *
 from .defaults import *
 from .rl_trainer import RLTrainer
 from .retrieval_trainer import RetrievalTrainer
+from .tden_pretrainer import TDENPretrainer
 from .build import build_engine

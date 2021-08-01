@@ -6,9 +6,9 @@ DATASETS:
 
 ###################################### DATALOADER ######################################
 DATALOADER:
-  TRAIN_BATCH_SIZE: 8
+  TRAIN_BATCH_SIZE: 64
   TEST_BATCH_SIZE: 32
-  NUM_WORKERS: 0
+  NUM_WORKERS: 4
   FEATS_FOLDER: '../open_source_dataset/ConceptualCaptions/features/up_down'
   ANNO_FOLDER: '../open_source_dataset/ConceptualCaptions'
   SEQ_PER_SAMPLE:  1
@@ -16,14 +16,7 @@ DATALOADER:
 
 ######################################### Engine #########################################
 ENGINE:
-  NAME: 'DefaultTrainer'
-
-######################################### Scheduled sampling #########################################
-SCHEDULED_SAMPLING:
-  START_EPOCH: 0
-  INC_EVERY_EPOCH: 5
-  INC_PROB: 0.05
-  MAX_PROB: 0.25
+  NAME: 'TDENPretrainer'
 
 ######################################### MODEL #########################################
 MODEL:
@@ -34,7 +27,7 @@ MODEL:
   PREDICTOR: 'BertPredictionHead'
   V_PREDICTOR: 'BertVisualPredictionHead'
   MAX_SEQ_LEN: 36
-  WEIGHTS: '../convert/TDEN.pth'
+  WEIGHTS: '../pretrain/BERT/bert-base-uncased.pth'
 
 ######################################### BERT #########################################
   BERT:
@@ -51,6 +44,10 @@ MODEL:
     V_NUM_HIDDEN_LAYERS: 6
     NUM_UNDERSTANDING_LAYERS: 6
     NUM_GENERATION_LAYERS: 6
+    LAYER_DROP: 0.0
+    V_LAYER_DROP: 0.0
+    U_LAYER_DROP: 0.0
+    G_LAYER_DROP: 0.0
 
 #################################### Token embedding ####################################
   TOKEN_EMBED:
@@ -81,29 +78,29 @@ MODEL:
     
 ####################################### Optimizer #######################################
 SOLVER:
-  NAME: 'Adam'
+  NAME: 'AdamW'
   EPOCH: 10
   CHECKPOINT_PERIOD: 1
   EVAL_PERIOD: 1
-  BASE_LR: 0.0005
+  BASE_LR: 0.0001
   BIAS_LR_FACTOR: 1.0
-  WEIGHT_DECAY: 0.0
+  WEIGHT_DECAY: 0.01
   WEIGHT_DECAY_NORM: 0.0
   WEIGHT_DECAY_BIAS: 0.0
-  MOMENTUM: 0.0
+  MOMENTUM: 0.9
   DAMPENING: 0.0
   NESTEROV: 0.0
   BETAS: [0.9, 0.999]
   EPS: 1e-8
-  GRAD_CLIP: 0.1
+  GRAD_CLIP: -1.0
   GRAD_CLIP_TYPE: 'value'
   NORM_TYPE: 2.0
   
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
-  NAME: 'StepLR'
-  STEP_SIZE: 3
-  GAMMA: 0.1
+  NAME: 'WarmupLinear'
+  WARMUP: 1
+  MIN_LR: 0.0
 
 ####################################### decode strategy ####################################### 
 DECODE_STRATEGY:
