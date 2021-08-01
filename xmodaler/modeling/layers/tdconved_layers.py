@@ -38,7 +38,6 @@ class TemporalDeformableBlock(nn.Module):
         self.min_idx = min_idx
         self.max_idx = max_idx
         self.clamp_idx = clamp_idx
-        # print(in_channels, kernel_size, kernel_size)
         # offset conv : to compute the offsets
         if use_norm:
             self.offset_conv = weight_norm(nn.Conv1d(
@@ -94,10 +93,8 @@ class TemporalDeformableBlock(nn.Module):
         if self.offset_act is not None:
             offests = self.offset_act(offests)
         offests_pred = offests.permute(0, 2, 1).cpu() # [batch, TIME_STEP, kernel_size]
-        # print(offests_pred.size())
 
         sampling_positions = self._get_sampling_shift() # [kernel_size]
-        # print(sampling_positions)
 
         # [batch, 1, max_len, dim]
         new_inputs = inputs.permute(0, 2, 1).unsqueeze(1) # [b, 1, TIME_STEP, ENCODER_HIDDEN_DIM]
@@ -136,8 +133,6 @@ class TemporalDeformableBlock(nn.Module):
         return outputs
 
     def _padding_inputs(self, inputs):
-        # print(self.padding_mode)
-        # print(inputs.size(), "padding")
         if self.padding_mode == "border":
             left_most_feat = inputs[:, :, 0:1].repeat(1, 1, self.half_span)
             right_most_feat = inputs[:, :, -1:].repeat(1, 1, self.half_span)
@@ -220,7 +215,6 @@ class TemporalDeformableLayer(nn.Module):
 
         super(TemporalDeformableLayer, self).__init__()
 
-        # print(padding_mode)
         self.conv =  TemporalDeformableBlock(
                                     in_channels,
                                     out_channels * 2,
@@ -243,7 +237,6 @@ class TemporalDeformableLayer(nn.Module):
         outputs =  self.act(self.conv(cur_inputs)) # [b, time_step ,hidden]
         if self.dropout is not None:
             outputs = self.dropout(outputs)
-        # print(outputs.size())
         return outputs
 
 class ShiftedConvLayer(nn.Module):
@@ -324,6 +317,5 @@ class SoftAttention(nn.Module):
         if att_masks is not None:
             alpha = alpha + att_masks
         alpha = self.softmax(alpha)
-        #print(alpha.size(), att_feats.size())
         att = torch.bmm(alpha.unsqueeze(1), att_feats).squeeze(1)
         return att
