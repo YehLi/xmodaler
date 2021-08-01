@@ -2,8 +2,12 @@ _BASE_: "base_att_image_caption.yaml"
 
 ###################################### DATALOADER ######################################
 DATALOADER:
-  TRAIN_BATCH_SIZE: 10
-  NUM_WORKERS: 0
+  TRAIN_BATCH_SIZE: 5 # 5 x 4gpu = 20
+  NUM_WORKERS: 4
+
+######################################### Engine #########################################
+ENGINE:
+  NAME: 'RLTrainer'
 
 ######################################### Scheduled sampling #########################################
 SCHEDULED_SAMPLING:
@@ -14,6 +18,7 @@ SCHEDULED_SAMPLING:
 
 ######################################### MODEL #########################################
 MODEL:
+  WEIGHTS: '{path_to_xe_model}'
   ENCODER: 'LowRankBilinearEncoder'
   DECODER: 'XLANDecoder'
 
@@ -39,10 +44,10 @@ MODEL:
 ####################################### Optimizer #######################################
 SOLVER:
   NAME: 'Adam'
-  EPOCH: 70
+  EPOCH: 35
   CHECKPOINT_PERIOD: 1
   EVAL_PERIOD: 1
-  BASE_LR: 0.0005
+  BASE_LR: 0.00001
   BIAS_LR_FACTOR: 1.0
   WEIGHT_DECAY: 0.0
   WEIGHT_DECAY_NORM: 0.0
@@ -50,19 +55,14 @@ SOLVER:
   MOMENTUM: 0.9
   DAMPENING: 0.0
   NESTEROV: 0.0
-  BETAS: [0.9, 0.98]
-  EPS: 1.0e-9
-  GRAD_CLIP: 0.5
-  GRAD_CLIP_TYPE: 'norm'
+  BETAS: [0.9, 0.999]
+  EPS: 1.0e-8
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: 'value'
   NORM_TYPE: 2.0
   
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
-  NAME: 'NoamLR'
-  MODEL_SIZE: 1024
-  FACTOR: 1.0
-  WARMUP: 10000
-
-####################################### losses ####################################### 
-LOSSES:
-  NAMES: ['CrossEntropy']
+  NAME: 'StepLR'
+  STEP_SIZE: 10
+  GAMMA: 0.8
