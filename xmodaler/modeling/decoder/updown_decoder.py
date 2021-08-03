@@ -46,7 +46,7 @@ class UpDownDecoder(Decoder):
             att_embed_size = att_embed_size,
             att_embed_dropout = att_embed_dropout
         )
-        self.p_att_feats = nn.Linear(hidden_size, att_embed_size)
+        self.p_att_feats = nn.Linear(visual_embed_dim, att_embed_size)
         
     @classmethod
     def from_config(cls, cfg):
