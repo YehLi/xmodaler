@@ -25,7 +25,8 @@ class MSCoCoDataset:
         seq_per_img: int,
         max_feat_num: int,
         max_seq_len: int,
-        feats_folder: str
+        feats_folder: str,
+        relation_file: str
     ):
         self.stage = stage
         self.anno_file = anno_file
@@ -33,6 +34,7 @@ class MSCoCoDataset:
         self.max_feat_num = max_feat_num
         self.feats_folder = feats_folder
         self.max_seq_len = max_seq_len
+        self.relation_file = relation_file
         
     @classmethod
     def from_config(cls, cfg, stage: str = "train"):
@@ -47,12 +49,19 @@ class MSCoCoDataset:
             "seq_per_img": cfg.DATALOADER.SEQ_PER_SAMPLE,
             "max_feat_num": cfg.DATALOADER.MAX_FEAT_NUM,
             "feats_folder": cfg.DATALOADER.FEATS_FOLDER,
+            "relation_file": cfg.DATALOADER.RELATION_FILE,
             "max_seq_len": cfg.MODEL.MAX_SEQ_LEN
         }
         return ret
 
     def load_data(self, cfg):
         datalist = pickle.load(open(self.anno_file, 'rb'), encoding='bytes')
+        if len(self.relation_file) > 0:
+            relation = pickle.load(open(self.relation_file, 'rb'), encoding='bytes')
+            for i in range(len(datalist)):
+                image_id = int(datalist[i]['image_id'])
+                if image_id in relation:
+                    datalist[i]['relation'] = relation[image_id]
         return datalist
         
     def __call__(self, dataset_dict):
@@ -83,6 +92,8 @@ class MSCoCoDataset:
                 kfg.V_TARGET: cls_probs.astype('float32'),
                 kfg.ATT_FEATS_LOC: image_locations.astype('float32'),
             })
+        if 'relation' in dataset_dict:
+            ret.update( { kfg.RELATION: dataset_dict['relation']} )
             
         if self.stage != 'train':
             g_tokens_type = np.ones((self.max_seq_len,), dtype=np.int64)
@@ -107,5 +118,6 @@ class MSCoCoDataset:
             kfg.G_TARGET_IDS: target_ids,
             kfg.G_TOKENS_TYPE: g_tokens_type,
         })
+
         dict_as_tensor(ret)
         return ret

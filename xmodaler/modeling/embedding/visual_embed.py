@@ -11,7 +11,20 @@ from xmodaler.config import kfg
 from ..layers.create_act import get_act_layer
 from .build import EMBEDDING_REGISTRY
 
-__all__ = ["VisualBaseEmbedding"]
+__all__ = ["VisualBaseEmbedding", "VisualIdentityEmbedding"]
+
+@EMBEDDING_REGISTRY.register()
+class VisualIdentityEmbedding(nn.Module):
+    @configurable
+    def __init__(self):
+        super(VisualIdentityEmbedding, self).__init__()
+
+    @classmethod
+    def from_config(cls, cfg):
+        return {}
+
+    def forward(self, batched_inputs):
+        return {}
 
 @EMBEDDING_REGISTRY.register()
 class VisualBaseEmbedding(nn.Module):

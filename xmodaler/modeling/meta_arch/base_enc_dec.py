@@ -89,6 +89,11 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
         vfeats, vmasks = pad_tensor(vfeats, padding_value=0, use_mask=True)
         ret = { kfg.ATT_FEATS: vfeats, kfg.ATT_MASKS: vmasks }
 
+        if kfg.RELATION in batched_inputs[0]:
+            relation = [x[kfg.RELATION] for x in batched_inputs]
+            relation = pad_tensor(relation, padding_value=0, use_mask=False) # GCN-LSTM, only support 36 features
+            ret.update( { kfg.RELATION: relation } )
+
         if kfg.U_TOKENS_IDS in batched_inputs[0]:
             u_tokens_ids = [x[kfg.U_TOKENS_IDS] for x in batched_inputs]
             u_tokens_ids, tmasks = pad_tensor(u_tokens_ids, padding_value=0, use_mask=True)
@@ -149,6 +154,11 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
                 vfeats_loc = vfeats_loc.unsqueeze(1).expand(batch_size, repeat_num, max_feats_num, vfeats_loc_dim)
                 vfeats_loc = vfeats_loc.reshape(-1, max_feats_num, vfeats_loc_dim)
                 ret.update({ kfg.ATT_FEATS_LOC: vfeats_loc })
+
+            if kfg.RELATION in batched_inputs[0]:
+                relation = relation.unsqueeze(1).expand(batch_size, repeat_num, max_feats_num, max_feats_num)
+                relation = relation.reshape(-1, max_feats_num, max_feats_num)
+                ret.update({ kfg.RELATION: relation })
 
         dict_to_cuda(ret)
         if kfg.IDS in batched_inputs[0]:
