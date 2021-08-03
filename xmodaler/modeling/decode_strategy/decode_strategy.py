@@ -26,7 +26,7 @@ class DecodeStrategy(nn.Module, metaclass=ABCMeta):
         if vocab_path == 'BERT':
             self.vocab = None
         else:
-        self.vocab = load_vocab(vocab_path)
+            self.vocab = load_vocab(vocab_path)
         self.max_seq_len = max_seq_len
         self.bert_tokenizer = bert_tokenizer
 
