@@ -12,5 +12,6 @@ from .meshed_decoder import MeshedDecoder
 from .decouple_bert_decoder import DecoupleBertDecoder
 from .lowrank_bilinear_decoder import XLANDecoder
 from .tdconved_decoder import TDConvEDDecoder
+from .attribute_decoder import AttributeDecoder
 
 __all__ = list(globals().keys())

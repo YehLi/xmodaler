@@ -94,6 +94,16 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
             relation = pad_tensor(relation, padding_value=0, use_mask=False) # GCN-LSTM, only support 36 features
             ret.update( { kfg.RELATION: relation } )
 
+        if kfg.ATTRIBUTE in batched_inputs[0]:
+            attributes = [x[kfg.ATTRIBUTE] for x in batched_inputs]
+            attributes = pad_tensor(attributes, padding_value=0, use_mask=False) # GCN-LSTM, only support 36 features
+            ret.update( { kfg.ATTRIBUTE: attributes } )
+
+        if kfg.GLOBAL_FEATS in batched_inputs[0]:
+            gv_feats = [x[kfg.GLOBAL_FEATS] for x in batched_inputs]
+            gv_feats = pad_tensor(gv_feats, padding_value=0, use_mask=False) # GCN-LSTM, only support 36 features
+            ret.update( { kfg.GLOBAL_FEATS: gv_feats } )
+
         if kfg.U_TOKENS_IDS in batched_inputs[0]:
             u_tokens_ids = [x[kfg.U_TOKENS_IDS] for x in batched_inputs]
             u_tokens_ids, tmasks = pad_tensor(u_tokens_ids, padding_value=0, use_mask=True)
@@ -159,6 +169,18 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
                 relation = relation.unsqueeze(1).expand(batch_size, repeat_num, max_feats_num, max_feats_num)
                 relation = relation.reshape(-1, max_feats_num, max_feats_num)
                 ret.update({ kfg.RELATION: relation })
+
+            if kfg.ATTRIBUTE in batched_inputs[0]:
+                attribute_dim = attributes.size(-1)
+                attributes = attributes.unsqueeze(1).expand(batch_size, repeat_num, attribute_dim)
+                attributes = attributes.reshape(-1, attribute_dim)
+                ret.update({ kfg.ATTRIBUTE: attributes })
+
+            if kfg.GLOBAL_FEATS in batched_inputs[0]:
+                gv_feat_dim = gv_feats.size(-1)
+                gv_feats = gv_feats.unsqueeze(1).expand(batch_size, repeat_num, gv_feat_dim)
+                gv_feats = gv_feats.reshape(-1, gv_feat_dim)
+                ret.update({ kfg.GLOBAL_FEATS: gv_feats })
 
         dict_to_cuda(ret)
         if kfg.IDS in batched_inputs[0]:

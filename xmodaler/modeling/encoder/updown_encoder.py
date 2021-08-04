@@ -32,12 +32,15 @@ class UpDownEncoder(nn.Module):
         if mode == None or mode == 'v':
             att_feats = batched_inputs[kfg.ATT_FEATS]
             att_masks = batched_inputs[kfg.ATT_MASKS]
-            if att_masks is None:
-                global_feats = torch.mean(att_feats, 1)
-            else:
-                att_feats_masks = att_feats * att_masks.unsqueeze(-1)
-                att_masks_sum = att_masks.sum(-1)
-                global_feats = att_feats_masks.sum(1) / att_masks_sum.unsqueeze(-1)
+            global_feats = batched_inputs.get(kfg.GLOBAL_FEATS, None)
+
+            if global_feats is None:
+                if att_masks is None:
+                    global_feats = torch.mean(att_feats, 1)
+                else:
+                    att_feats_masks = att_feats * att_masks.unsqueeze(-1)
+                    att_masks_sum = att_masks.sum(-1)
+                    global_feats = att_feats_masks.sum(1) / att_masks_sum.unsqueeze(-1)
             ret.update({ kfg.GLOBAL_FEATS: global_feats })
-        
+            
         return ret

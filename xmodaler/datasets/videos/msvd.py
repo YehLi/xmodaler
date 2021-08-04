@@ -66,12 +66,12 @@ class MSVDDataset:
                     })
             datalist = expand_datalist
         return datalist
-
+        
     def _sample_frame(self, atten_feats):
-        while len(atten_feats) % self.max_feat_num > 0:
-            atten_feats = np.concatenate([atten_feats, atten_feats[-1:, :]], axis=0)
-        step = len(atten_feats) // self.max_feat_num
-        return atten_feats[::step, :]
+        interval = atten_feats.shape[0] / self.max_feat_num
+        selected_indexes = [int(i * interval) for i in range(self.max_feat_num)]
+        selected_frames = atten_feats[selected_indexes, :]
+        return selected_frames
 
     def __call__(self, dataset_dict):
         dataset_dict = copy.deepcopy(dataset_dict)
