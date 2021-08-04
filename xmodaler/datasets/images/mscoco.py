@@ -39,7 +39,6 @@ class MSCoCoDataset:
         self.relation_file = relation_file
         self.gv_feat_file = gv_feat_file
         self.attribute_file = attribute_file
-        #print(self.attribute_file)
         
     @classmethod
     def from_config(cls, cfg, stage: str = "train"):
@@ -74,14 +73,11 @@ class MSCoCoDataset:
         for i in range(len(datalist)):
             image_id = int(datalist[i]['image_id'])
             for data_type in ext_data:
-                #print(type(list(ext_data.keys())[0]))
                 if ext_data[data_type] is not None:
                     if str(image_id) in ext_data[data_type]:
                         datalist[i][data_type] = ext_data[data_type][str(image_id)]
                     elif image_id in ext_data[data_type]:
                         datalist[i][data_type] = ext_data[data_type][image_id]
-                #else:
-                #    print("data type {} is None".format(data_type))
         '''
         if len(self.relation_file) > 0:
             relation = pickle.load(open(self.relation_file, 'rb'), encoding='bytes')
