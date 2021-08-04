@@ -96,12 +96,12 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
 
         if kfg.ATTRIBUTE in batched_inputs[0]:
             attributes = [x[kfg.ATTRIBUTE] for x in batched_inputs]
-            attributes = pad_tensor(attributes, padding_value=0, use_mask=False) # GCN-LSTM, only support 36 features
+            attributes = pad_tensor(attributes, padding_value=0, use_mask=False) # LSTM-A
             ret.update( { kfg.ATTRIBUTE: attributes } )
 
         if kfg.GLOBAL_FEATS in batched_inputs[0]:
             gv_feats = [x[kfg.GLOBAL_FEATS] for x in batched_inputs]
-            gv_feats = pad_tensor(gv_feats, padding_value=0, use_mask=False) # GCN-LSTM, only support 36 features
+            gv_feats = pad_tensor(gv_feats, padding_value=0, use_mask=False) 
             ret.update( { kfg.GLOBAL_FEATS: gv_feats } )
 
         if kfg.U_TOKENS_IDS in batched_inputs[0]:
