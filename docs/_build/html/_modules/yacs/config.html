@@ -1,0 +1,760 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>yacs.config &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>yacs.config</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for yacs.config</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2018-present, Facebook, Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+<span class="c1">##############################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;YACS -- Yet Another Configuration System is designed to be a simple</span>
+<span class="sd">configuration management system for academic and industrial research</span>
+<span class="sd">projects.</span>
+
+<span class="sd">See README.md for usage and examples.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="c1"># Flag for py2 and py3 compatibility to use when separate code paths are necessary</span>
+<span class="c1"># When _PY2 is False, we assume Python 3 is in use</span>
+<span class="n">_PY2</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">2</span>
+
+<span class="c1"># Filename extensions for loading configs from files</span>
+<span class="n">_YAML_EXTS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;.yml&quot;</span><span class="p">}</span>
+<span class="n">_PY_EXTS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;.py&quot;</span><span class="p">}</span>
+
+<span class="c1"># py2 and py3 compatibility for checking file object type</span>
+<span class="c1"># We simply use this to infer py2 vs py3</span>
+<span class="k">if</span> <span class="n">_PY2</span><span class="p">:</span>
+    <span class="n">_FILE_TYPES</span> <span class="o">=</span> <span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_FILE_TYPES</span> <span class="o">=</span> <span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">,)</span>
+
+<span class="c1"># CfgNodes can only contain a limited set of valid types</span>
+<span class="n">_VALID_TYPES</span> <span class="o">=</span> <span class="p">{</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)}</span>
+<span class="c1"># py2 allow for str and unicode</span>
+<span class="k">if</span> <span class="n">_PY2</span><span class="p">:</span>
+    <span class="n">_VALID_TYPES</span> <span class="o">=</span> <span class="n">_VALID_TYPES</span><span class="o">.</span><span class="n">union</span><span class="p">({</span><span class="n">unicode</span><span class="p">})</span>  <span class="c1"># noqa: F821</span>
+
+<span class="c1"># Utilities for importing modules from file paths</span>
+<span class="k">if</span> <span class="n">_PY2</span><span class="p">:</span>
+    <span class="c1"># imp is available in both py2 and py3 for now, but is deprecated in py3</span>
+    <span class="kn">import</span> <span class="nn">imp</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">importlib.util</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">CfgNode</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    CfgNode represents an internal node in the configuration tree. It&#39;s a simple</span>
+<span class="sd">    dict-like container that allows for attribute-based access to keys.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">IMMUTABLE</span> <span class="o">=</span> <span class="s2">&quot;__immutable__&quot;</span>
+    <span class="n">DEPRECATED_KEYS</span> <span class="o">=</span> <span class="s2">&quot;__deprecated_keys__&quot;</span>
+    <span class="n">RENAMED_KEYS</span> <span class="o">=</span> <span class="s2">&quot;__renamed_keys__&quot;</span>
+    <span class="n">NEW_ALLOWED</span> <span class="o">=</span> <span class="s2">&quot;__new_allowed__&quot;</span>
+
+<div class="viewcode-block" id="CfgNode.__init__"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">new_allowed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            init_dict (dict): the possibly-nested dictionary to initailize the CfgNode.</span>
+<span class="sd">            key_list (list[str]): a list of names which index this CfgNode from the root.</span>
+<span class="sd">                Currently only used for logging purposes.</span>
+<span class="sd">            new_allowed (bool): whether adding new key is allowed when merging with</span>
+<span class="sd">                other configs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Recursively convert nested dictionaries in init_dict into CfgNodes</span>
+        <span class="n">init_dict</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">init_dict</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">init_dict</span>
+        <span class="n">key_list</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">key_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">key_list</span>
+        <span class="n">init_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_config_tree_from_dict</span><span class="p">(</span><span class="n">init_dict</span><span class="p">,</span> <span class="n">key_list</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CfgNode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">init_dict</span><span class="p">)</span>
+        <span class="c1"># Manage if the CfgNode is frozen or not</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">IMMUTABLE</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># Deprecated options</span>
+        <span class="c1"># If an option is removed from the code and you don&#39;t want to break existing</span>
+        <span class="c1"># yaml configs, you can add the full config key as a string to the set below.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">DEPRECATED_KEYS</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># Renamed options</span>
+        <span class="c1"># If you rename a config option, record the mapping from the old name to the new</span>
+        <span class="c1"># name in the dictionary below. Optionally, if the type also changed, you can</span>
+        <span class="c1"># make the value a tuple that specifies first the renamed key and then</span>
+        <span class="c1"># instructions for how to edit the config file.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">RENAMED_KEYS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># &#39;EXAMPLE.OLD.KEY&#39;: &#39;EXAMPLE.NEW.KEY&#39;,  # Dummy example to follow</span>
+            <span class="c1"># &#39;EXAMPLE.OLD.KEY&#39;: (                   # A more complex example to follow</span>
+            <span class="c1">#     &#39;EXAMPLE.NEW.KEY&#39;,</span>
+            <span class="c1">#     &quot;Also convert to a tuple, e.g., &#39;foo&#39; -&gt; (&#39;foo&#39;,) or &quot;</span>
+            <span class="c1">#     + &quot;&#39;foo:bar&#39; -&gt; (&#39;foo&#39;, &#39;bar&#39;)&quot;</span>
+            <span class="c1"># ),</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Allow new attributes after initialisation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">NEW_ALLOWED</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_allowed</span></div>
+
+<div class="viewcode-block" id="CfgNode._create_config_tree_from_dict"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode._create_config_tree_from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_create_config_tree_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">key_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a configuration tree using the given dict.</span>
+<span class="sd">        Any dict-like objects inside dict will be treated as a new CfgNode.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dic (dict):</span>
+<span class="sd">            key_list (list[str]): a list of names which index this CfgNode from the root.</span>
+<span class="sd">                Currently only used for logging purposes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># Convert dict to CfgNode</span>
+                <span class="n">dic</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">key_list</span><span class="o">=</span><span class="n">key_list</span> <span class="o">+</span> <span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Check for valid leaf type or nested CfgNode</span>
+                <span class="n">_assert_with_logging</span><span class="p">(</span>
+                    <span class="n">_valid_type</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">allow_cfg_node</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                    <span class="s2">&quot;Key </span><span class="si">{}</span><span class="s2"> with value </span><span class="si">{}</span><span class="s2"> is not a valid type; valid types: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_list</span> <span class="o">+</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)]),</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">_VALID_TYPES</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dic</span></div>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_frozen</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="s2">&quot;Attempted to set </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">, but CfgNode is immutable&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="n">value</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">_assert_with_logging</span><span class="p">(</span>
+            <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span>
+            <span class="s2">&quot;Invalid attempt to modify internal CfgNode state: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">_assert_with_logging</span><span class="p">(</span>
+            <span class="n">_valid_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">allow_cfg_node</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="s2">&quot;Invalid type </span><span class="si">{}</span><span class="s2"> for key </span><span class="si">{}</span><span class="s2">; valid types = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">name</span><span class="p">,</span> <span class="n">_VALID_TYPES</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">_indent</span><span class="p">(</span><span class="n">s_</span><span class="p">,</span> <span class="n">num_spaces</span><span class="p">):</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s_</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s_</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">[(</span><span class="n">num_spaces</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">first</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">s</span>
+            <span class="k">return</span> <span class="n">s</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">seperator</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot; &quot;</span>
+            <span class="n">attr_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">seperator</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="n">attr_str</span> <span class="o">=</span> <span class="n">_indent</span><span class="p">(</span><span class="n">attr_str</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr_str</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">super</span><span class="p">(</span><span class="n">CfgNode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Dump to a string.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">convert_to_dict</span><span class="p">(</span><span class="n">cfg_node</span><span class="p">,</span> <span class="n">key_list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg_node</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">):</span>
+                <span class="n">_assert_with_logging</span><span class="p">(</span>
+                    <span class="n">_valid_type</span><span class="p">(</span><span class="n">cfg_node</span><span class="p">),</span>
+                    <span class="s2">&quot;Key </span><span class="si">{}</span><span class="s2"> with value </span><span class="si">{}</span><span class="s2"> is not a valid type; valid types: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_list</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">cfg_node</span><span class="p">),</span> <span class="n">_VALID_TYPES</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">cfg_node</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cfg_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cfg_node</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cfg_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">cfg_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_to_dict</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">key_list</span> <span class="o">+</span> <span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                <span class="k">return</span> <span class="n">cfg_dict</span>
+
+        <span class="n">self_as_dict</span> <span class="o">=</span> <span class="n">convert_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_dump</span><span class="p">(</span><span class="n">self_as_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">merge_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load a yaml config file and merge it this CfgNode.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_cfg</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merge_from_other_cfg</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">merge_from_other_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Merge `cfg_other` into this CfgNode.&quot;&quot;&quot;</span>
+        <span class="n">_merge_a_into_b</span><span class="p">(</span><span class="n">cfg_other</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="k">def</span> <span class="nf">merge_from_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Merge config (keys, values) in a list (e.g., from command line) into</span>
+<span class="sd">        this CfgNode. For example, `cfg_list = [&#39;FOO.BAR&#39;, 0.5]`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_assert_with_logging</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">cfg_list</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;Override list has odd length: </span><span class="si">{}</span><span class="s2">; it must be a list of pairs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">cfg_list</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">full_key</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cfg_list</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">cfg_list</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">key_is_deprecated</span><span class="p">(</span><span class="n">full_key</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">key_is_renamed</span><span class="p">(</span><span class="n">full_key</span><span class="p">):</span>
+                <span class="n">root</span><span class="o">.</span><span class="n">raise_key_rename_error</span><span class="p">(</span><span class="n">full_key</span><span class="p">)</span>
+            <span class="n">key_list</span> <span class="o">=</span> <span class="n">full_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="k">for</span> <span class="n">subkey</span> <span class="ow">in</span> <span class="n">key_list</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">_assert_with_logging</span><span class="p">(</span>
+                    <span class="n">subkey</span> <span class="ow">in</span> <span class="n">d</span><span class="p">,</span> <span class="s2">&quot;Non-existent key: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_key</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">subkey</span><span class="p">]</span>
+            <span class="n">subkey</span> <span class="o">=</span> <span class="n">key_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">_assert_with_logging</span><span class="p">(</span><span class="n">subkey</span> <span class="ow">in</span> <span class="n">d</span><span class="p">,</span> <span class="s2">&quot;Non-existent key: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_key</span><span class="p">))</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode_cfg_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_check_and_coerce_cfg_value_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">subkey</span><span class="p">],</span> <span class="n">subkey</span><span class="p">,</span> <span class="n">full_key</span><span class="p">)</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">subkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="CfgNode.freeze"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.freeze">[docs]</a>    <span class="k">def</span> <span class="nf">freeze</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make this CfgNode and all of its children immutable.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_immutable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode.defrost"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.defrost">[docs]</a>    <span class="k">def</span> <span class="nf">defrost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make this CfgNode and all of its children mutable.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_immutable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode.is_frozen"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.is_frozen">[docs]</a>    <span class="k">def</span> <span class="nf">is_frozen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return mutability.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">IMMUTABLE</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CfgNode._immutable"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode._immutable">[docs]</a>    <span class="k">def</span> <span class="nf">_immutable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_immutable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set immutability to is_immutable and recursively apply the setting</span>
+<span class="sd">        to all nested CfgNodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">IMMUTABLE</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_immutable</span>
+        <span class="c1"># Recursively set immutable state</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">):</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">_immutable</span><span class="p">(</span><span class="n">is_immutable</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">):</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">_immutable</span><span class="p">(</span><span class="n">is_immutable</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode.clone"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recursively copy this CfgNode.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode.register_deprecated_key"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.register_deprecated_key">[docs]</a>    <span class="k">def</span> <span class="nf">register_deprecated_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register key (e.g. `FOO.BAR`) a deprecated option. When merging deprecated</span>
+<span class="sd">        keys a warning is generated and the key is ignored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_assert_with_logging</span><span class="p">(</span>
+            <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">DEPRECATED_KEYS</span><span class="p">],</span>
+            <span class="s2">&quot;key </span><span class="si">{}</span><span class="s2"> is already registered as a deprecated key&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">DEPRECATED_KEYS</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode.register_renamed_key"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.register_renamed_key">[docs]</a>    <span class="k">def</span> <span class="nf">register_renamed_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_name</span><span class="p">,</span> <span class="n">new_name</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register a key as having been renamed from `old_name` to `new_name`.</span>
+<span class="sd">        When merging a renamed key, an exception is thrown alerting to user to</span>
+<span class="sd">        the fact that the key has been renamed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_assert_with_logging</span><span class="p">(</span>
+            <span class="n">old_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">RENAMED_KEYS</span><span class="p">],</span>
+            <span class="s2">&quot;key </span><span class="si">{}</span><span class="s2"> is already registered as a renamed cfg key&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old_name</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">new_name</span>
+        <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_name</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">RENAMED_KEYS</span><span class="p">][</span><span class="n">old_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="CfgNode.key_is_deprecated"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.key_is_deprecated">[docs]</a>    <span class="k">def</span> <span class="nf">key_is_deprecated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test if a key is deprecated.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">full_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">DEPRECATED_KEYS</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Deprecated config key (ignoring): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_key</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="CfgNode.key_is_renamed"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.key_is_renamed">[docs]</a>    <span class="k">def</span> <span class="nf">key_is_renamed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test if a key is renamed.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">full_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">RENAMED_KEYS</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CfgNode.raise_key_rename_error"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.raise_key_rename_error">[docs]</a>    <span class="k">def</span> <span class="nf">raise_key_rename_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_key</span><span class="p">):</span>
+        <span class="n">new_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">RENAMED_KEYS</span><span class="p">][</span><span class="n">full_key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot; Note: &quot;</span> <span class="o">+</span> <span class="n">new_key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">new_key</span> <span class="o">=</span> <span class="n">new_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+            <span class="s2">&quot;Key </span><span class="si">{}</span><span class="s2"> was renamed to </span><span class="si">{}</span><span class="s2">; please update your config.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">full_key</span><span class="p">,</span> <span class="n">new_key</span><span class="p">,</span> <span class="n">msg</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode.is_new_allowed"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.is_new_allowed">[docs]</a>    <span class="k">def</span> <span class="nf">is_new_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">NEW_ALLOWED</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CfgNode.set_new_allowed"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.set_new_allowed">[docs]</a>    <span class="k">def</span> <span class="nf">set_new_allowed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_new_allowed</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set this config (and recursively its subconfigs) to allow merging</span>
+<span class="sd">        new keys from other configs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">CfgNode</span><span class="o">.</span><span class="n">NEW_ALLOWED</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_new_allowed</span>
+        <span class="c1"># Recursively set new_allowed state</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">):</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">set_new_allowed</span><span class="p">(</span><span class="n">is_new_allowed</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">):</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">set_new_allowed</span><span class="p">(</span><span class="n">is_new_allowed</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode.load_cfg"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode.load_cfg">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load_cfg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg_file_obj_or_str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load a cfg.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            cfg_file_obj_or_str (str or file):</span>
+<span class="sd">                Supports loading from:</span>
+<span class="sd">                - A file object backed by a YAML file</span>
+<span class="sd">                - A file object backed by a Python source file that exports an attribute</span>
+<span class="sd">                  &quot;cfg&quot; that is either a dict or a CfgNode</span>
+<span class="sd">                - A string that can be parsed as valid YAML</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_assert_with_logging</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg_file_obj_or_str</span><span class="p">,</span> <span class="n">_FILE_TYPES</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">,)),</span>
+            <span class="s2">&quot;Expected first argument to be of type </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">, but it was </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">_FILE_TYPES</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">cfg_file_obj_or_str</span><span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg_file_obj_or_str</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_load_cfg_from_yaml_str</span><span class="p">(</span><span class="n">cfg_file_obj_or_str</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg_file_obj_or_str</span><span class="p">,</span> <span class="n">_FILE_TYPES</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_load_cfg_from_file</span><span class="p">(</span><span class="n">cfg_file_obj_or_str</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Impossible to reach here (unless there&#39;s a bug)&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode._load_cfg_from_file"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode._load_cfg_from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_load_cfg_from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load a config from a YAML file or a Python source file.&quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_extension</span> <span class="ow">in</span> <span class="n">_YAML_EXTS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_load_cfg_from_yaml_str</span><span class="p">(</span><span class="n">file_obj</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">file_extension</span> <span class="ow">in</span> <span class="n">_PY_EXTS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_load_cfg_py_source</span><span class="p">(</span><span class="n">file_obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;Attempt to load from an unsupported file type </span><span class="si">{}</span><span class="s2">; &quot;</span>
+                <span class="s2">&quot;only </span><span class="si">{}</span><span class="s2"> are supported&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">_YAML_EXTS</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">_PY_EXTS</span><span class="p">))</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode._load_cfg_from_yaml_str"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode._load_cfg_from_yaml_str">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_load_cfg_from_yaml_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">str_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load a config from a YAML string encoding.&quot;&quot;&quot;</span>
+        <span class="n">cfg_as_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">str_obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">cfg_as_dict</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode._load_cfg_py_source"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode._load_cfg_py_source">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_load_cfg_py_source</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load a config from a Python source file.&quot;&quot;&quot;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">_load_module_from_file</span><span class="p">(</span><span class="s2">&quot;yacs.config.override&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">_assert_with_logging</span><span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;cfg&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;Python module from file </span><span class="si">{}</span><span class="s2"> must have &#39;cfg&#39; attr&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">VALID_ATTR_TYPES</span> <span class="o">=</span> <span class="p">{</span><span class="nb">dict</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">}</span>
+        <span class="n">_assert_with_logging</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span> <span class="ow">in</span> <span class="n">VALID_ATTR_TYPES</span><span class="p">,</span>
+            <span class="s2">&quot;Imported module &#39;cfg&#39; attr must be in </span><span class="si">{}</span><span class="s2"> but is </span><span class="si">{}</span><span class="s2"> instead&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">VALID_ATTR_TYPES</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CfgNode._decode_cfg_value"><a class="viewcode-back" href="../../modules/config.html#xmodaler.config.CfgNode._decode_cfg_value">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_decode_cfg_value</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decodes a raw config value (e.g., from a yaml config files or command</span>
+<span class="sd">        line argument) into a Python object.</span>
+
+<span class="sd">        If the value is a dict, it will be interpreted as a new CfgNode.</span>
+<span class="sd">        If the value is a str, it will be evaluated as literals.</span>
+<span class="sd">        Otherwise it is returned as-is.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Configs parsed from raw yaml will contain dictionary keys that need to be</span>
+        <span class="c1"># converted to CfgNode objects</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="c1"># All remaining processing is only applied to strings</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="c1"># Try to interpret `value` as a:</span>
+        <span class="c1">#   string, number, tuple, list, dict, boolean, or None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="c1"># The following two excepts allow v to pass through when it represents a</span>
+        <span class="c1"># string.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Longer explanation:</span>
+        <span class="c1"># The type of v is always a string (before calling literal_eval), but</span>
+        <span class="c1"># sometimes it *represents* a string and other times a data structure, like</span>
+        <span class="c1"># a list. In the case that v represents a string, what we got back from the</span>
+        <span class="c1"># yaml parser is &#39;foo&#39; *without quotes* (so, not &#39;&quot;foo&quot;&#39;). literal_eval is</span>
+        <span class="c1"># ok with &#39;&quot;foo&quot;&#39;, but will raise a ValueError if given &#39;foo&#39;. In other</span>
+        <span class="c1"># cases, like paths (v = &#39;foo/bar&#39; and not v = &#39;&quot;foo/bar&quot;&#39;), literal_eval</span>
+        <span class="c1"># will raise a SyntaxError.</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">SyntaxError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+
+<span class="n">load_cfg</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">CfgNode</span><span class="o">.</span><span class="n">load_cfg</span>
+<span class="p">)</span>  <span class="c1"># keep this function in global scope for backward compatibility</span>
+
+
+<span class="k">def</span> <span class="nf">_valid_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">allow_cfg_node</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_VALID_TYPES</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="n">allow_cfg_node</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_merge_a_into_b</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">key_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Merge config dictionary a into config dictionary b, clobbering the</span>
+<span class="sd">    options in b whenever they are also specified in a.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_assert_with_logging</span><span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">),</span>
+        <span class="s2">&quot;`a` (cur type </span><span class="si">{}</span><span class="s2">) must be an instance of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">CfgNode</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">_assert_with_logging</span><span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">),</span>
+        <span class="s2">&quot;`b` (cur type </span><span class="si">{}</span><span class="s2">) must be an instance of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">CfgNode</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">full_key</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key_list</span> <span class="o">+</span> <span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+        <span class="n">v</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">v_</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">_decode_cfg_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">b</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">_check_and_coerce_cfg_value_type</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">k</span><span class="p">,</span> <span class="n">full_key</span><span class="p">)</span>
+            <span class="c1"># Recursively merge dicts</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CfgNode</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_merge_a_into_b</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">root</span><span class="p">,</span> <span class="n">key_list</span> <span class="o">+</span> <span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                    <span class="k">raise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">elif</span> <span class="n">b</span><span class="o">.</span><span class="n">is_new_allowed</span><span class="p">():</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">key_is_deprecated</span><span class="p">(</span><span class="n">full_key</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">elif</span> <span class="n">root</span><span class="o">.</span><span class="n">key_is_renamed</span><span class="p">(</span><span class="n">full_key</span><span class="p">):</span>
+                <span class="n">root</span><span class="o">.</span><span class="n">raise_key_rename_error</span><span class="p">(</span><span class="n">full_key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Non-existent config key: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_key</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_check_and_coerce_cfg_value_type</span><span class="p">(</span><span class="n">replacement</span><span class="p">,</span> <span class="n">original</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">full_key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Checks that `replacement`, which is intended to replace `original` is of</span>
+<span class="sd">    the right type. The type is correct if it matches exactly or is one of a few</span>
+<span class="sd">    cases in which the type can be easily coerced.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">original_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">original</span><span class="p">)</span>
+    <span class="n">replacement_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">replacement</span><span class="p">)</span>
+
+    <span class="c1"># The types must match (with some exceptions)</span>
+    <span class="k">if</span> <span class="n">replacement_type</span> <span class="o">==</span> <span class="n">original_type</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">replacement</span>
+
+    <span class="c1"># If either of them is None, allow type conversion to one of the valid types</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">replacement_type</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">original_type</span> <span class="ow">in</span> <span class="n">_VALID_TYPES</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="n">original_type</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">replacement_type</span> <span class="ow">in</span> <span class="n">_VALID_TYPES</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">replacement</span>
+
+    <span class="c1"># Cast replacement from from_type to to_type if the replacement and original</span>
+    <span class="c1"># types match from_type and to_type</span>
+    <span class="k">def</span> <span class="nf">conditional_cast</span><span class="p">(</span><span class="n">from_type</span><span class="p">,</span> <span class="n">to_type</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">replacement_type</span> <span class="o">==</span> <span class="n">from_type</span> <span class="ow">and</span> <span class="n">original_type</span> <span class="o">==</span> <span class="n">to_type</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">to_type</span><span class="p">(</span><span class="n">replacement</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="c1"># Conditionally casts</span>
+    <span class="c1"># list &lt;-&gt; tuple</span>
+    <span class="n">casts</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)]</span>
+    <span class="c1"># For py2: allow converting from str (bytes) to a unicode string</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">casts</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">,</span> <span class="n">unicode</span><span class="p">))</span>  <span class="c1"># noqa: F821</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">from_type</span><span class="p">,</span> <span class="n">to_type</span><span class="p">)</span> <span class="ow">in</span> <span class="n">casts</span><span class="p">:</span>
+        <span class="n">converted</span><span class="p">,</span> <span class="n">converted_value</span> <span class="o">=</span> <span class="n">conditional_cast</span><span class="p">(</span><span class="n">from_type</span><span class="p">,</span> <span class="n">to_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">converted</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">converted_value</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="s2">&quot;Type mismatch (</span><span class="si">{}</span><span class="s2"> vs. </span><span class="si">{}</span><span class="s2">) with values (</span><span class="si">{}</span><span class="s2"> vs. </span><span class="si">{}</span><span class="s2">) for config &quot;</span>
+        <span class="s2">&quot;key: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">original_type</span><span class="p">,</span> <span class="n">replacement_type</span><span class="p">,</span> <span class="n">original</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">full_key</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_assert_with_logging</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cond</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">cond</span><span class="p">,</span> <span class="n">msg</span>
+
+
+<span class="k">def</span> <span class="nf">_load_module_from_file</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">_PY2</span><span class="p">:</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">load_source</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+        <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">module</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,692 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.utils.events &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xmodaler.utils.events</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for xmodaler.utils.events</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Facebook, Inc. and its affiliates.</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">fvcore.common.history_buffer</span> <span class="kn">import</span> <span class="n">HistoryBuffer</span>
+
+<span class="kn">from</span> <span class="nn">xmodaler.utils.file_io</span> <span class="kn">import</span> <span class="n">PathManager</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;get_event_storage&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;JSONWriter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TensorboardXWriter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CommonMetricPrinter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;EventStorage&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">_CURRENT_STORAGE_STACK</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<div class="viewcode-block" id="get_event_storage"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.get_event_storage">[docs]</a><span class="k">def</span> <span class="nf">get_event_storage</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The :class:`EventStorage` object that&#39;s currently being used.</span>
+<span class="sd">        Throws an error if no :class:`EventStorage` is currently enabled.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">_CURRENT_STORAGE_STACK</span>
+    <span class="p">),</span> <span class="s2">&quot;get_event_storage() has to be called inside a &#39;with EventStorage(...)&#39; context!&quot;</span>
+    <span class="k">return</span> <span class="n">_CURRENT_STORAGE_STACK</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<span class="k">class</span> <span class="nc">EventWriter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for writers that obtain events from :class:`EventStorage` and process them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="JSONWriter"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.JSONWriter">[docs]</a><span class="k">class</span> <span class="nc">JSONWriter</span><span class="p">(</span><span class="n">EventWriter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write scalars to a json file.</span>
+
+<span class="sd">    It saves scalars as one json per line (instead of a big json) for easy parsing.</span>
+
+<span class="sd">    Examples parsing such a json file:</span>
+<span class="sd">    ::</span>
+<span class="sd">        $ cat metrics.json | jq -s &#39;.[0:2]&#39;</span>
+<span class="sd">        [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;data_time&quot;: 0.008433341979980469,</span>
+<span class="sd">            &quot;iteration&quot;: 19,</span>
+<span class="sd">            &quot;loss&quot;: 1.9228371381759644,</span>
+<span class="sd">            &quot;loss_box_reg&quot;: 0.050025828182697296,</span>
+<span class="sd">            &quot;loss_classifier&quot;: 0.5316952466964722,</span>
+<span class="sd">            &quot;loss_mask&quot;: 0.7236229181289673,</span>
+<span class="sd">            &quot;loss_rpn_box&quot;: 0.0856662318110466,</span>
+<span class="sd">            &quot;loss_rpn_cls&quot;: 0.48198649287223816,</span>
+<span class="sd">            &quot;lr&quot;: 0.007173333333333333,</span>
+<span class="sd">            &quot;time&quot;: 0.25401854515075684</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;data_time&quot;: 0.007216215133666992,</span>
+<span class="sd">            &quot;iteration&quot;: 39,</span>
+<span class="sd">            &quot;loss&quot;: 1.282649278640747,</span>
+<span class="sd">            &quot;loss_box_reg&quot;: 0.06222952902317047,</span>
+<span class="sd">            &quot;loss_classifier&quot;: 0.30682939291000366,</span>
+<span class="sd">            &quot;loss_mask&quot;: 0.6970193982124329,</span>
+<span class="sd">            &quot;loss_rpn_box&quot;: 0.038663312792778015,</span>
+<span class="sd">            &quot;loss_rpn_cls&quot;: 0.1471673548221588,</span>
+<span class="sd">            &quot;lr&quot;: 0.007706666666666667,</span>
+<span class="sd">            &quot;time&quot;: 0.2490077018737793</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+
+<span class="sd">        $ cat metrics.json | jq &#39;.loss_mask&#39;</span>
+<span class="sd">        0.7126231789588928</span>
+<span class="sd">        0.689423680305481</span>
+<span class="sd">        0.6776131987571716</span>
+<span class="sd">        ...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="JSONWriter.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.JSONWriter.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_file</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            json_file (str): path to the json file. New data will be appended if the file exists.</span>
+<span class="sd">            window_size (int): the window size of median smoothing for the scalars whose</span>
+<span class="sd">                `smoothing_hint` are True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_handle</span> <span class="o">=</span> <span class="n">PathManager</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window_size</span> <span class="o">=</span> <span class="n">window_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="JSONWriter.write"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.JSONWriter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">storage</span> <span class="o">=</span> <span class="n">get_event_storage</span><span class="p">()</span>
+        <span class="n">to_save</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">iter</span><span class="p">)</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">latest_with_smoothing_hint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_window_size</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># keep scalars that have not been written</span>
+            <span class="k">if</span> <span class="nb">iter</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">to_save</span><span class="p">[</span><span class="nb">iter</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_save</span><span class="p">):</span>
+            <span class="n">all_iters</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">to_save</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">all_iters</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">itr</span><span class="p">,</span> <span class="n">scalars_per_iter</span> <span class="ow">in</span> <span class="n">to_save</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">scalars_per_iter</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">itr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">scalars_per_iter</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_handle</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">fsync</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_handle</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="JSONWriter.close"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.JSONWriter.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TensorboardXWriter"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.TensorboardXWriter">[docs]</a><span class="k">class</span> <span class="nc">TensorboardXWriter</span><span class="p">(</span><span class="n">EventWriter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write all scalars to a tensorboard file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TensorboardXWriter.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.TensorboardXWriter.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            log_dir (str): the directory to save the output events</span>
+<span class="sd">            window_size (int): the scalars will be median-smoothed by this window size</span>
+
+<span class="sd">            kwargs: other arguments passed to `torch.utils.tensorboard.SummaryWriter(...)`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window_size</span> <span class="o">=</span> <span class="n">window_size</span>
+        <span class="kn">from</span> <span class="nn">torch.utils.tensorboard</span> <span class="kn">import</span> <span class="n">SummaryWriter</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="n">SummaryWriter</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="TensorboardXWriter.write"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.TensorboardXWriter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">storage</span> <span class="o">=</span> <span class="n">get_event_storage</span><span class="p">()</span>
+        <span class="n">new_last_write</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">iter</span><span class="p">)</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">latest_with_smoothing_hint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_window_size</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">iter</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="nb">iter</span><span class="p">)</span>
+                <span class="n">new_last_write</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">new_last_write</span><span class="p">,</span> <span class="nb">iter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="n">new_last_write</span>
+
+        <span class="c1"># storage.put_{image,histogram} is only meant to be used by</span>
+        <span class="c1"># tensorboard writer. So we access its internal fields directly from here.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">storage</span><span class="o">.</span><span class="n">_vis_data</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">img_name</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">step_num</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">_vis_data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">img_name</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">step_num</span><span class="p">)</span>
+            <span class="c1"># Storage stores all image data and rely on this writer to clear them.</span>
+            <span class="c1"># As a result it assumes only one writer will use its image data.</span>
+            <span class="c1"># An alternative design is to let storage store limited recent</span>
+            <span class="c1"># data (e.g. only the most recent image) that all writers can access.</span>
+            <span class="c1"># In that case a writer may not see all image data if its period is long.</span>
+            <span class="n">storage</span><span class="o">.</span><span class="n">clear_images</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">storage</span><span class="o">.</span><span class="n">_histograms</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">_histograms</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">add_histogram_raw</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">storage</span><span class="o">.</span><span class="n">clear_histograms</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TensorboardXWriter.close"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.TensorboardXWriter.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_writer&quot;</span><span class="p">):</span>  <span class="c1"># doesn&#39;t exist when the code fails at import</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="CommonMetricPrinter"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.CommonMetricPrinter">[docs]</a><span class="k">class</span> <span class="nc">CommonMetricPrinter</span><span class="p">(</span><span class="n">EventWriter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print **common** metrics to the terminal, including</span>
+<span class="sd">    iteration time, ETA, memory, all losses, and the learning rate.</span>
+<span class="sd">    It also applies smoothing using a window of 20 elements.</span>
+
+<span class="sd">    It&#39;s meant to print common metrics in common ways.</span>
+<span class="sd">    To print something in more customized ways, please implement a similar printer by yourself.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CommonMetricPrinter.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.CommonMetricPrinter.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            max_iter: the maximum number of iterations to train.</span>
+<span class="sd">                Used to compute ETA. If not given, ETA will not be printed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (step, time) of last call to write(). Used to compute ETA</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_eta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">iteration</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">iter</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">eta_seconds</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span> <span class="o">-</span> <span class="n">iteration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">storage</span><span class="o">.</span><span class="n">put_scalar</span><span class="p">(</span><span class="s2">&quot;eta_seconds&quot;</span><span class="p">,</span> <span class="n">eta_seconds</span><span class="p">,</span> <span class="n">smoothing_hint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">eta_seconds</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># estimate eta on our own - more noisy</span>
+            <span class="n">eta_string</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">estimate_iter_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="n">iteration</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">eta_seconds</span> <span class="o">=</span> <span class="n">estimate_iter_time</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span> <span class="o">-</span> <span class="n">iteration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">eta_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">eta_seconds</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_write</span> <span class="o">=</span> <span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">eta_string</span>
+
+<div class="viewcode-block" id="CommonMetricPrinter.write"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.CommonMetricPrinter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">torch</span>
+
+        <span class="n">storage</span> <span class="o">=</span> <span class="n">get_event_storage</span><span class="p">()</span>
+        <span class="n">iteration</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">iter</span>
+        <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span><span class="p">:</span>
+            <span class="c1"># This hook only reports training progress (loss, ETA, etc) but not other data,</span>
+            <span class="c1"># therefore do not write anything after training succeeds, even if this method</span>
+            <span class="c1"># is called.</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data_time</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="s2">&quot;data_time&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># they may not exist in the first few iterations (due to warmup)</span>
+            <span class="c1"># or when SimpleTrainer is not used</span>
+            <span class="n">data_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">iter_time</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">global_avg</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">iter_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">lr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:.5g}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="s2">&quot;lr&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">latest</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">lr</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span>
+
+        <span class="n">eta_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_eta</span><span class="p">(</span><span class="n">storage</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="n">max_mem_mb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">max_memory_allocated</span><span class="p">()</span> <span class="o">/</span> <span class="mf">1024.0</span> <span class="o">/</span> <span class="mf">1024.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_mem_mb</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># NOTE: max_mem is parsed by grep in &quot;dev/parse_results.sh&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot; </span><span class="si">{eta}</span><span class="s2">iter: </span><span class="si">{iter}</span><span class="s2">  </span><span class="si">{losses}</span><span class="s2">  </span><span class="si">{time}{data_time}</span><span class="s2">lr: </span><span class="si">{lr}</span><span class="s2">  </span><span class="si">{memory}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">eta</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;eta: </span><span class="si">{eta_string}</span><span class="s2">  &quot;</span> <span class="k">if</span> <span class="n">eta_string</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="nb">iter</span><span class="o">=</span><span class="n">iteration</span><span class="p">,</span>
+                <span class="n">losses</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{:.4g}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">histories</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;loss&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;Cider&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;RewardCriterion&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">time</span><span class="o">=</span><span class="s2">&quot;time: </span><span class="si">{:.4f}</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iter_time</span><span class="p">)</span> <span class="k">if</span> <span class="n">iter_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">data_time</span><span class="o">=</span><span class="s2">&quot;data_time: </span><span class="si">{:.4f}</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_time</span><span class="p">)</span> <span class="k">if</span> <span class="n">data_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
+                <span class="n">memory</span><span class="o">=</span><span class="s2">&quot;max_mem: </span><span class="si">{:.0f}</span><span class="s2">M&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_mem_mb</span><span class="p">)</span> <span class="k">if</span> <span class="n">max_mem_mb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="EventStorage"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage">[docs]</a><span class="k">class</span> <span class="nc">EventStorage</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The user-facing class that provides metric storage functionalities.</span>
+
+<span class="sd">    In the future we may add support for storing / logging other types of data if needed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EventStorage.__init__"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_iter</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            start_iter (int): the iteration number to start with</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">HistoryBuffer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_smoothing_hints</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latest_scalars</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">=</span> <span class="n">start_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vis_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_histograms</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="EventStorage.put_image"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.put_image">[docs]</a>    <span class="k">def</span> <span class="nf">put_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_name</span><span class="p">,</span> <span class="n">img_tensor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an `img_tensor` associated with `img_name`, to be shown on</span>
+<span class="sd">        tensorboard.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            img_name (str): The name of the image to put into tensorboard.</span>
+<span class="sd">            img_tensor (torch.Tensor or numpy.array): An `uint8` or `float`</span>
+<span class="sd">                Tensor of shape `[channel, height, width]` where `channel` is</span>
+<span class="sd">                3. The image format should be RGB. The elements in img_tensor</span>
+<span class="sd">                can either have values in [0, 1] (float32) or [0, 255] (uint8).</span>
+<span class="sd">                The `img_tensor` will be visualized in tensorboard.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vis_data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">img_name</span><span class="p">,</span> <span class="n">img_tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="EventStorage.put_scalar"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.put_scalar">[docs]</a>    <span class="k">def</span> <span class="nf">put_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">smoothing_hint</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a scalar `value` to the `HistoryBuffer` associated with `name`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            smoothing_hint (bool): a &#39;hint&#39; on whether this scalar is noisy and should be</span>
+<span class="sd">                smoothed when logged. The hint will be accessible through</span>
+<span class="sd">                :meth:`EventStorage.smoothing_hints`.  A writer may ignore the hint</span>
+<span class="sd">                and apply custom smoothing rule.</span>
+
+<span class="sd">                It defaults to True because most scalars we save need to be smoothed to</span>
+<span class="sd">                provide any useful signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_prefix</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">history</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latest_scalars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">)</span>
+
+        <span class="n">existing_hint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smoothing_hints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">existing_hint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">existing_hint</span> <span class="o">==</span> <span class="n">smoothing_hint</span>
+            <span class="p">),</span> <span class="s2">&quot;Scalar </span><span class="si">{}</span><span class="s2"> was put with a different smoothing_hint!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_smoothing_hints</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">smoothing_hint</span></div>
+
+<div class="viewcode-block" id="EventStorage.put_scalars"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.put_scalars">[docs]</a>    <span class="k">def</span> <span class="nf">put_scalars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">smoothing_hint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Put multiple scalars from keyword arguments.</span>
+
+<span class="sd">        Examples:</span>
+
+<span class="sd">            storage.put_scalars(loss=my_loss, accuracy=my_accuracy, smoothing_hint=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">put_scalar</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">smoothing_hint</span><span class="o">=</span><span class="n">smoothing_hint</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EventStorage.put_histogram"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.put_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">put_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hist_name</span><span class="p">,</span> <span class="n">hist_tensor</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a histogram from a tensor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            hist_name (str): The name of the histogram to put into tensorboard.</span>
+<span class="sd">            hist_tensor (torch.Tensor): A Tensor of arbitrary shape to be converted</span>
+<span class="sd">                into a histogram.</span>
+<span class="sd">            bins (int): Number of histogram bins.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">torch</span>
+
+        <span class="n">ht_min</span><span class="p">,</span> <span class="n">ht_max</span> <span class="o">=</span> <span class="n">hist_tensor</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">hist_tensor</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="c1"># Create a histogram with PyTorch</span>
+        <span class="n">hist_counts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">histc</span><span class="p">(</span><span class="n">hist_tensor</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+        <span class="n">hist_edges</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">ht_min</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">ht_max</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="c1"># Parameter for the add_histogram_raw function of SummaryWriter</span>
+        <span class="n">hist_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">tag</span><span class="o">=</span><span class="n">hist_name</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=</span><span class="n">ht_min</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="n">ht_max</span><span class="p">,</span>
+            <span class="n">num</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">hist_tensor</span><span class="p">),</span>
+            <span class="nb">sum</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">hist_tensor</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+            <span class="n">sum_squares</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">hist_tensor</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)),</span>
+            <span class="n">bucket_limits</span><span class="o">=</span><span class="n">hist_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">bucket_counts</span><span class="o">=</span><span class="n">hist_counts</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="n">global_step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iter</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_histograms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hist_params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EventStorage.history"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.history">[docs]</a>    <span class="k">def</span> <span class="nf">history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            HistoryBuffer: the scalar history for name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;No history metric available for </span><span class="si">{}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="EventStorage.histories"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.histories">[docs]</a>    <span class="k">def</span> <span class="nf">histories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[name -&gt; HistoryBuffer]: the HistoryBuffer for all scalars</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span></div>
+
+<div class="viewcode-block" id="EventStorage.latest"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.latest">[docs]</a>    <span class="k">def</span> <span class="nf">latest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str -&gt; (float, int)]: mapping from the name of each scalar to the most</span>
+<span class="sd">                recent value and the iteration number its added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_latest_scalars</span></div>
+
+<div class="viewcode-block" id="EventStorage.latest_with_smoothing_hint"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.latest_with_smoothing_hint">[docs]</a>    <span class="k">def</span> <span class="nf">latest_with_smoothing_hint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Similar to :meth:`latest`, but the returned values</span>
+<span class="sd">        are either the un-smoothed original latest value,</span>
+<span class="sd">        or a median of the given window_size,</span>
+<span class="sd">        depend on whether the smoothing_hint is True.</span>
+
+<span class="sd">        This provides a default behavior that other writers can use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">itr</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_latest_scalars</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smoothing_hints</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">else</span> <span class="n">v</span><span class="p">,</span>
+                <span class="n">itr</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="EventStorage.smoothing_hints"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.smoothing_hints">[docs]</a>    <span class="k">def</span> <span class="nf">smoothing_hints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[name -&gt; bool]: the user-provided hint on whether the scalar</span>
+<span class="sd">                is noisy and needs smoothing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smoothing_hints</span></div>
+
+<div class="viewcode-block" id="EventStorage.step"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        User should either: (1) Call this function to increment storage.iter when needed. Or</span>
+<span class="sd">        (2) Set `storage.iter` to the correct iteration number before each iteration.</span>
+
+<span class="sd">        The storage will then be able to associate the new data with an iteration number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The current iteration number. When used together with a trainer,</span>
+<span class="sd">                this is ensured to be the same as trainer.iter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span>
+
+    <span class="nd">@iter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># for backward compatibility</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">_CURRENT_STORAGE_STACK</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">_CURRENT_STORAGE_STACK</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span>
+        <span class="n">_CURRENT_STORAGE_STACK</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+<div class="viewcode-block" id="EventStorage.name_scope"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.name_scope">[docs]</a>    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">name_scope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yields:</span>
+<span class="sd">            A context within which all the events added to this storage</span>
+<span class="sd">            will be prefixed by the name scope.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_prefix</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+        <span class="k">yield</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_prefix</span> <span class="o">=</span> <span class="n">old_prefix</span></div>
+
+<div class="viewcode-block" id="EventStorage.clear_images"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.clear_images">[docs]</a>    <span class="k">def</span> <span class="nf">clear_images</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete all the stored images for visualization. This should be called</span>
+<span class="sd">        after images are written to tensorboard.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vis_data</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="EventStorage.clear_histograms"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.events.EventStorage.clear_histograms">[docs]</a>    <span class="k">def</span> <span class="nf">clear_histograms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete all the stored histograms for visualization.</span>
+<span class="sd">        This should be called after histograms are written to tensorboard.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_histograms</span> <span class="o">=</span> <span class="p">[]</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

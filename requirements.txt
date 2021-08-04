@@ -1,0 +1,8 @@
+torch>=1.8.0
+fvcore
+pycocotools
+omegaconf
+cloudpickle
+torchvision
+tensorboard
+jsonlines

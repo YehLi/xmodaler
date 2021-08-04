@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.utils.colormap &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xmodaler.utils.colormap</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for xmodaler.utils.colormap</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Facebook, Inc. and its affiliates.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An awesome colormap for really neat visualizations.</span>
+<span class="sd">Copied from Detectron, and removed gray colors.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;colormap&quot;</span><span class="p">,</span> <span class="s2">&quot;random_color&quot;</span><span class="p">]</span>
+
+<span class="c1"># fmt: off</span>
+<span class="c1"># RGB:</span>
+<span class="n">_COLORS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.447</span><span class="p">,</span> <span class="mf">0.741</span><span class="p">,</span>
+        <span class="mf">0.850</span><span class="p">,</span> <span class="mf">0.325</span><span class="p">,</span> <span class="mf">0.098</span><span class="p">,</span>
+        <span class="mf">0.929</span><span class="p">,</span> <span class="mf">0.694</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span>
+        <span class="mf">0.494</span><span class="p">,</span> <span class="mf">0.184</span><span class="p">,</span> <span class="mf">0.556</span><span class="p">,</span>
+        <span class="mf">0.466</span><span class="p">,</span> <span class="mf">0.674</span><span class="p">,</span> <span class="mf">0.188</span><span class="p">,</span>
+        <span class="mf">0.301</span><span class="p">,</span> <span class="mf">0.745</span><span class="p">,</span> <span class="mf">0.933</span><span class="p">,</span>
+        <span class="mf">0.635</span><span class="p">,</span> <span class="mf">0.078</span><span class="p">,</span> <span class="mf">0.184</span><span class="p">,</span>
+        <span class="mf">0.300</span><span class="p">,</span> <span class="mf">0.300</span><span class="p">,</span> <span class="mf">0.300</span><span class="p">,</span>
+        <span class="mf">0.600</span><span class="p">,</span> <span class="mf">0.600</span><span class="p">,</span> <span class="mf">0.600</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.749</span><span class="p">,</span> <span class="mf">0.749</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.500</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.833</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.167</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.833</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.167</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.333</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.500</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.667</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.833</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span>
+        <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span>
+        <span class="mf">0.143</span><span class="p">,</span> <span class="mf">0.143</span><span class="p">,</span> <span class="mf">0.143</span><span class="p">,</span>
+        <span class="mf">0.857</span><span class="p">,</span> <span class="mf">0.857</span><span class="p">,</span> <span class="mf">0.857</span><span class="p">,</span>
+        <span class="mf">1.000</span><span class="p">,</span> <span class="mf">1.000</span><span class="p">,</span> <span class="mf">1.000</span>
+    <span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c1"># fmt: on</span>
+
+
+<div class="viewcode-block" id="colormap"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.colormap.colormap">[docs]</a><span class="k">def</span> <span class="nf">colormap</span><span class="p">(</span><span class="n">rgb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="mi">255</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        rgb (bool): whether to return RGB colors or BGR colors.</span>
+<span class="sd">        maximum (int): either 255 or 1</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ndarray: a float32 array of Nx3 colors, in range [0, 255] or [0, 1]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">maximum</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">255</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">maximum</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">_COLORS</span> <span class="o">*</span> <span class="n">maximum</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">rgb</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">c</span></div>
+
+
+<div class="viewcode-block" id="random_color"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.colormap.random_color">[docs]</a><span class="k">def</span> <span class="nf">random_color</span><span class="p">(</span><span class="n">rgb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="mi">255</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        rgb (bool): whether to return RGB colors or BGR colors.</span>
+<span class="sd">        maximum (int): either 255 or 1</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ndarray: a vector of 3 numbers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">_COLORS</span><span class="p">))</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">_COLORS</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*</span> <span class="n">maximum</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">rgb</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

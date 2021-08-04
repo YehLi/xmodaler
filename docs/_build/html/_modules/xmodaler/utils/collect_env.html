@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.utils.collect_env &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xmodaler.utils.collect_env</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for xmodaler.utils.collect_env</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Facebook, Inc. and its affiliates.</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">PIL</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchvision</span>
+<span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;collect_env_info&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">collect_torch_env</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">torch.__config__</span>
+
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">__config__</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="c1"># compatible with older versions of pytorch</span>
+        <span class="kn">from</span> <span class="nn">torch.utils.collect_env</span> <span class="kn">import</span> <span class="n">get_pretty_env_info</span>
+
+        <span class="k">return</span> <span class="n">get_pretty_env_info</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">get_env_module</span><span class="p">():</span>
+    <span class="n">var_name</span> <span class="o">=</span> <span class="s2">&quot;DETECTRON2_ENV_MODULE&quot;</span>
+    <span class="k">return</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="s2">&quot;&lt;not set&gt;&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">detect_compute_compatibility</span><span class="p">(</span><span class="n">CUDA_HOME</span><span class="p">,</span> <span class="n">so_file</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cuobjdump</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CUDA_HOME</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;cuobjdump&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cuobjdump</span><span class="p">):</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; --list-elf &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cuobjdump</span><span class="p">,</span> <span class="n">so_file</span><span class="p">),</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">arch</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\.sm_([0-9]*)\.&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">arch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+            <span class="n">arch</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">arch</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">so_file</span> <span class="o">+</span> <span class="s2">&quot;; cannot find cuobjdump&quot;</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="c1"># unhandled failure</span>
+        <span class="k">return</span> <span class="n">so_file</span>
+
+
+<div class="viewcode-block" id="collect_env_info"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.collect_env.collect_env_info">[docs]</a><span class="k">def</span> <span class="nf">collect_env_info</span><span class="p">():</span>
+    <span class="n">has_gpu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>  <span class="c1"># true for both CUDA &amp; ROCM</span>
+    <span class="n">torch_version</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">__version__</span>
+
+    <span class="c1"># NOTE that CUDA_HOME/ROCM_HOME could be None even when CUDA runtime libs are functional</span>
+    <span class="kn">from</span> <span class="nn">torch.utils.cpp_extension</span> <span class="kn">import</span> <span class="n">CUDA_HOME</span><span class="p">,</span> <span class="n">ROCM_HOME</span>
+
+    <span class="n">has_rocm</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="s2">&quot;hip&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ROCM_HOME</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">has_rocm</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">has_cuda</span> <span class="o">=</span> <span class="n">has_gpu</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">has_rocm</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;sys.platform&quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">))</span>  <span class="c1"># check-template.yml depends on it</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;Python&quot;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;numpy&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">__version__</span><span class="p">))</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">detectron2</span>  <span class="c1"># noqa</span>
+
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;detectron2&quot;</span><span class="p">,</span> <span class="n">detectron2</span><span class="o">.</span><span class="n">__version__</span> <span class="o">+</span> <span class="s2">&quot; @&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">detectron2</span><span class="o">.</span><span class="vm">__file__</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;detectron2&quot;</span><span class="p">,</span> <span class="s2">&quot;failed to import&quot;</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;detectron2&quot;</span><span class="p">,</span> <span class="s2">&quot;imported a wrong installation&quot;</span><span class="p">))</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">detectron2._C</span> <span class="k">as</span> <span class="nn">_C</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;detectron2._C&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;not built correctly: </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">))</span>
+
+        <span class="c1"># print system compilers when extension fails to build</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">!=</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>  <span class="c1"># don&#39;t know what to do for windows</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># this is how torch/utils/cpp_extensions.py choose compiler</span>
+                <span class="n">cxx</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CXX&quot;</span><span class="p">,</span> <span class="s2">&quot;c++&quot;</span><span class="p">)</span>
+                <span class="n">cxx</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; --version&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cxx</span><span class="p">),</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">cxx</span> <span class="o">=</span> <span class="n">cxx</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">SubprocessError</span><span class="p">:</span>
+                <span class="n">cxx</span> <span class="o">=</span> <span class="s2">&quot;Not found&quot;</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;Compiler ($CXX)&quot;</span><span class="p">,</span> <span class="n">cxx</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">has_cuda</span> <span class="ow">and</span> <span class="n">CUDA_HOME</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">nvcc</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CUDA_HOME</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;nvcc&quot;</span><span class="p">)</span>
+                    <span class="n">nvcc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; -V&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nvcc</span><span class="p">),</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">nvcc</span> <span class="o">=</span> <span class="n">nvcc</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">SubprocessError</span><span class="p">:</span>
+                    <span class="n">nvcc</span> <span class="o">=</span> <span class="s2">&quot;Not found&quot;</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;CUDA compiler&quot;</span><span class="p">,</span> <span class="n">nvcc</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">has_cuda</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">!=</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">so_file</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">find_spec</span><span class="p">(</span><span class="s2">&quot;detectron2._C&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">origin</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="s2">&quot;detectron2 arch flags&quot;</span><span class="p">,</span> <span class="n">detect_compute_compatibility</span><span class="p">(</span><span class="n">CUDA_HOME</span><span class="p">,</span> <span class="n">so_file</span><span class="p">))</span>
+                <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># print compilers that are used to build extension</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;Compiler&quot;</span><span class="p">,</span> <span class="n">_C</span><span class="o">.</span><span class="n">get_compiler_version</span><span class="p">()))</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;CUDA compiler&quot;</span><span class="p">,</span> <span class="n">_C</span><span class="o">.</span><span class="n">get_cuda_version</span><span class="p">()))</span>  <span class="c1"># cuda or hip</span>
+        <span class="k">if</span> <span class="n">has_cuda</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_C</span><span class="p">,</span> <span class="s2">&quot;has_cuda&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)():</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;detectron2 arch flags&quot;</span><span class="p">,</span> <span class="n">detect_compute_compatibility</span><span class="p">(</span><span class="n">CUDA_HOME</span><span class="p">,</span> <span class="n">_C</span><span class="o">.</span><span class="vm">__file__</span><span class="p">))</span>
+            <span class="p">)</span>
+
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_env_module</span><span class="p">())</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;PyTorch&quot;</span><span class="p">,</span> <span class="n">torch_version</span> <span class="o">+</span> <span class="s2">&quot; @&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)))</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;PyTorch debug build&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">debug</span><span class="p">))</span>
+
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;GPU available&quot;</span><span class="p">,</span> <span class="n">has_gpu</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">has_gpu</span><span class="p">:</span>
+        <span class="n">devices</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device_count</span><span class="p">()):</span>
+            <span class="n">cap</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_capability</span><span class="p">(</span><span class="n">k</span><span class="p">)))</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; (arch=</span><span class="si">{cap}</span><span class="s2">)&quot;</span>
+            <span class="n">devices</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">devids</span> <span class="ow">in</span> <span class="n">devices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;GPU &quot;</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">devids</span><span class="p">),</span> <span class="n">name</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">has_rocm</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot; - invalid!&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ROCM_HOME</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">ROCM_HOME</span><span class="p">))</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;ROCM_HOME&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ROCM_HOME</span><span class="p">)</span> <span class="o">+</span> <span class="n">msg</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot; - invalid!&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">CUDA_HOME</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">CUDA_HOME</span><span class="p">))</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;CUDA_HOME&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">CUDA_HOME</span><span class="p">)</span> <span class="o">+</span> <span class="n">msg</span><span class="p">))</span>
+
+            <span class="n">cuda_arch_list</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TORCH_CUDA_ARCH_LIST&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cuda_arch_list</span><span class="p">:</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;TORCH_CUDA_ARCH_LIST&quot;</span><span class="p">,</span> <span class="n">cuda_arch_list</span><span class="p">))</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;Pillow&quot;</span><span class="p">,</span> <span class="n">PIL</span><span class="o">.</span><span class="n">__version__</span><span class="p">))</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;torchvision&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">torchvision</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; @&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">torchvision</span><span class="o">.</span><span class="vm">__file__</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">has_cuda</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">torchvision_C</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">find_spec</span><span class="p">(</span><span class="s2">&quot;torchvision._C&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">origin</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">detect_compute_compatibility</span><span class="p">(</span><span class="n">CUDA_HOME</span><span class="p">,</span> <span class="n">torchvision_C</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;torchvision arch flags&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;torchvision._C&quot;</span><span class="p">,</span> <span class="s2">&quot;Not found&quot;</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;torchvision&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown&quot;</span><span class="p">))</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">fvcore</span>
+
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;fvcore&quot;</span><span class="p">,</span> <span class="n">fvcore</span><span class="o">.</span><span class="n">__version__</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">iopath</span>
+
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;iopath&quot;</span><span class="p">,</span> <span class="n">iopath</span><span class="o">.</span><span class="n">__version__</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">cv2</span>
+
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;cv2&quot;</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">__version__</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;cv2&quot;</span><span class="p">,</span> <span class="s2">&quot;Not found&quot;</span><span class="p">))</span>
+    <span class="n">env_str</span> <span class="o">=</span> <span class="n">tabulate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">env_str</span> <span class="o">+=</span> <span class="n">collect_torch_env</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">env_str</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

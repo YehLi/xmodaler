@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.evaluation &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xmodaler.functional" href="functional.html" />
+    <link rel="prev" title="xmodaler.engine" href="engine.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/index.html">Notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="checkpoint.html">xmodaler.checkpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">xmodaler.config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html">xmodaler.datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="engine.html">xmodaler.engine</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">xmodaler.evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functional.html">xmodaler.functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses.html">xmodaler.losses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lr_scheduler.html">xmodaler.lr_scheduler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modeling/index.html">xmodaler.modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.html">xmodaler.optim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scorer.html">xmodaler.scorer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tokenization.html">xmodaler.tokenization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">xmodaler.utils</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">API Documentation</a> &raquo;</li>
+        
+      <li>xmodaler.evaluation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            
+              <a href="https://github.com/YehLi/xmodaler/blob/master/docs/modules/evaluation.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="xmodaler-evaluation">
+<h1>xmodaler.evaluation<a class="headerlink" href="#xmodaler-evaluation" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="xmodaler.evaluation.build_evaluation">
+<code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">build_evaluation</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/build.html#build_evaluation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.build_evaluation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.evaluation.COCOEvaler">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">COCOEvaler</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/coco_evaler.html#COCOEvaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.COCOEvaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="xmodaler.evaluation.COCOEvaler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/coco_evaler.html#COCOEvaler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.COCOEvaler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.evaluation.COCOEvaler.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">result</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/coco_evaler.html#COCOEvaler.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.COCOEvaler.eval" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.evaluation.VQAEvaler">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">VQAEvaler</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/vqa_evaler.html#VQAEvaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.VQAEvaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="xmodaler.evaluation.VQAEvaler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/vqa_evaler.html#VQAEvaler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.VQAEvaler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.evaluation.VQAEvaler.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">results</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/vqa_evaler.html#VQAEvaler.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.VQAEvaler.eval" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="xmodaler.evaluation.RetrievalEvaler">
+<em class="property">class </em><code class="sig-prename descclassname">xmodaler.evaluation.</code><code class="sig-name descname">RetrievalEvaler</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/retrieval_evaler.html#RetrievalEvaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.RetrievalEvaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="xmodaler.evaluation.RetrievalEvaler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">cfg</em>, <em class="sig-param">annfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/retrieval_evaler.html#RetrievalEvaler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.RetrievalEvaler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xmodaler.evaluation.RetrievalEvaler.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">vfeats</em>, <em class="sig-param">tfeats</em>, <em class="sig-param">labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xmodaler/evaluation/retrieval_evaler.html#RetrievalEvaler.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xmodaler.evaluation.RetrievalEvaler.eval" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="functional.html" class="btn btn-neutral float-right" title="xmodaler.functional" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="engine.html" class="btn btn-neutral float-left" title="xmodaler.engine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

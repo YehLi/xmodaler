@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.utils.logger &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xmodaler.utils.logger</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for xmodaler.utils.logger</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Facebook, Inc. and its affiliates.</span>
+<span class="kn">import</span> <span class="nn">atexit</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
+<span class="kn">from</span> <span class="nn">termcolor</span> <span class="kn">import</span> <span class="n">colored</span>
+
+<span class="kn">from</span> <span class="nn">xmodaler.utils.file_io</span> <span class="kn">import</span> <span class="n">PathManager</span>
+
+
+<span class="k">class</span> <span class="nc">_ColorfulFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;root_name&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_abbrev_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;abbrev_name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_abbrev_name</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_abbrev_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abbrev_name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">_ColorfulFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">formatMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="n">record</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abbrev_name</span><span class="p">)</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">_ColorfulFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">formatMessage</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;blink&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span> <span class="ow">or</span> <span class="n">record</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;blink&quot;</span><span class="p">,</span> <span class="s2">&quot;underline&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">log</span>
+        <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">log</span>
+
+
+<div class="viewcode-block" id="setup_logger"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.logger.setup_logger">[docs]</a><span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">()</span>  <span class="c1"># so that calling setup_logger multiple times won&#39;t add many handlers</span>
+<span class="k">def</span> <span class="nf">setup_logger</span><span class="p">(</span>
+    <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distributed_rank</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;xmodaler&quot;</span><span class="p">,</span> <span class="n">abbrev_name</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize the xmodaler logger and set its verbosity level to &quot;DEBUG&quot;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        output (str): a file name or a directory to save log. If None, will not save log file.</span>
+<span class="sd">            If ends with &quot;.txt&quot; or &quot;.log&quot;, assumed to be a file name.</span>
+<span class="sd">            Otherwise, logs will be saved to `output/log.txt`.</span>
+<span class="sd">        name (str): the root module name of this logger</span>
+<span class="sd">        abbrev_name (str): an abbreviation of the module, to avoid long names in logs.</span>
+<span class="sd">            Set to &quot;&quot; to not log the root module in logs.</span>
+<span class="sd">            By default, will abbreviate &quot;xmodaler&quot; to &quot;d2&quot; and leave other</span>
+<span class="sd">            modules unchanged.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        logging.Logger: a logger</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">abbrev_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">abbrev_name</span> <span class="o">=</span> <span class="s2">&quot;xl&quot;</span> <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;xmodaler&quot;</span> <span class="k">else</span> <span class="n">name</span>
+
+    <span class="n">plain_formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+        <span class="s2">&quot;[</span><span class="si">%(asctime)s</span><span class="s2">] </span><span class="si">%(name)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># stdout logging: master only</span>
+    <span class="k">if</span> <span class="n">distributed_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="n">ch</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">color</span><span class="p">:</span>
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">_ColorfulFormatter</span><span class="p">(</span>
+                <span class="n">colored</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(name)s</span><span class="s2">]: &quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span>
+                <span class="n">root_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">abbrev_name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">abbrev_name</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">plain_formatter</span>
+        <span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+
+    <span class="c1"># file logging: all workers</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.txt&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.log&quot;</span><span class="p">):</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;log.txt&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">distributed_rank</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.rank</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">distributed_rank</span><span class="p">)</span>
+        <span class="n">PathManager</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+        <span class="n">fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">_cached_log_stream</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">plain_formatter</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">logger</span></div>
+
+
+<span class="c1"># cache the opened file object, so that different calls to `setup_logger`</span>
+<span class="c1"># with the same file name can safely write to the same file.</span>
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_cached_log_stream</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">io</span> <span class="o">=</span> <span class="n">PathManager</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+    <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">io</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Below are some other convenient logging methods.</span>
+<span class="sd">They are mainly adopted from</span>
+<span class="sd">https://github.com/abseil/abseil-py/blob/master/absl/logging/__init__.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_find_caller</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: module name of the caller</span>
+<span class="sd">        tuple: a hashable key to be used to identify different callers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">frame</span><span class="p">:</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;utils&quot;</span><span class="p">,</span> <span class="s2">&quot;logger.&quot;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">code</span><span class="o">.</span><span class="n">co_filename</span><span class="p">:</span>
+            <span class="n">mod_name</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span><span class="p">[</span><span class="s2">&quot;__name__&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">mod_name</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+                <span class="n">mod_name</span> <span class="o">=</span> <span class="s2">&quot;xmodaler&quot;</span>
+            <span class="k">return</span> <span class="n">mod_name</span><span class="p">,</span> <span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_lineno</span><span class="p">,</span> <span class="n">code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_back</span>
+
+
+<span class="n">_LOG_COUNTER</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+<span class="n">_LOG_TIMER</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="log_first_n"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.logger.log_first_n">[docs]</a><span class="k">def</span> <span class="nf">log_first_n</span><span class="p">(</span><span class="n">lvl</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;caller&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log only for the first n times.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lvl (int): the logging level</span>
+<span class="sd">        msg (str):</span>
+<span class="sd">        n (int):</span>
+<span class="sd">        name (str): name of the logger to use. Will use the caller&#39;s module by default.</span>
+<span class="sd">        key (str or tuple[str]): the string(s) can be one of &quot;caller&quot; or</span>
+<span class="sd">            &quot;message&quot;, which defines how to identify duplicated logs.</span>
+<span class="sd">            For example, if called with `n=1, key=&quot;caller&quot;`, this function</span>
+<span class="sd">            will only log the first call from the same caller, regardless of</span>
+<span class="sd">            the message content.</span>
+<span class="sd">            If called with `n=1, key=&quot;message&quot;`, this function will log the</span>
+<span class="sd">            same content only once, even if they are called from different places.</span>
+<span class="sd">            If called with `n=1, key=(&quot;caller&quot;, &quot;message&quot;)`, this function</span>
+<span class="sd">            will not log only if the same caller has logged the same message before.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="n">caller_module</span><span class="p">,</span> <span class="n">caller_key</span> <span class="o">=</span> <span class="n">_find_caller</span><span class="p">()</span>
+    <span class="n">hash_key</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;caller&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+        <span class="n">hash_key</span> <span class="o">=</span> <span class="n">hash_key</span> <span class="o">+</span> <span class="n">caller_key</span>
+    <span class="k">if</span> <span class="s2">&quot;message&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+        <span class="n">hash_key</span> <span class="o">=</span> <span class="n">hash_key</span> <span class="o">+</span> <span class="p">(</span><span class="n">msg</span><span class="p">,)</span>
+
+    <span class="n">_LOG_COUNTER</span><span class="p">[</span><span class="n">hash_key</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">_LOG_COUNTER</span><span class="p">[</span><span class="n">hash_key</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span> <span class="ow">or</span> <span class="n">caller_module</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">lvl</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="log_every_n"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.logger.log_every_n">[docs]</a><span class="k">def</span> <span class="nf">log_every_n</span><span class="p">(</span><span class="n">lvl</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log once per n times.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lvl (int): the logging level</span>
+<span class="sd">        msg (str):</span>
+<span class="sd">        n (int):</span>
+<span class="sd">        name (str): name of the logger to use. Will use the caller&#39;s module by default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">caller_module</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">_find_caller</span><span class="p">()</span>
+    <span class="n">_LOG_COUNTER</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">_LOG_COUNTER</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">%</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span> <span class="ow">or</span> <span class="n">caller_module</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">lvl</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="log_every_n_seconds"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.logger.log_every_n_seconds">[docs]</a><span class="k">def</span> <span class="nf">log_every_n_seconds</span><span class="p">(</span><span class="n">lvl</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log no more than once per n seconds.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lvl (int): the logging level</span>
+<span class="sd">        msg (str):</span>
+<span class="sd">        n (int):</span>
+<span class="sd">        name (str): name of the logger to use. Will use the caller&#39;s module by default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">caller_module</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">_find_caller</span><span class="p">()</span>
+    <span class="n">last_logged</span> <span class="o">=</span> <span class="n">_LOG_TIMER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">last_logged</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">last_logged</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span> <span class="ow">or</span> <span class="n">caller_module</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">lvl</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="n">_LOG_TIMER</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_time</span></div>
+
+
+<div class="viewcode-block" id="create_small_table"><a class="viewcode-back" href="../../../modules/utils.html#xmodaler.utils.logger.create_small_table">[docs]</a><span class="k">def</span> <span class="nf">create_small_table</span><span class="p">(</span><span class="n">small_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a small table using the keys of small_dict as headers. This is only</span>
+<span class="sd">    suitable for small dictionaries.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        small_dict (dict): a result dictionary of only a few items.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: the table as a string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">keys</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">small_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">tabulate</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">values</span><span class="p">],</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span>
+        <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;pipe&quot;</span><span class="p">,</span>
+        <span class="n">floatfmt</span><span class="o">=</span><span class="s2">&quot;.3f&quot;</span><span class="p">,</span>
+        <span class="n">stralign</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="n">numalign</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">table</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

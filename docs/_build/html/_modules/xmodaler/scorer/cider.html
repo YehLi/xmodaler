@@ -1,0 +1,464 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.scorer.cider &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xmodaler.scorer.cider</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for xmodaler.scorer.cider</h1><div class="highlight"><pre>
+<span></span>    <span class="c1">#!/usr/bin/env python</span>
+<span class="c1"># Tsung-Yi Lin &lt;tl483@cornell.edu&gt;</span>
+<span class="c1"># Ramakrishna Vedantam &lt;vrama91@vt.edu&gt;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">configurable</span>
+<span class="kn">from</span> <span class="nn">.build</span> <span class="kn">import</span> <span class="n">SCORER_REGISTRY</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Cider&#39;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">precook</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes a string as input and returns an object that can be given to</span>
+<span class="sd">    either cook_refs or cook_test. This is optional: cook_refs and cook_test</span>
+<span class="sd">    can take string arguments as well.</span>
+<span class="sd">    :param s: string : sentence to be converted into ngrams</span>
+<span class="sd">    :param n: int    : number of ngrams for which representation is calculated</span>
+<span class="sd">    :return: term frequency vector for occuring ngrams</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#words = s.split()</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span><span class="o">-</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">ngram</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">counts</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">counts</span>
+
+<span class="k">def</span> <span class="nf">cook_refs</span><span class="p">(</span><span class="n">refs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span> <span class="c1">## lhuang: oracle will call with &quot;average&quot;</span>
+    <span class="sd">&#39;&#39;&#39;Takes a list of reference sentences for a single segment</span>
+<span class="sd">    and returns an object that encapsulates everything that BLEU</span>
+<span class="sd">    needs to know about them.</span>
+<span class="sd">    :param refs: list of string : reference sentences for some image</span>
+<span class="sd">    :param n: int : number of ngrams for which (ngram) representation is calculated</span>
+<span class="sd">    :return: result (list of dict)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">precook</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">cook_test</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Takes a test sentence and returns an object that</span>
+<span class="sd">    encapsulates everything that BLEU needs to know about it.</span>
+<span class="sd">    :param test: list of string : hypothesis sentence for some image</span>
+<span class="sd">    :param n: int : number of ngrams for which (ngram) representation is calculated</span>
+<span class="sd">    :return: result (dict)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">precook</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">CiderScorer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;CIDEr scorer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; copy the refs.&#39;&#39;&#39;</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">CiderScorer</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">ctest</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctest</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">crefs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crefs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">cider_cached</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; singular instance &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crefs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctest</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">cider_cache</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">cider_cached</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;bytes&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">document_frequency</span> <span class="o">=</span> <span class="n">cider_cache</span><span class="p">[</span><span class="s1">&#39;document_frequency&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ref_len</span> <span class="o">=</span> <span class="n">cider_cache</span><span class="p">[</span><span class="s1">&#39;ref_len&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cook_append</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crefs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctest</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">cook_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">refs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;called by constructor and __iadd__ to avoid creating new instances.&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">refs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">crefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cook_refs</span><span class="p">(</span><span class="n">refs</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">test</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctest</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cook_test</span><span class="p">(</span><span class="n">test</span><span class="p">))</span> <span class="c1">## N.B.: -1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctest</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="c1"># lens of crefs and ctest have to match</span>
+
+    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crefs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctest</span><span class="p">),</span> <span class="s2">&quot;refs/test mismatch! </span><span class="si">%d</span><span class="s2">&lt;&gt;</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crefs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctest</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crefs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;add an instance (e.g., from another sentence).&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
+            <span class="c1">## avoid creating new CiderScorer instances</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cook_append</span><span class="p">(</span><span class="n">other</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">other</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctest</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">ctest</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">crefs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">crefs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">compute_doc_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute term frequency for reference data.</span>
+<span class="sd">        This will be used to compute idf (inverse document frequency later)</span>
+<span class="sd">        The term frequency is stored in the object</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">refs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">crefs</span><span class="p">:</span>
+            <span class="c1"># refs, k ref captions of one image</span>
+            <span class="k">for</span> <span class="n">ngram</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">([</span><span class="n">ngram</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span> <span class="k">for</span> <span class="p">(</span><span class="n">ngram</span><span class="p">,</span><span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ref</span><span class="o">.</span><span class="n">items</span><span class="p">()]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">document_frequency</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># maxcounts[ngram] = max(maxcounts.get(ngram,0), count)</span>
+
+    <span class="k">def</span> <span class="nf">compute_cider</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">counts2vec</span><span class="p">(</span><span class="n">cnts</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Function maps counts of ngram to vector of tfidf weights.</span>
+<span class="sd">            The function returns vec, an array of dictionary that store mapping of n-gram and tf-idf weights.</span>
+<span class="sd">            The n-th entry of array denotes length of n-grams.</span>
+<span class="sd">            :param cnts:</span>
+<span class="sd">            :return: vec (array of dict), norm (array of float), length (int)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">vec</span> <span class="o">=</span> <span class="p">[</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)]</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">ngram</span><span class="p">,</span><span class="n">term_freq</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cnts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># give word count 1 if it doesn&#39;t appear in reference corpus</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">document_frequency</span><span class="p">[</span><span class="n">ngram</span><span class="p">]))</span>
+                <span class="c1"># ngram index</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ngram</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+                <span class="c1"># tf (term_freq) * idf (precomputed idf) for n-grams</span>
+                <span class="n">vec</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">ngram</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">term_freq</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref_len</span> <span class="o">-</span> <span class="n">df</span><span class="p">)</span>
+                <span class="c1"># compute norm for the vector.  the norm will be used for computing similarity</span>
+                <span class="n">norm</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">vec</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">ngram</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">length</span> <span class="o">+=</span> <span class="n">term_freq</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">norm</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">vec</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">length</span>
+
+        <span class="k">def</span> <span class="nf">sim</span><span class="p">(</span><span class="n">vec_hyp</span><span class="p">,</span> <span class="n">vec_ref</span><span class="p">,</span> <span class="n">norm_hyp</span><span class="p">,</span> <span class="n">norm_ref</span><span class="p">,</span> <span class="n">length_hyp</span><span class="p">,</span> <span class="n">length_ref</span><span class="p">):</span>
+            <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Compute the cosine similarity of two vectors.</span>
+<span class="sd">            :param vec_hyp: array of dictionary for vector corresponding to hypothesis</span>
+<span class="sd">            :param vec_ref: array of dictionary for vector corresponding to reference</span>
+<span class="sd">            :param norm_hyp: array of float for vector corresponding to hypothesis</span>
+<span class="sd">            :param norm_ref: array of float for vector corresponding to reference</span>
+<span class="sd">            :param length_hyp: int containing length of hypothesis</span>
+<span class="sd">            :param length_ref: int containing length of reference</span>
+<span class="sd">            :return: array of score for each n-grams cosine similarity</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">length_hyp</span> <span class="o">-</span> <span class="n">length_ref</span><span class="p">)</span>
+            <span class="c1"># measure consine similarity</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)])</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+                <span class="c1"># ngram</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">ngram</span><span class="p">,</span><span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="n">vec_hyp</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="c1"># vrama91 : added clipping</span>
+                    <span class="n">val</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">min</span><span class="p">(</span><span class="n">vec_hyp</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">ngram</span><span class="p">],</span> <span class="n">vec_ref</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">ngram</span><span class="p">])</span> <span class="o">*</span> <span class="n">vec_ref</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">ngram</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">norm_hyp</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">norm_ref</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">val</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">/=</span> <span class="p">(</span><span class="n">norm_hyp</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">*</span><span class="n">norm_ref</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+
+                <span class="k">assert</span><span class="p">(</span><span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="n">n</span><span class="p">]))</span>
+                <span class="c1"># vrama91: added a length based gaussian penalty</span>
+                <span class="n">val</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">delta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+        <span class="c1"># compute log reference length</span>
+        <span class="c1"># self.ref_len = np.log(float(len(self.crefs))) ###########################</span>
+
+        <span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">test</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctest</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crefs</span><span class="p">):</span>
+            <span class="c1"># compute vector for test captions</span>
+            <span class="n">vec</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">counts2vec</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+            <span class="c1"># compute vector for ref captions</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)])</span>
+            <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">:</span>
+                <span class="n">vec_ref</span><span class="p">,</span> <span class="n">norm_ref</span><span class="p">,</span> <span class="n">length_ref</span> <span class="o">=</span> <span class="n">counts2vec</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+                <span class="n">score</span> <span class="o">+=</span> <span class="n">sim</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">vec_ref</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">norm_ref</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">length_ref</span><span class="p">)</span>
+            <span class="c1"># change by vrama91 - mean of ngram scores, instead of sum</span>
+            <span class="n">score_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+            <span class="c1"># divide by number of references</span>
+            <span class="n">score_avg</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span>
+            <span class="c1"># multiply score by 10</span>
+            <span class="n">score_avg</span> <span class="o">*=</span> <span class="mf">10.0</span>
+            <span class="c1"># append score of an image to the score list</span>
+            <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score_avg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scores</span>
+
+    <span class="k">def</span> <span class="nf">compute_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># compute cider score</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_cider</span><span class="p">()</span>
+        <span class="c1"># debug</span>
+        <span class="c1"># print score</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">score</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Cider"><a class="viewcode-back" href="../../../modules/scorer.html#xmodaler.scorer.Cider">[docs]</a><span class="nd">@SCORER_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">Cider</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main Class to compute the CIDEr metric </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Cider.__init__"><a class="viewcode-back" href="../../../modules/scorer.html#xmodaler.scorer.Cider.__init__">[docs]</a>    <span class="nd">@configurable</span>
+    <span class="c1">#def __init__(self, n=4, sigma=6.0, cider_cached=&#39;&#39;):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">cider_cached</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">):</span>
+        <span class="c1"># set cider to sum over 1 to 4-grams</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="c1"># set the standard deviation parameter for gaussian penalty</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cider_scorer</span> <span class="o">=</span> <span class="n">CiderScorer</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sigma</span><span class="p">,</span> <span class="n">cider_cached</span><span class="o">=</span><span class="n">cider_cached</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Cider.from_config"><a class="viewcode-back" href="../../../modules/scorer.html#xmodaler.scorer.Cider.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
+            <span class="s1">&#39;cider_cached&#39;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SCORER</span><span class="o">.</span><span class="n">CIDER_CACHED</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="Cider.compute_score"><a class="viewcode-back" href="../../../modules/scorer.html#xmodaler.scorer.Cider.compute_score">[docs]</a>    <span class="k">def</span> <span class="nf">compute_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gts</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main function to compute CIDEr score</span>
+<span class="sd">        :param  hypo_for_image (dict) : dictionary with key &lt;image&gt; and value &lt;tokenized hypothesis / candidate sentence&gt;</span>
+<span class="sd">                ref_for_image (dict)  : dictionary with key &lt;image&gt; and value &lt;tokenized reference sentence&gt;</span>
+<span class="sd">        :return: cider (float) : computed CIDEr score for the corpus </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># clear all the previous hypos and refs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cider_scorer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">hypo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+            <span class="n">ref</span> <span class="o">=</span> <span class="n">gts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="c1"># Sanity check.</span>
+            <span class="c1">#assert(type(hypo) is list)</span>
+            <span class="c1">#assert(len(hypo) == 1)</span>
+            <span class="k">assert</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">)</span>
+            <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">cider_scorer</span> <span class="o">+=</span> <span class="p">(</span><span class="n">hypo</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span>
+
+        <span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cider_scorer</span><span class="o">.</span><span class="n">compute_score</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">score</span><span class="p">,</span> <span class="n">scores</span></div>
+
+<div class="viewcode-block" id="Cider.method"><a class="viewcode-back" href="../../../modules/scorer.html#xmodaler.scorer.Cider.method">[docs]</a>    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;CIDEr&quot;</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

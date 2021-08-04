@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>xmodaler.modeling.embedding.token_embed &mdash; Xmodaler 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> Xmodaler
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                v 1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/index.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules/index.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">Xmodaler</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>xmodaler.modeling.embedding.token_embed</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for xmodaler.modeling.embedding.token_embed</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2021 JD.com, Inc., JD AI</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">@author: Yehao Li</span>
+<span class="sd">@contact: yehaoli.sysu@gmail.com</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+
+<span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">configurable</span>
+<span class="kn">from</span> <span class="nn">xmodaler.config</span> <span class="kn">import</span> <span class="n">kfg</span>
+<span class="kn">from</span> <span class="nn">..layers.create_act</span> <span class="kn">import</span> <span class="n">get_act_layer</span>
+<span class="kn">from</span> <span class="nn">.build</span> <span class="kn">import</span> <span class="n">EMBEDDING_REGISTRY</span>
+<span class="kn">from</span> <span class="nn">.position_embedding</span> <span class="kn">import</span> <span class="n">build_position_encoding</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;TokenBaseEmbedding&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="TokenBaseEmbedding"><a class="viewcode-back" href="../../../../modules/modeling/embedding.html#xmodaler.modeling.embedding.TokenBaseEmbedding">[docs]</a><span class="nd">@EMBEDDING_REGISTRY</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">TokenBaseEmbedding</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="TokenBaseEmbedding.__init__"><a class="viewcode-back" href="../../../../modules/modeling/embedding.html#xmodaler.modeling.embedding.TokenBaseEmbedding.__init__">[docs]</a>    <span class="nd">@configurable</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">vocab_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="c1"># include &lt;BOS&gt;/&lt;EOS&gt;</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TokenBaseEmbedding</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">vocab_size</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_act</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;embeddings_act&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_norm</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;embeddings_norm&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_dropout</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;embeddings_dropout&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_pos</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;embeddings_pos&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_token_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;embeddings_token_type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TokenBaseEmbedding.from_config"><a class="viewcode-back" href="../../../../modules/modeling/embedding.html#xmodaler.modeling.embedding.TokenBaseEmbedding.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;dim&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">DIM</span><span class="p">,</span> 
+            <span class="s2">&quot;vocab_size&quot;</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">VOCAB_SIZE</span>
+        <span class="p">}</span>
+
+        <span class="n">activation_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">ACTIVATION</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">activation_name</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="n">activation</span> <span class="o">=</span> <span class="n">get_act_layer</span><span class="p">(</span><span class="n">activation_name</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">activation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+            <span class="n">act_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">activation_name</span> <span class="ow">in</span> <span class="p">{</span> <span class="s2">&quot;elu&quot;</span><span class="p">,</span> <span class="s2">&quot;celu&quot;</span> <span class="p">}:</span>
+                <span class="n">act_kwargs</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">ELU_ALPHA</span>
+            <span class="n">embeddings_act</span> <span class="o">=</span> <span class="n">activation</span><span class="p">(</span><span class="n">act_kwargs</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;embeddings_act&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">embeddings_act</span>
+
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">DROPOUT</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">embeddings_dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">DROPOUT</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;embeddings_dropout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">embeddings_dropout</span>
+
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">USE_NORM</span><span class="p">:</span>
+            <span class="n">embeddings_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">DIM</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;embeddings_norm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">embeddings_norm</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">POSITION</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span>
+            <span class="n">embeddings_pos</span> <span class="o">=</span> <span class="n">build_position_encoding</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">DIM</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">POSITION_MAX_LEN</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;embeddings_pos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">embeddings_pos</span>
+
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">TYPE_VOCAB_SIZE</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">embeddings_token_type</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">TYPE_VOCAB_SIZE</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MODEL</span><span class="o">.</span><span class="n">TOKEN_EMBED</span><span class="o">.</span><span class="n">DIM</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;embeddings_token_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">embeddings_token_type</span>
+
+        <span class="k">return</span> <span class="n">kwargs</span></div>
+            
+
+<div class="viewcode-block" id="TokenBaseEmbedding.forward"><a class="viewcode-back" href="../../../../modules/modeling/embedding.html#xmodaler.modeling.embedding.TokenBaseEmbedding.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batched_inputs</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKENS_IDS</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">:</span> 
+            <span class="n">u_tokens_ids</span> <span class="o">=</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKENS_IDS</span><span class="p">]</span>
+            <span class="n">u_tokens_type</span> <span class="o">=</span> <span class="n">batched_inputs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKENS_TYPE</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">u_token_embed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward</span><span class="p">(</span><span class="n">u_tokens_ids</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="o">=</span><span class="n">u_tokens_type</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">U_TOKEN_EMBED</span><span class="p">:</span> <span class="n">u_token_embed</span> <span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKENS_IDS</span> <span class="ow">in</span> <span class="n">batched_inputs</span><span class="p">:</span>
+            <span class="n">time_step</span> <span class="o">=</span> <span class="n">batched_inputs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kfg</span><span class="o">.</span><span class="n">TIME_STEP</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">g_tokens_ids</span> <span class="o">=</span> <span class="n">batched_inputs</span><span class="p">[</span><span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKENS_IDS</span><span class="p">]</span>
+            <span class="n">g_tokens_type</span> <span class="o">=</span> <span class="n">batched_inputs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKENS_TYPE</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">g_token_embed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward</span><span class="p">(</span><span class="n">g_tokens_ids</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="o">=</span><span class="n">g_tokens_type</span><span class="p">,</span> <span class="n">time_step</span><span class="o">=</span><span class="n">time_step</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">kfg</span><span class="o">.</span><span class="n">G_TOKEN_EMBED</span><span class="p">:</span> <span class="n">g_token_embed</span> <span class="p">})</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="TokenBaseEmbedding._forward"><a class="viewcode-back" href="../../../../modules/modeling/embedding.html#xmodaler.modeling.embedding.TokenBaseEmbedding._forward">[docs]</a>    <span class="k">def</span> <span class="nf">_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">,</span> <span class="n">token_type_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pos_inputs</span> <span class="o">=</span> <span class="n">input_ids</span> <span class="k">if</span> <span class="n">time_step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">time_step</span>
+            <span class="n">position_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_pos</span><span class="p">(</span><span class="n">pos_inputs</span><span class="p">)</span>
+            <span class="n">embeddings</span> <span class="o">=</span> <span class="n">embeddings</span> <span class="o">+</span> <span class="n">position_embeddings</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings_token_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">token_type_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">token_type_ids</span> <span class="o">=</span> <span class="n">token_type_ids</span> <span class="k">if</span> <span class="n">time_step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">token_type_ids</span><span class="p">[:,</span><span class="n">time_step</span><span class="p">]</span> 
+            <span class="n">embeddings_token_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_token_type</span><span class="p">(</span><span class="n">token_type_ids</span><span class="p">)</span>
+            <span class="n">embeddings</span> <span class="o">=</span> <span class="n">embeddings</span> <span class="o">+</span> <span class="n">embeddings_token_type</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_act</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_act</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_norm</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_dropout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_dropout</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">embeddings</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Yehao Li.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
