@@ -18,7 +18,86 @@ from ..embedding import build_embeddings
 from ..encoder import build_encoder
 from ..predictor import build_predictor
 
-__all__ = ["UniterPretrain"]
+__all__ = ["UniterPretrain", "UniterForMMUnderstanding"]
+
+@META_ARCH_REGISTRY.register()
+class UniterForMMUnderstanding(TransformerEncoderDecoder):
+    @configurable
+    def __init__(
+        self,
+        *,
+        vocab_size,
+        max_seq_len,
+        token_embed,
+        visual_embed,
+        encoder,
+        decoder,
+        predictor,
+        greedy_decoder,
+        beam_searcher,
+        v_predictor,
+
+        itm_predictor,
+    ):
+        super().__init__(
+            vocab_size=vocab_size,
+            max_seq_len=max_seq_len,
+            token_embed=token_embed,
+            visual_embed=visual_embed,
+            encoder=encoder,
+            decoder=decoder,
+            predictor=predictor,
+            greedy_decoder=greedy_decoder,
+            beam_searcher=beam_searcher,
+            v_predictor=v_predictor
+        )
+        # load the pretrained pooler
+        self.itm_predictor = itm_predictor
+        self.predictor.pooler = self.itm_predictor.pooler
+
+    @classmethod
+    def from_config(cls, cfg):
+        ret = {
+            # basic config
+            "token_embed": build_embeddings(cfg, cfg.MODEL.TOKEN_EMBED.NAME),
+            "visual_embed": build_embeddings(cfg, cfg.MODEL.VISUAL_EMBED.NAME),
+            "encoder": build_encoder(cfg),
+            "decoder": None,
+            "predictor": build_predictor(cfg),
+
+            "greedy_decoder": None,
+            "beam_searcher": None,
+            "vocab_size": cfg.MODEL.VOCAB_SIZE,
+            "max_seq_len": cfg.MODEL.MAX_SEQ_LEN,
+            "v_predictor": None,
+
+            # uniter pretrain config, in order to load the pretrained pooler
+            "itm_predictor": build_predictor_with_name(cfg, 'BertIsMatchedPredictor')
+        }
+
+        return ret
+
+    def get_extended_attention_mask(self, batched_inputs):
+        if kfg.TOKENS_MASKS not in batched_inputs:
+            batched_inputs[kfg.TOKENS_MASKS] = torch.ones((batched_inputs[kfg.ATT_MASKS].size(0), self.max_seq_len)).cuda()
+
+        tmasks = batched_inputs[kfg.TOKENS_MASKS]
+        tmasks = tmasks.to(dtype=next(self.parameters()).dtype)
+        ext_u_tmasks = tmasks.unsqueeze(1).unsqueeze(2)
+        ext_u_tmasks = (1.0 - ext_u_tmasks) * -10000.0
+        
+        vmasks = batched_inputs[kfg.ATT_MASKS]
+        vmasks = vmasks.to(dtype=next(self.parameters()).dtype)
+        vmasks = vmasks.unsqueeze(1).unsqueeze(2)
+        ext_vmasks = (1.0 - vmasks) * -10000.0
+
+        return {
+            kfg.TOKENS_MASKS: tmasks,
+            kfg.EXT_U_TOKENS_MASKS: ext_u_tmasks,
+            kfg.ATT_MASKS: vmasks,
+            kfg.EXT_ATT_MASKS: ext_vmasks
+        }
+
 
 @META_ARCH_REGISTRY.register()
 class UniterPretrain(TransformerEncoderDecoder):

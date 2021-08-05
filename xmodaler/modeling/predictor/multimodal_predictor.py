@@ -11,8 +11,9 @@ from xmodaler.config import CfgNode as CN
 from xmodaler.config import kfg
 from .build import PREDICTOR_REGISTRY
 from ..layers.attention_pooler import AttentionPooler
+from ..layers.bert import BertPooler
 
-__all__ = ["MultiModalPredictor"]
+__all__ = ["MultiModalPredictor", "SingleStreamMultiModalPredictor"]
 
 @PREDICTOR_REGISTRY.register()
 class MultiModalPredictor(nn.Module):
@@ -125,6 +126,54 @@ class MultiModalPredictor(nn.Module):
             if not self.training:
                 outputs = outputs + torch.softmax(g_logits, dim=-1)
                 outputs = torch.max(outputs, 1)[1].data.cpu().numpy()
+
+        ret.update({ kfg.OUTPUT: outputs })
+        return ret
+
+
+@PREDICTOR_REGISTRY.register()
+class SingleStreamMultiModalPredictor(nn.Module):
+    @configurable
+    def __init__(
+        self,
+        *,
+        hidden_size: int,
+        labels_num: int,
+        pooler
+    ):
+        super(SingleStreamMultiModalPredictor, self).__init__()
+        self.labels_num = labels_num
+
+        self.pooler = pooler
+        self.cls = nn.Linear(hidden_size, labels_num)
+
+    @classmethod
+    def from_config(cls, cfg):
+        return {
+            "hidden_size": cfg.MODEL.BERT.HIDDEN_SIZE,
+            "labels_num": cfg.MODEL.MM_PREDICTOR.LABELS_NUM,
+            "pooler": BertPooler(cfg)
+        }
+
+    @classmethod
+    def add_config(cls, cfg):
+        cfg.MODEL.MM_PREDICTOR = CN()
+        cfg.MODEL.MM_PREDICTOR.LABELS_NUM = 3129
+
+    def forward(self, batched_inputs):
+        outputs = 0
+        ret = {}
+
+        hidden_states = batched_inputs[kfg.U_HIDDEN_STATES]
+        if isinstance(hidden_states, list):
+            hidden_states = hidden_states[-1]
+
+        pooled_output = self.pooler(hidden_states)
+        u_logits = self.cls(pooled_output)
+        ret.update({ kfg.U_LOGITS: u_logits })
+        if not self.training:
+            outputs = outputs + torch.softmax(u_logits, dim=-1)
+            outputs = torch.max(outputs, 1)[1].data.cpu().numpy()
 
         ret.update({ kfg.OUTPUT: outputs })
         return ret
