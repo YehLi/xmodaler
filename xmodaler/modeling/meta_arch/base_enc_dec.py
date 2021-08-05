@@ -89,6 +89,11 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
         vfeats, vmasks = pad_tensor(vfeats, padding_value=0, use_mask=True)
         ret = { kfg.ATT_FEATS: vfeats, kfg.ATT_MASKS: vmasks }
 
+        if kfg.ATT_FEATS_WO_MASK in batched_inputs[0]:
+            vfeats_wo_mask = [x[kfg.ATT_FEATS_WO_MASK] for x in batched_inputs]
+            vfeats_wo_mask = pad_tensor(vfeats_wo_mask, padding_value=0, use_mask=False)
+            ret.update( { kfg.ATT_FEATS_WO_MASK: vfeats_wo_mask } )
+
         if kfg.RELATION in batched_inputs[0]:
             relation = [x[kfg.RELATION] for x in batched_inputs]
             relation = pad_tensor(relation, padding_value=0, use_mask=False) # GCN-LSTM, only support 36 features
@@ -108,6 +113,11 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
             u_tokens_ids = [x[kfg.U_TOKENS_IDS] for x in batched_inputs]
             u_tokens_ids, tmasks = pad_tensor(u_tokens_ids, padding_value=0, use_mask=True)
             ret.update( { kfg.U_TOKENS_IDS: u_tokens_ids, kfg.TOKENS_MASKS: tmasks} )
+
+        if kfg.U_TOKENS_IDS_WO_MASK in batched_inputs[0]:
+            u_tokens_ids_wo_mask = [x[kfg.U_TOKENS_IDS_WO_MASK] for x in batched_inputs]
+            u_tokens_ids_wo_mask = pad_tensor(u_tokens_ids_wo_mask, padding_value=0, use_mask=False)
+            ret.update( { kfg.U_TOKENS_IDS_WO_MASK: u_tokens_ids_wo_mask } )
 
         if kfg.G_TOKENS_IDS in batched_inputs[0]:
             g_tokens_ids = [x[kfg.G_TOKENS_IDS] for x in batched_inputs]
@@ -148,6 +158,11 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
             v_target_labels = [x[kfg.V_TARGET_LABELS] for x in batched_inputs]
             v_target_labels = pad_tensor(v_target_labels, padding_value=-1, use_mask=False)
             ret.update({ kfg.V_TARGET_LABELS: v_target_labels })
+
+        if kfg.ITM_NEG_LABEL in batched_inputs[0]:
+            itm_neg_labels = [x[kfg.ITM_NEG_LABEL] for x in batched_inputs]
+            itm_neg_labels = torch.stack(itm_neg_labels, dim=0)
+            ret.update({ kfg.ITM_NEG_LABEL: itm_neg_labels })
 
         if kfg.SEQ_PER_SAMPLE in batched_inputs[0]:
             batch_size, max_feats_num, feats_dim = vfeats.size()[0:3]

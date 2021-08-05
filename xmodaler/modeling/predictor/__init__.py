@@ -5,7 +5,7 @@
 """
 from .build import build_predictor, build_v_predictor, build_predictor_with_name, add_predictor_config
 from .base_predictor import BasePredictor
-from .bert_predictor import BertPredictionHead, BertVisualPredictionHead
+from .bert_predictor import BertPredictionHead, BertVisualPredictionHead, BertVisualFeatureRegressionHead, BertIsMatchedPredictor
 from .multimodal_predictor import MultiModalPredictor
 from .multimodal_similarity import MultiModalSimilarity
 

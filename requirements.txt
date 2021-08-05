@@ -6,3 +6,4 @@ cloudpickle
 torchvision
 tensorboard
 jsonlines
+json_lines

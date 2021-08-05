@@ -12,7 +12,7 @@ from .build import (
 from .common import DatasetFromList, MapDataset
 from .images.mscoco import MSCoCoDataset
 from .images.mscoco_bert import MSCoCoBertDataset
-from .images.conceptual_captions import ConceptualCaptionsDataset
+from .images.conceptual_captions import ConceptualCaptionsDataset, ConceptualCaptionsDatasetForSingleStream
 from .images.vqa import VQADataset
 from .images.vcr import VCRDataset
 from .images.flickr30k import Flickr30kDataset

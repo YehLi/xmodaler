@@ -15,6 +15,8 @@ _K.IDS = 'IDS'
 ########################################## TOKENS ##########################################
 _K.U_TOKENS_IDS = 'U_TOKENS_IDS'
 
+_K.U_TOKENS_IDS_WO_MASK = 'U_TOKENS_IDS_WO_MASK'
+
 _K.G_TOKENS_IDS = 'G_TOKENS_IDS'
 
 _K.RELATION = 'RELATION'
@@ -45,8 +47,12 @@ _K.V_TARGET = 'V_TARGET'
 
 _K.V_TARGET_LABELS = 'V_TARGET_LABELS'
 
+_K.ITM_NEG_LABEL = 'ITM_NEG_LABEL'
+
 ########################################## FEATS ##########################################
 _K.ATT_FEATS = 'ATT_FEATS'
+
+_K.ATT_FEATS_WO_MASK = 'ATT_FEATS_WO_MASK'
 
 _K.ATT_MASKS = 'ATT_MASKS'
 
@@ -77,6 +83,10 @@ _K.U_LOGITS = 'U_LOGITS'
 _K.G_LOGITS = 'G_LOGITS'
 
 _K.V_LOGITS = 'V_LOGITS'
+
+_K.V_REGRESS = 'V_REGRESS'
+
+_K.ITM_LOGITS = 'ITM_LOGITS'
 
 ########################################## Others ##########################################
 _K.SEQ_PER_SAMPLE = 'SEQ_PER_SAMPLE'

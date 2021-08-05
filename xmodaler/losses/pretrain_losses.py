@@ -1,7 +1,7 @@
 # Copyright 2021 JD.com, Inc., JD AI
 """
-@author: Yehao Li
-@contact: yehaoli.sysu@gmail.com
+@author: Yehao Li, Jianjie Luo
+@contact: yehaoli.sysu@gmail.com, jianjieluo.sysu@gmail.com
 """
 import torch
 import torch.nn as nn
@@ -19,6 +19,7 @@ class PretrainLosses(nn.Module):
         self.xe_loss = nn.CrossEntropyLoss(ignore_index=-1)
         self.kl_loss = nn.KLDivLoss(reduction="none")
         self.triplet_loss = BatchTriplet(margin, max_violation)
+        self.mse_loss = nn.MSELoss(reduction="mean")
 
     @classmethod
     def from_config(cls, cfg):
@@ -40,10 +41,41 @@ class PretrainLosses(nn.Module):
             triplet_loss['BatchTriplet Loss'] /= len(batched_inputs[kfg.IDS])
             ret.update(triplet_loss)
 
+        if kfg.ITM_LOGITS in batched_inputs:
+            is_match_score = batched_inputs[kfg.ITM_LOGITS]
+            itm_neg_label = batched_inputs[kfg.ITM_NEG_LABEL]
+            is_match_loss = self.xe_loss(
+                is_match_score.view(-1, 2), itm_neg_label.view(-1)
+            )
+            ret.update({ "Image Text Matching": is_match_loss })
+
+        if kfg.V_REGRESS in batched_inputs:
+            v_reg = batched_inputs[kfg.V_REGRESS]
+            v_targets = batched_inputs[kfg.V_TARGET]
+
+            if v_targets.size(1) + 1 == v_reg.size(1):
+                # remove global avg vfeat
+                v_reg = v_reg[:, 1:, :].reshape(-1, v_reg.size(-1))
+            else:
+                v_reg = v_reg.view(-1, v_reg.size(-1))
+
+            v_targets = v_targets.view(-1, v_targets.size(-1))
+            v_targets_labels = batched_inputs[kfg.V_TARGET_LABELS].view(-1)
+            v_reg, v_targets = self.select_logits_targets_by_mask(v_reg, v_targets, v_targets_labels > 0)
+            if v_targets.size(0) > 0:
+                v_loss = self.mse_loss(v_reg, v_targets)
+                ret.update({ "Masked Object Feature Regression": v_loss })
+
         if kfg.V_LOGITS in batched_inputs:
             v_logits = batched_inputs[kfg.V_LOGITS]
-            v_logits = v_logits[:, 1:, :].reshape(-1, v_logits.size(-1))
             v_targets = batched_inputs[kfg.V_TARGET]
+
+            if v_targets.size(1) + 1 == v_logits.size(1):
+                # remove global avg vfeat
+                v_logits = v_logits[:, 1:, :].reshape(-1, v_logits.size(-1))
+            else:
+                v_logits = v_logits.view(-1, v_logits.size(-1))
+
             v_targets = v_targets.view(-1, v_targets.size(-1))
             v_targets_labels = batched_inputs[kfg.V_TARGET_LABELS].view(-1)
             v_logits, v_targets = self.select_logits_targets_by_mask(v_logits, v_targets, v_targets_labels > 0)
@@ -70,4 +102,8 @@ class PretrainLosses(nn.Module):
                 g_loss = self.xe_loss(g_tlogits, g_targets)
                 ret.update({ "Masked Sentence Generation": g_loss })
 
+        if len(ret) == 0:
+            print("No Loss in this Iteration")
+            ret.update({ "No Loss in this Iteration": torch.tensor(0).cuda() })
+            
         return ret
