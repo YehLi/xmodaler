@@ -17,7 +17,9 @@ from .func_feats import (
     dict_as_tensor,
     dict_to_cuda,
     pad_tensor,
-    expand_tensor
+    expand_tensor,
+    clip_v_inputs,
+    clip_t_inputs
 )
 
 from .func_caption import (

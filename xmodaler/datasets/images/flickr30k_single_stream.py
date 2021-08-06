@@ -12,23 +12,11 @@ from collections import defaultdict
 
 from xmodaler.config import configurable
 from xmodaler.config import kfg
-from xmodaler.functional import dict_as_tensor, flat_list_of_lists, pad_tensor
+from xmodaler.functional import dict_as_tensor, flat_list_of_lists, pad_tensor, clip_v_inputs
 from .flickr30k import Flickr30kDataset
 from ..build import DATASETS_REGISTRY
 
 __all__ = ["Flickr30kDatasetForSingleStream", "Flickr30kDatasetForSingleStreamVal"]
-
-
-def get_max_len_from_mask(mask):
-    return int(mask.sum(1).max().item())
-
-
-def clip_v_inputs(v_feats, spatials, image_mask):
-    max_len = get_max_len_from_mask(image_mask)
-    v_feats = v_feats[:, :max_len]
-    spatials = spatials[:, :max_len]
-    image_mask = image_mask[:, :max_len]
-    return v_feats, spatials, image_mask
 
 
 @DATASETS_REGISTRY.register()

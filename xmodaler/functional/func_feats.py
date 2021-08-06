@@ -55,8 +55,12 @@ def expand_tensor(tensor, size, dim=1):
     if size == 1 or tensor is None:
         return tensor
     tensor = tensor.unsqueeze(dim)
-    tensor = tensor.expand(list(tensor.shape[:dim]) + [size] + list(tensor.shape[dim+1:]))
-    tensor = tensor.reshape(list(tensor.shape[:dim-1]) + [-1] + list(tensor.shape[dim+1:]))
+    if dim == 0:
+        tensor = tensor.expand([size] + [-1] + list(tensor.shape[2:]))
+        tensor = tensor.reshape([-1] + list(tensor.shape[2:]))
+    else:
+        tensor = tensor.expand(list(tensor.shape[:dim]) + [size] + list(tensor.shape[dim+1:]))
+        tensor = tensor.reshape(list(tensor.shape[:dim-1]) + [-1] + list(tensor.shape[dim+1:]))
     return tensor
 
 def iou(anchors, gt_boxes):
@@ -97,3 +101,23 @@ def iou(anchors, gt_boxes):
     overlaps = iw * ih / ua
 
     return overlaps
+
+
+def get_max_len_from_mask(mask):
+    return int(mask.sum(1).max().item())
+
+
+def clip_v_inputs(v_feats, spatials, image_mask):
+    max_len = get_max_len_from_mask(image_mask)
+    v_feats = v_feats[:, :max_len]
+    spatials = spatials[:, :max_len]
+    image_mask = image_mask[:, :max_len]
+    return v_feats, spatials, image_mask
+
+
+def clip_t_inputs(input_txt, segment_ids, input_mask):
+    max_len = get_max_len_from_mask(input_mask)
+    input_txt = input_txt[:, :max_len]
+    segment_ids = segment_ids[:, :max_len]
+    input_mask = input_mask[:, :max_len]
+    return input_txt, segment_ids, input_mask
