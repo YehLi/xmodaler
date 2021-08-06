@@ -6,13 +6,11 @@
 import os
 import copy
 import pickle
-import random
-import json
 import jsonlines
 import numpy as np
 from xmodaler.config import configurable
 from xmodaler.config import kfg
-from xmodaler.functional import read_np, dict_as_tensor, boxes_to_locfeats, read_np_bbox
+from xmodaler.functional import dict_as_tensor, read_np_bbox
 from xmodaler.tokenization import BertTokenizer
 from ..build import DATASETS_REGISTRY
 
@@ -29,6 +27,7 @@ class Flickr30kDataset:
         feats_folder: str,
         max_feat_num: int,
         max_seq_len: int,
+        use_global_v: bool,
         tokenizer
     ):
         self.stage = stage
@@ -37,6 +36,7 @@ class Flickr30kDataset:
         self.feats_folder = feats_folder
         self.max_feat_num = max_feat_num
         self.max_seq_len = max_seq_len
+        self.use_global_v = use_global_v
         self.tokenizer = tokenizer
 
     @classmethod
@@ -53,6 +53,7 @@ class Flickr30kDataset:
             "feats_folder": cfg.DATALOADER.FEATS_FOLDER,
             "max_feat_num": cfg.DATALOADER.MAX_FEAT_NUM,
             "max_seq_len": cfg.MODEL.MAX_SEQ_LEN,
+            "use_global_v": cfg.DATALOADER.USE_GLOBAL_V,
             "tokenizer": BertTokenizer.from_pretrained(cfg.MODEL.PRETRAINING.MODEL_NAME,
                 do_lower_case=cfg.MODEL.PRETRAINING.DO_LOWER_CASE)
         }
@@ -101,12 +102,22 @@ class Flickr30kDataset:
                 tokens = self.tokenizer.add_special_tokens_single_sentence(tokens)
                 entry["captions"] = tokens
 
+    def load_img_feat(self, image_id):
+        image_path = os.path.join(self.feats_folder, image_id + ".npz")
+        features, image_locations = read_np_bbox(image_path, self.max_feat_num, self.use_global_v)
+        return features, image_locations
+
+    def format_cap(self, caption):
+        u_tokens_type = np.array([0] * len(caption)).astype(np.int64)
+        caption = np.array(caption).astype(np.int64)
+        return caption, u_tokens_type
+
     def __call__(self, dataset_dict):
         dataset_dict = copy.deepcopy(dataset_dict)
         image_id = dataset_dict['image_id']
         
         image_path = os.path.join(self.feats_folder, image_id + ".npz")
-        features, image_locations = read_np_bbox(image_path, self.max_feat_num)
+        features, image_locations = read_np_bbox(image_path, self.max_feat_num, self.use_global_v)
 
         captions = dataset_dict['captions']
         if self.stage == "train":

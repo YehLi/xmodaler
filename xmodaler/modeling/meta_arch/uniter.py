@@ -18,7 +18,7 @@ from ..embedding import build_embeddings
 from ..encoder import build_encoder
 from ..predictor import build_predictor
 
-__all__ = ["UniterPretrain", "UniterForMMUnderstanding"]
+__all__ = ["UniterPretrain", "UniterForMMUnderstanding", "UniterRetrieval"]
 
 @META_ARCH_REGISTRY.register()
 class UniterForMMUnderstanding(TransformerEncoderDecoder):
@@ -51,9 +51,7 @@ class UniterForMMUnderstanding(TransformerEncoderDecoder):
             beam_searcher=beam_searcher,
             v_predictor=v_predictor
         )
-        # load the pretrained pooler
         self.itm_predictor = itm_predictor
-        self.predictor.pooler = self.itm_predictor.pooler
 
     @classmethod
     def from_config(cls, cfg):
@@ -77,6 +75,9 @@ class UniterForMMUnderstanding(TransformerEncoderDecoder):
 
         return ret
 
+    def bind_or_init_weights(self):
+        self.predictor.pooler = self.itm_predictor.pooler
+
     def get_extended_attention_mask(self, batched_inputs):
         if kfg.TOKENS_MASKS not in batched_inputs:
             batched_inputs[kfg.TOKENS_MASKS] = torch.ones((batched_inputs[kfg.ATT_MASKS].size(0), self.max_seq_len)).cuda()
@@ -97,6 +98,46 @@ class UniterForMMUnderstanding(TransformerEncoderDecoder):
             kfg.ATT_MASKS: vmasks,
             kfg.EXT_ATT_MASKS: ext_vmasks
         }
+
+
+@META_ARCH_REGISTRY.register()
+class UniterRetrieval(UniterForMMUnderstanding):
+    @configurable
+    def __init__(
+        self,
+        *,
+        vocab_size,
+        max_seq_len,
+        token_embed,
+        visual_embed,
+        encoder,
+        decoder,
+        predictor,
+        greedy_decoder,
+        beam_searcher,
+        v_predictor,
+
+        itm_predictor,
+    ):
+        super().__init__(
+            vocab_size=vocab_size,
+            max_seq_len=max_seq_len,
+            token_embed=token_embed,
+            visual_embed=visual_embed,
+            encoder=encoder,
+            decoder=decoder,
+            predictor=predictor,
+            greedy_decoder=greedy_decoder,
+            beam_searcher=beam_searcher,
+            v_predictor=v_predictor,
+            itm_predictor=itm_predictor
+        )
+
+    def bind_or_init_weights(self):
+        self.predictor.pooler = self.itm_predictor.pooler
+
+        self.predictor.cls.weight.data = self.itm_predictor.is_match_cls.weight.data[:1, :]
+        self.predictor.cls.bias.data = self.itm_predictor.is_match_cls.bias.data[:1]
 
 
 @META_ARCH_REGISTRY.register()

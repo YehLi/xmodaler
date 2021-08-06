@@ -1,7 +1,7 @@
 # Copyright 2021 JD.com, Inc., JD AI
 """
-@author: Yehao Li
-@contact: yehaoli.sysu@gmail.com
+@author: Yehao Li, Jianjie Luo
+@contact: yehaoli.sysu@gmail.com, jianjieluo.sysu@gmail.com
 """
 import numpy as np
 import torch
@@ -13,8 +13,9 @@ from xmodaler.config import CfgNode as CN
 from xmodaler.config import kfg
 from .build import PREDICTOR_REGISTRY
 from ..layers.attention_pooler import AttentionPooler
+from .multimodal_predictor import SingleStreamMultiModalPredictor
 
-__all__ = ["MultiModalSimilarity"]
+__all__ = ["MultiModalSimilarity", "SingleStreamMultiModalSimilarity"]
 
 @PREDICTOR_REGISTRY.register()
 class MultiModalSimilarity(nn.Module):
@@ -93,3 +94,24 @@ class MultiModalSimilarity(nn.Module):
             return { kfg.OUTPUT: similarity }
         else:
             return { kfg.OUTPUT: [vfeats, u_tfeats] }
+
+
+@PREDICTOR_REGISTRY.register()
+class SingleStreamMultiModalSimilarity(SingleStreamMultiModalPredictor):
+    @configurable
+    def __init__(
+        self,
+        *,
+        hidden_size: int,
+        labels_num: int,
+        pooler
+    ):
+        super(SingleStreamMultiModalSimilarity, self).__init__(
+            hidden_size=hidden_size,
+            labels_num=labels_num,
+            pooler=pooler
+        )
+
+    def test_forward(self, u_logits):
+        # for Single stream similarity
+        return { kfg.OUTPUT: u_logits }

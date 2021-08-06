@@ -16,6 +16,7 @@ from .images.conceptual_captions import ConceptualCaptionsDataset, ConceptualCap
 from .images.vqa import VQADataset
 from .images.vcr import VCRDataset
 from .images.flickr30k import Flickr30kDataset
+from .images.flickr30k_single_stream import Flickr30kDatasetForSingleStream, Flickr30kDatasetForSingleStreamVal
 from .videos.msvd import MSVDDataset
 from .videos.msrvtt import MSRVTTDataset
 

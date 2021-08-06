@@ -309,7 +309,8 @@ class DefaultTrainer(TrainerBase):
                 inc_every_iter = cfg.SCHEDULED_SAMPLING.INC_EVERY_EPOCH * self.iters_per_epoch, 
                 inc_prob = cfg.SCHEDULED_SAMPLING.INC_PROB, 
                 max_prob = cfg.SCHEDULED_SAMPLING.MAX_PROB
-            )
+            ),
+            hooks.ModelWeightsManipulating()
         ]
 
         # Do PreciseBN before checkpointer, because it updates the model and need to
@@ -336,7 +337,8 @@ class DefaultTrainer(TrainerBase):
                     eval_start = cfg.INFERENCE.VAL_EVAL_START,
                     eval_function = val_and_save_results, 
                     iters_per_epoch = self.iters_per_epoch,
-                    stage = 'val'
+                    stage = 'val',
+                    multi_gpu_eval=(cfg.ENGINE.NAME.startswith("SingleStreamRetrieval"))
                 ))
 
         if self.test_data_loader is not None:
@@ -346,7 +348,8 @@ class DefaultTrainer(TrainerBase):
                     eval_start = cfg.INFERENCE.TEST_EVAL_START,
                     eval_function = test_and_save_results, 
                     iters_per_epoch = self.iters_per_epoch,
-                    stage = 'test'
+                    stage = 'test',
+                    multi_gpu_eval=(cfg.ENGINE.NAME.startswith("SingleStreamRetrieval"))
                 ))
 
         if comm.is_main_process():

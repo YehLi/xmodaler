@@ -91,6 +91,8 @@ _K.ITM_LOGITS = 'ITM_LOGITS'
 ########################################## Others ##########################################
 _K.SEQ_PER_SAMPLE = 'SEQ_PER_SAMPLE'
 
+_K.SAMPLE_PER_SAMPLE = 'SAMPLE_PER_SAMPLE'
+
 _K.G_SENTS_IDS = 'G_SENTS_IDS'
 
 _K.G_LOGP = 'G_LOGP'

@@ -15,7 +15,7 @@ from abc import ABCMeta, abstractmethod
 from xmodaler.config import configurable
 from xmodaler.config import CfgNode as CN
 from xmodaler.config import kfg
-from xmodaler.functional import pad_tensor, dict_to_cuda
+from xmodaler.functional import pad_tensor, dict_to_cuda, flat_list_of_lists
 from ..embedding import build_embeddings
 from ..encoder import build_encoder, add_encoder_config
 from ..decoder import build_decoder, add_decoder_config
@@ -84,8 +84,15 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
     def _forward(self, batched_inputs):
         pass
 
+    def bind_or_init_weights(self):
+        pass
+
     def preprocess_batch(self, batched_inputs):
+        sample_per_sample = batched_inputs[0].get(kfg.SAMPLE_PER_SAMPLE, 1)
+        
         vfeats = [x[kfg.ATT_FEATS] for x in batched_inputs]
+        if sample_per_sample > 1:
+            vfeats = flat_list_of_lists(vfeats)
         vfeats, vmasks = pad_tensor(vfeats, padding_value=0, use_mask=True)
         ret = { kfg.ATT_FEATS: vfeats, kfg.ATT_MASKS: vmasks }
 
@@ -111,6 +118,8 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
 
         if kfg.U_TOKENS_IDS in batched_inputs[0]:
             u_tokens_ids = [x[kfg.U_TOKENS_IDS] for x in batched_inputs]
+            if sample_per_sample > 1:
+                u_tokens_ids = flat_list_of_lists(u_tokens_ids)
             u_tokens_ids, tmasks = pad_tensor(u_tokens_ids, padding_value=0, use_mask=True)
             ret.update( { kfg.U_TOKENS_IDS: u_tokens_ids, kfg.TOKENS_MASKS: tmasks} )
 
@@ -136,11 +145,15 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
 
         if kfg.ATT_FEATS_LOC in batched_inputs[0]:
             vfeats_loc = [x[kfg.ATT_FEATS_LOC] for x in batched_inputs]
+            if sample_per_sample > 1:
+                vfeats_loc = flat_list_of_lists(vfeats_loc)
             vfeats_loc = pad_tensor(vfeats_loc, padding_value=0, use_mask=False)
             ret.update({ kfg.ATT_FEATS_LOC: vfeats_loc })
 
         if kfg.U_TOKENS_TYPE in batched_inputs[0]:
             u_tokens_type = [x[kfg.U_TOKENS_TYPE] for x in batched_inputs]
+            if sample_per_sample > 1:
+                u_tokens_type = flat_list_of_lists(u_tokens_type)
             u_tokens_type = pad_tensor(u_tokens_type, padding_value=0, use_mask=False)
             ret.update({ kfg.U_TOKENS_TYPE: u_tokens_type })
 
@@ -203,6 +216,8 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
             if kfg.SEQ_PER_SAMPLE in batched_inputs[0]:
                 ids = np.repeat(np.expand_dims(ids, axis=1), repeat_num, axis=1).flatten()
             ret.update({ kfg.IDS: ids })
+        if kfg.SAMPLE_PER_SAMPLE in batched_inputs[0]:
+            ret.update({ kfg.SAMPLE_PER_SAMPLE: sample_per_sample})
         return ret
 
     def greedy_decode(self, batched_inputs, output_sents=False):

@@ -97,15 +97,23 @@ def _valtest_loader_from_config(cfg, dataset_mapper=None, *, datalist=None, samp
         dataset_mapper = None
         datalist = None
 
+    if dataset_name == 'Flickr30kDatasetForSingleStreamVal':
+        multi_gpu_eval = True
+        batch_size = 1
+    else:
+        multi_gpu_eval = False
+        batch_size = cfg.DATALOADER.TEST_BATCH_SIZE
+
     return {
         "datalist": datalist,
         "dataset_mapper": dataset_mapper,
         "num_workers": cfg.DATALOADER.NUM_WORKERS,
-        "batch_size": cfg.DATALOADER.TEST_BATCH_SIZE
+        "batch_size": batch_size,
+        "multi_gpu_eval": multi_gpu_eval
     }
 
 @configurable(from_config=_valtest_loader_from_config)
-def build_xmodaler_valtest_loader(datalist, *, dataset_mapper, batch_size, num_workers):
+def build_xmodaler_valtest_loader(datalist, *, dataset_mapper, batch_size, num_workers, multi_gpu_eval):
     if datalist is None or dataset_mapper is None:
         return None
 
@@ -114,13 +122,25 @@ def build_xmodaler_valtest_loader(datalist, *, dataset_mapper, batch_size, num_w
     if dataset_mapper is not None:
         dataset = MapDataset(dataset, dataset_mapper)
 
-    data_loader = torch.utils.data.DataLoader(
-        dataset,
-        batch_size = batch_size,
-        num_workers = num_workers,
-        drop_last=False,
-        shuffle = False,
-        collate_fn=trivial_batch_collator,
-    )
+    if multi_gpu_eval and get_world_size() > 1:
+        # multi-gpu-eval for single stream retrieval
+        sampler = DistributedSampler(dataset, shuffle=False)
+        data_loader = torch.utils.data.DataLoader(
+            dataset,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            drop_last=False,
+            sampler=sampler,
+            collate_fn=trivial_batch_collator,
+        )
+    else:
+        data_loader = torch.utils.data.DataLoader(
+            dataset,
+            batch_size = batch_size,
+            num_workers = num_workers,
+            drop_last=False,
+            shuffle = False,
+            collate_fn=trivial_batch_collator,
+        )
     return data_loader
 

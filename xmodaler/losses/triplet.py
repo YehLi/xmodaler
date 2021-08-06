@@ -1,7 +1,7 @@
 # Copyright 2021 JD.com, Inc., JD AI
 """
-@author: Yehao Li
-@contact: yehaoli.sysu@gmail.com
+@author: Yehao Li, Jianjie Luo
+@contact: yehaoli.sysu@gmail.com, jianjieluo.sysu@gamil.com
 """
 import numpy as np
 import torch
@@ -10,6 +10,36 @@ from torch.autograd import Variable
 from xmodaler.config import configurable
 from xmodaler.config import kfg
 from .build import LOSSES_REGISTRY
+
+
+@LOSSES_REGISTRY.register()
+class Triplet(nn.Module):
+    @configurable
+    def __init__(self, margin):
+        super(Triplet, self).__init__()
+        self.margin = margin
+
+    @classmethod
+    def from_config(cls, cfg):
+        return {
+            "margin": cfg.LOSSES.MARGIN
+        }
+
+    def forward(self, outputs_dict):
+        vil_logit = outputs_dict[kfg.U_LOGITS]
+        vil_logit = vil_logit.view(-1, outputs_dict[kfg.SAMPLE_PER_SAMPLE])
+        num_pairs = vil_logit.shape[1] - 1
+
+        pairs = []
+        for i in range(num_pairs):
+            # NOTE: The first element is the positive pair
+            pairs.append(torch.cat([vil_logit[:, 0].unsqueeze(-1), vil_logit[:, i+1].unsqueeze(-1)], dim=1))
+        pairs = torch.cat(pairs, dim=0)
+        triplet_dist = self.margin - pairs[:, 0] + pairs[:, 1]
+        triplet_dist = torch.masked_select(triplet_dist, triplet_dist > 0)
+        loss = torch.mean(triplet_dist) if len(triplet_dist) > 0 else torch.sum(triplet_dist)
+        return { 'Triplet Loss': loss }
+
 
 @LOSSES_REGISTRY.register()
 class BatchTriplet(nn.Module):

@@ -34,6 +34,7 @@ __all__ = [
     "AutogradProfiler",
     "EvalHook",
     "PreciseBN",
+    "ModelWeightsManipulating"
 ]
 
 
@@ -76,6 +77,16 @@ class CallbackHook(HookBase):
         if self._after_step:
             self._after_step(self.trainer)
 
+class ModelWeightsManipulating(HookBase):
+    """
+    Init or bind weights after loading a model
+    """
+    def __init__(self):
+        super().__init__()
+
+    def before_train(self):
+        if hasattr(self.trainer.model, 'bind_or_init_weights'):
+            self.trainer.model.bind_or_init_weights()
 
 class ScheduledSampling(HookBase):
     def __init__(self, start_iter, inc_every_iter, inc_prob, max_prob):
@@ -334,7 +345,7 @@ class EvalHook(HookBase):
     It is executed every ``eval_period`` iterations and after the last iteration.
     """
 
-    def __init__(self, eval_period, eval_start, eval_function, iters_per_epoch, stage):
+    def __init__(self, eval_period, eval_start, eval_function, iters_per_epoch, stage, multi_gpu_eval):
         """
         Args:
             eval_period (int): the period to run `eval_function`. Set to 0 to
@@ -351,11 +362,20 @@ class EvalHook(HookBase):
         self._func = eval_function
         self._stage = stage
         self._eval_start = eval_start
+        self._multi_gpu_eval = multi_gpu_eval
 
     def _do_eval(self, epoch):
-        
-        if comm.is_main_process():
+        if self._multi_gpu_eval:
             results = self._func(epoch)
+        else:
+            if comm.is_main_process():
+                results = self._func(epoch)
+
+        # Evaluation may take different time among workers.
+        # A barrier make them start the next iteration together.
+        comm.synchronize()
+
+        if comm.is_main_process():
             if results:
                 assert isinstance(results, dict), "Eval function must return a dict. Got {} instead.".format(results)
                 flattened_results = flatten_results_dict(results)
