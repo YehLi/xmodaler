@@ -1,7 +1,7 @@
 # Copyright 2021 JD.com, Inc., JD AI
 """
-@author: Yehao Li
-@contact: yehaoli.sysu@gmail.com
+@author: Yehao Li, Jianjie Luo
+@contact: yehaoli.sysu@gmail.com, jianjieluo.sysu@gmail.com
 """
 import torch
 from torch import nn
@@ -160,8 +160,13 @@ class SingleStreamMultiModalPredictor(nn.Module):
         cfg.MODEL.MM_PREDICTOR = CN()
         cfg.MODEL.MM_PREDICTOR.LABELS_NUM = 3129
 
+    def test_forward(self, u_logits):
+        # for VQA
+        outputs = torch.softmax(u_logits, dim=-1)
+        outputs = torch.max(outputs, 1)[1].data.cpu().numpy()
+        return { kfg.OUTPUT: outputs }
+
     def forward(self, batched_inputs):
-        outputs = 0
         ret = {}
 
         hidden_states = batched_inputs[kfg.U_HIDDEN_STATES]
@@ -172,8 +177,7 @@ class SingleStreamMultiModalPredictor(nn.Module):
         u_logits = self.cls(pooled_output)
         ret.update({ kfg.U_LOGITS: u_logits })
         if not self.training:
-            outputs = outputs + torch.softmax(u_logits, dim=-1)
-            outputs = torch.max(outputs, 1)[1].data.cpu().numpy()
+            ret_test = self.test_forward(u_logits)
+            ret.update(ret_test)
 
-        ret.update({ kfg.OUTPUT: outputs })
         return ret

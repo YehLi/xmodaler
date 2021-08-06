@@ -28,7 +28,7 @@ def read_np(path):
         return { "features": content[list(keys)[0]] }
     return content
 
-def read_np_bbox(path, max_feat_num):
+def read_np_bbox(path, max_feat_num, use_global_v=True):
     content = read_np(path)
     features = content['features'][0:max_feat_num - 1]
     boxes = content['boxes'][0:max_feat_num - 1]
@@ -36,12 +36,14 @@ def read_np_bbox(path, max_feat_num):
     image_w = content['image_w'][0]
     num_boxes = len(boxes)
 
-    g_feat = np.sum(features, axis=0) / num_boxes
-    features = np.concatenate([np.expand_dims(g_feat, axis=0), features], axis=0)
+    if use_global_v:
+        g_feat = np.sum(features, axis=0) / num_boxes
+        features = np.concatenate([np.expand_dims(g_feat, axis=0), features], axis=0)
 
     image_locations = boxes_to_locfeats(boxes, image_w, image_h)
-    g_location = np.array([0, 0, 1, 1, 1])
-    image_locations = np.concatenate([np.expand_dims(g_location, axis=0), image_locations], axis=0)
+    if use_global_v:
+        g_location = np.array([0, 0, 1, 1, 1])
+        image_locations = np.concatenate([np.expand_dims(g_location, axis=0), image_locations], axis=0)
     return features, image_locations
 
 

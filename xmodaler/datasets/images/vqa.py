@@ -29,6 +29,7 @@ class VQADataset:
         feats_folder: str,
         max_feat_num: int,
         max_seq_len: int,
+        use_global_v: bool,
         tokenizer
     ):
         self.stage = stage
@@ -38,10 +39,10 @@ class VQADataset:
         self.feats_folder = feats_folder
         self.max_feat_num = max_feat_num
         self.max_seq_len = max_seq_len
+        self.use_global_v = use_global_v
         self.tokenizer = tokenizer
         self.num_labels = len(self.ans2label)
 
-        
     @classmethod
     def from_config(cls, cfg, stage: str = "train"):
         ans2label_path = os.path.join(cfg.DATALOADER.ANNO_FOLDER, "trainval_ans2label.pkl")
@@ -59,6 +60,7 @@ class VQADataset:
             "feats_folder": feats_folder,
             "max_feat_num": cfg.DATALOADER.MAX_FEAT_NUM,
             "max_seq_len": cfg.MODEL.MAX_SEQ_LEN,
+            "use_global_v": cfg.DATALOADER.USE_GLOBAL_V,
             "tokenizer": BertTokenizer.from_pretrained(cfg.MODEL.PRETRAINING.MODEL_NAME,
                 do_lower_case=cfg.MODEL.PRETRAINING.DO_LOWER_CASE),
         }
@@ -164,7 +166,7 @@ class VQADataset:
         question_id = dataset_dict["question_id"]
         
         image_path = os.path.join(self.feats_folder, image_id + ".npz")
-        features, image_locations = read_np_bbox(image_path, self.max_feat_num)
+        features, image_locations = read_np_bbox(image_path, self.max_feat_num, self.use_global_v)
 
         question = np.array(dataset_dict["question"])
         u_tokens_type = np.array([0] * len(question))

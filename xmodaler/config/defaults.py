@@ -51,6 +51,12 @@ _C.DATALOADER.SEQ_PER_SAMPLE = 5
 
 _C.DATALOADER.MAX_FEAT_NUM = -1
 
+_C.DATALOADER.NEGATIVE_SIZE = -1
+
+_C.DATALOADER.INF_BATCH_SIZE = 200 # for single stream retrieval only, chunk size
+
+_C.DATALOADER.USE_GLOBAL_V = True
+
 # -----------------------------------------------------------------------------
 # Engine
 # -----------------------------------------------------------------------------
