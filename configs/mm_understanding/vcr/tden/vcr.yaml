@@ -45,7 +45,7 @@ MODEL:
 
 ####################################### Optimizer #######################################
 SOLVER:
-  NAME: 'AdamW'
+  NAME: 'BertAdam'
   EPOCH: 20
   CHECKPOINT_PERIOD: 1
   EVAL_PERIOD: 1
