@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=0 python3 train_net.py --config-file configs/video_caption/msvd/transformer/transformer.yaml --num-gpus 1 OUTPUT_DIR ./experiments/msvd-transformer DATALOADER.TRAIN_BATCH_SIZE 64 DECODE_STRATEGY.BEAM_SIZE 5 DATALOADER.NUM_WORKERS 4

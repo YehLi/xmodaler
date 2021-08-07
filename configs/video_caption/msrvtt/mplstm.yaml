@@ -1,7 +1,0 @@
-_BASE_: "base_caption.yaml"
-
-MODEL:
-  ENCODER: 'UpDownEncoder'
-  DECODER: 'MPLSTMDecoder'
-  
-

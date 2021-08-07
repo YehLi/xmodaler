@@ -1,0 +1,34 @@
+_BASE_: "../base_att_image_caption.yaml"
+
+DATALOADER:
+  TRAIN_BATCH_SIZE: 16
+  TEST_BATCH_SIZE: 32
+  FEATS_FOLDER: ''
+  GV_FEAT_FILE: '../open_source_dataset/mscoco_dataset/features/global_feat/resnet101_pool5.pkl'
+  ATTRIBUTE_FILE: '../open_source_dataset/mscoco_dataset/features/mil/resnet101_mil.pkl'
+
+ENGINE:
+  NAME: 'RLTrainer'
+
+######################################### MODEL #########################################
+MODEL:
+  WEIGHTS: '{path_to_xe_model}'
+  DECODER: 'AttributeDecoder'
+  DECODER_DIM: 1024
+
+  VISUAL_EMBED:
+    NAME: 'VisualIdentityEmbedding'
+
+  LSTMA:
+    ATTRIBUTE_DIM: 1000
+    DROPOUT: 0.
+
+####################################### losses ####################################### 
+SOLVER:
+  NAME: 'Adam'
+  EPOCH: 30
+  BASE_LR: 0.00005
+
+####################################### lr scheduler ####################################### 
+LR_SCHEDULER:
+  NAME: 'FixLR'

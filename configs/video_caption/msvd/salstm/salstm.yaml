@@ -1,0 +1,8 @@
+_BASE_: "../base_caption.yaml"
+
+MODEL: 
+  SALSTM:
+    ATT_EMBED_SIZE: 512
+    ATT_EMBED_DROPOUT: 0.0
+  
+

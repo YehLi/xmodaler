@@ -1,0 +1,9 @@
+_BASE_: "../base_caption.yaml"
+
+OUTPUT_DIR: './experiments/mplstm-msrvtt'
+
+MODEL:
+  ENCODER: 'UpDownEncoder'
+  DECODER: 'MPLSTMDecoder'
+  
+
