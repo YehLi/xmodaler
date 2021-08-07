@@ -169,23 +169,17 @@ class MemoryAugmentedEncoder(nn.Module):
             attention_mask = (att_masks == 0)
 
             outs = []
-            global_feats = []
             out = att_feats
             for l in self.layers:
                 out = l(out, out, out, attention_mask)
                 outs.append(out.unsqueeze(1))
 
-                gv = self._get_global_feat(out, att_masks)
-                global_feats.append(gv.unsqueeze(1))
-
             outs = torch.cat(outs, 1) # [batch, num_layer, seq_len, d_model]
-            gv_feats = torch.cat(global_feats, 1) # [batch, num_layer, d_model]
 
             ret.update(
                 {
                     kfg.ATT_FEATS: outs,
-                    kfg.ATT_MASKS: attention_mask,
-                    kfg.GLOBAL_FEATS: gv_feats
+                    kfg.ATT_MASKS: attention_mask
                 }
             )
         return ret

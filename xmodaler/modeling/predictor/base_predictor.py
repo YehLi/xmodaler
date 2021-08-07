@@ -24,7 +24,7 @@ class BasePredictor(nn.Module):
     ):
         super(BasePredictor, self).__init__()
         self.logits = nn.Linear(hidden_size, vocab_size)
-        self.dropout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(dropout) if dropout > 0.0 else None
 
     @classmethod
     def from_config(cls, cfg):
@@ -42,6 +42,7 @@ class BasePredictor(nn.Module):
         hidden_states = batched_inputs[kfg.G_HIDDEN_STATES]
         if isinstance(hidden_states, list):
             hidden_states = hidden_states[-1]        
-        hidden_states = self.dropout(hidden_states)
+        if self.dropout:  
+            hidden_states = self.dropout(hidden_states)
         logits = self.logits(hidden_states)
         return { kfg.G_LOGITS: logits }

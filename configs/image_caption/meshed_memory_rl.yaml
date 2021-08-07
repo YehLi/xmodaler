@@ -1,22 +1,30 @@
 _BASE_: "meshed_memory.yaml"
 
+####################################### DATASETS #######################################
+DATASETS:
+  TRAIN: 'MSCoCoDataset'
+  VAL: 'MSCoCoDataset'
+  TEST: 'MSCoCoDataset'
+
 ###################################### DATALOADER ######################################
 DATALOADER:
-  TRAIN_BATCH_SIZE: 16
+  TRAIN_BATCH_SIZE: 10 # one gpu
+  SEQ_PER_SAMPLE: 1
 
 ######################################### Engine #########################################
 ENGINE:
-  NAME: 'RLTrainer'
+  NAME: 'RLBeamTrainer'
 
 ######################################### MODEL #########################################
 MODEL:
-  WEIGHTS: '../meshed_memory_xe.pth'
+  WEIGHTS: '{path_to_xe_model}'
 
 ####################################### Optimizer #######################################
 SOLVER:
   NAME: 'Adam'
-  EPOCH: 50
+  EPOCH: 30
   BASE_LR: 0.000005
+  BETAS: [0.9, 0.999]
 
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
