@@ -39,6 +39,13 @@ def main(args):
     """
     trainer = build_engine(cfg)
     trainer.resume_or_load(resume=args.resume)
+    
+    if args.eval_only:
+        res = trainer.test(trainer.cfg, trainer.model, trainer.test_data_loader, trainer.test_evaluator, epoch=-1)
+        if comm.is_main_process():
+            print(res)
+        return res
+
     return trainer.train()
 
 
