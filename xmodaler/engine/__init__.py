@@ -11,8 +11,9 @@ __all__ = [k for k in globals().keys() if not k.startswith("_")]
 from .hooks import *
 from .defaults import *
 from .rl_trainer import RLTrainer
+from .rl_beam_trainer import RLBeamTrainer
 from .vcr_trainer import VCRTrainer
 from .retrieval_trainer import RetrievalTrainer
-from .single_stream_retrieval_trainer import SingleStreamRetrievalTrainer
+from .single_stream_retrieval_trainer import SingleStreamRetrievalTrainer, SingleStreamRetrievalTrainerHardNegatives
 from .tden_pretrainer import TDENPretrainer
 from .build import build_engine

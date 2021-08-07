@@ -34,6 +34,7 @@ class BeamSearcher(DecodeStrategy):
 
     def _forward(self, batched_inputs, model):
         batch_size = batched_inputs[kfg.ATT_FEATS].size(0)
+        out_size = batched_inputs.get('OUT_SIZE', 1)
         beam_size = self.beam_size
         log_probs = []
         selected_words = None
@@ -134,8 +135,11 @@ class BeamSearcher(DecodeStrategy):
         log_probs = torch.cat(log_probs, -1)
         log_probs = torch.gather(log_probs, 1, sort_idxs.expand(batch_size, beam_size, self.max_seq_len))
 
-        outputs = outputs.contiguous()[:, 0]
-        log_probs = log_probs.contiguous()[:, 0]
+        outputs = outputs.contiguous()[:, :out_size]
+        log_probs = log_probs.contiguous()[:, :out_size]
+        if out_size == 1:
+            outputs = outputs.squeeze(1)
+            log_probs = log_probs.squeeze(1)
         
         return {
             kfg.IDS: batched_inputs[kfg.IDS],
