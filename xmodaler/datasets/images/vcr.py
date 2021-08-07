@@ -1,7 +1,7 @@
 # Copyright 2021 JD.com, Inc., JD AI
 """
-@author: Yehao Li
-@contact: yehaoli.sysu@gmail.com
+@author: Yehao Li, Jianjie Luo
+@contact: yehaoli.sysu@gmail.com, jianjieluo.sysu@gmail.com
 """
 import os
 import copy
@@ -30,6 +30,7 @@ class VCRDataset:
         max_feat_num: int,
         max_seq_len: int,
         seq_per_img: int,
+        use_global_v: bool,
         tokenizer
     ):
         self.stage = stage
@@ -39,6 +40,7 @@ class VCRDataset:
         self.gt_feat_folder = feats_folder + "_gt"
         self.max_feat_num = max_feat_num
         self.seq_per_img = seq_per_img
+        self.use_global_v = use_global_v
         self.tokenizer = tokenizer
 
         if self.task_name == 'VCR_Q-A':
@@ -51,7 +53,6 @@ class VCRDataset:
             'Avery', 'Jaime', 'Peyton', 'Kerry', 
             'Jody', 'Kendall', 'Frankie', 'Pat', 'Quinn']
 
-    
     @classmethod
     def from_config(cls, cfg, stage: str = "train;VCR_Q-A"):
         stage, task_name = stage.split(';')
@@ -64,6 +65,7 @@ class VCRDataset:
             "max_feat_num": cfg.DATALOADER.MAX_FEAT_NUM,
             "max_seq_len": cfg.MODEL.MAX_SEQ_LEN,
             "seq_per_img": cfg.DATALOADER.SEQ_PER_SAMPLE,
+            "use_global_v": cfg.DATALOADER.USE_GLOBAL_V,
             "tokenizer": BertTokenizer.from_pretrained(cfg.MODEL.PRETRAINING.MODEL_NAME,
                 do_lower_case=cfg.MODEL.PRETRAINING.DO_LOWER_CASE),
         }
@@ -223,27 +225,33 @@ class VCRDataset:
 
         prob = random.random()
         if prob > 0.5 and self.stage == 'train':
-            image_path = os.path.join(self.feats_folder, img_query + ".npz")
-            gt_image_path = os.path.join(self.gt_feat_folder, img_query + ".npz")
-        else:
             image_path = os.path.join(self.feats_folder + "_mirror", img_query + ".npz")
             gt_image_path = os.path.join(self.gt_feat_folder + "_mirror", img_query + ".npz")
-        features, image_locations = read_np_bbox(image_path, self.max_feat_num)
-        gt_features, gt_image_locations = read_np_bbox(gt_image_path, self.max_feat_num)
+        else:
+            image_path = os.path.join(self.feats_folder, img_query + ".npz")
+            gt_image_path = os.path.join(self.gt_feat_folder, img_query + ".npz")
 
-        # merge two features.
+        features, image_locations = read_np_bbox(image_path, self.max_feat_num, use_global_v=self.use_global_v)
+        gt_features, gt_image_locations = read_np_bbox(gt_image_path, self.max_feat_num, use_global_v=self.use_global_v)
+
         num_boxes = features.shape[0]
         gt_num_boxes = gt_features.shape[0]
-        features[0] = (features[0] * num_boxes + gt_features[0] * gt_num_boxes) / (
-            num_boxes + gt_num_boxes
-        )
+        # NOTE: if you use global v feat, then you need to merge
+        if self.use_global_v:
+            # merge two features.
+            features[0] = (features[0] * num_boxes + gt_features[0] * gt_num_boxes) / (
+                num_boxes + gt_num_boxes
+            )
 
-        # merge two boxes, and assign the labels.
-        gt_boxes = gt_image_locations[1:gt_num_boxes]
-        gt_features = gt_features[1:gt_num_boxes]
-        gt_num_boxes = gt_num_boxes - 1
+            # merge two boxes, and assign the labels.
+            gt_boxes = gt_image_locations[1:gt_num_boxes]
+            gt_features = gt_features[1:gt_num_boxes]
+            gt_num_boxes = gt_num_boxes - 1
+            gt_box_preserve = min(self.max_feat_num - 1, gt_num_boxes)
+        else:
+            gt_boxes = gt_image_locations
+            gt_box_preserve = min(self.max_feat_num, gt_num_boxes)
 
-        gt_box_preserve = min(self.max_feat_num - 1, gt_num_boxes)
         gt_boxes = gt_boxes[:gt_box_preserve]
         gt_features = gt_features[:gt_box_preserve]
         gt_num_boxes = gt_box_preserve
