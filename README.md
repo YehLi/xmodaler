@@ -30,6 +30,9 @@ python train_net.py --num-gpus 4 \
  	--config-file configs/image_caption/updown_rl.yaml
 ```
 
+# Model Zoo and Baselines
+A large set of baseline results and trained models are available [here](https://xmodaler.readthedocs.io/en/latest/notes/benchmarks.html).
+
 ## API Documentation
 * xmodaler.checkpoint
 * xmodaler.config

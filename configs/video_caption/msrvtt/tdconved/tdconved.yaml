@@ -1,0 +1,73 @@
+_BASE_: "../base_caption.yaml"
+
+DATALOADER:
+  TRAIN_BATCH_SIZE: 256
+  MAX_FEAT_NUM: 50
+
+MODEL: 
+  META_ARCHITECTURE: "TransformerEncoderDecoder"
+  ENCODER: "TDConvEDEncoder"
+  DECODER: "TDConvEDDecoder"
+  DECODER_DIM: 512
+
+  VISUAL_EMBED:
+    NAME: "TDConvEDVisualBaseEmbedding"
+    IN_DIM: 2048
+    OUT_DIM: 512
+    ACTIVATION: "none"
+    DROPOUT: 0.5
+    USE_NORM: True
+    LOCATION_SIZE: -1
+
+  TOKEN_EMBED:
+    NAME: "TokenBaseEmbedding"
+    DIM: 512
+    ACTIVATION: "none"
+    DROPOUT: 0.5
+    USE_NORM: True
+    POSITION: "SinusoidEncoding"
+    POSITION_MAX_LEN: 512
+    TYPE_VOCAB_SIZE: -1
+  
+  TDCONVED:
+    ENCODER:
+      NUM_HIDDEN_LAYERS: 2
+      HIDDEN_SIZE: 512
+      KERNEL_SIZES: [3, 3]
+      PADDING_MODE: 'border'
+      OFFSET_ACT: 'tanh'
+      OFFSET_MIN: -1.0
+      OFFSET_MAX: 1.0
+      CLAMP_OFFSET: True
+      DROPOUT: 0.5
+      USE_NORM: True
+    DECODER:
+      NUM_HIDDEN_LAYERS: 2
+      HIDDEN_SIZE: 512
+      KERNEL_SIZES: [3, 3]
+      DROPOUT: 0.5
+      ATT_EMBED_SIZE: 256
+      ATT_EMBED_DROPOUT: 0.5
+      USE_NORM: True
+
+####################################### Optimizer #######################################
+SOLVER:
+  NAME: 'Adam'
+  EPOCH: 50
+  CHECKPOINT_PERIOD: 1
+  EVAL_PERIOD: 1
+  BASE_LR: 0.001
+  BIAS_LR_FACTOR: 1.0
+  WEIGHT_DECAY: 0.0
+  WEIGHT_DECAY_NORM: 0.0
+  WEIGHT_DECAY_BIAS: 0.0
+  MOMENTUM: 0.9
+  DAMPENING: 0.0
+  NESTEROV: 0.0
+  BETAS: [0.9, 0.999]
+  EPS: 1e-8
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: 'value'
+  NORM_TYPE: 2.0
+  
+
