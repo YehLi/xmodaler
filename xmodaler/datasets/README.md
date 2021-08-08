@@ -10,10 +10,10 @@ xmodaler/datasets/
   videos/
     msvd.py  
 ```
-You can specify which dataset wrapper to use by `DATASETS.TRAIN`, `DATASETS.VAL` and `DATASETS.TEST` in the config file. The dataset files can be downloaded [here](https://drive.google.com/drive/folders/1vx9n7tAIt8su0y_3tsPJGvMPBMm8JLCZ?usp=sharing). The pre-trained models (e.g., BERT, TDEN, Uniter) can be downloaded [here] (https://drive.google.com/drive/folders/14N0MHJl0MvzuXa6RAmauiHfvFmaAZ0Xn?usp=sharing).
+You can specify which dataset wrapper to use by `DATASETS.TRAIN`, `DATASETS.VAL` and `DATASETS.TEST` in the config file. 
 
 # Expected structure for xmodaler
-First, download the [dataset files](https://drive.google.com/drive/folders/1vx9n7tAIt8su0y_3tsPJGvMPBMm8JLCZ?usp=sharing), [pre-trained models, e.g., BERT, TDEN, Uniter](https://drive.google.com/drive/folders/14N0MHJl0MvzuXa6RAmauiHfvFmaAZ0Xn?usp=sharing) and [coco_caption](https://github.com/ruotianluo/coco-caption).
+First, download the [dataset files](https://drive.google.com/drive/folders/1vx9n7tAIt8su0y_3tsPJGvMPBMm8JLCZ?usp=sharing), [pre-trained models](https://drive.google.com/drive/folders/14N0MHJl0MvzuXa6RAmauiHfvFmaAZ0Xn?usp=sharing) and [coco_caption](https://github.com/ruotianluo/coco-caption).
 
 ```
 xmodaler
