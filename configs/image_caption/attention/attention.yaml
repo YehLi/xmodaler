@@ -1,0 +1,21 @@
+_BASE_: "../base_att_image_caption.yaml"
+
+DATALOADER:
+  TRAIN_BATCH_SIZE: 8
+  TEST_BATCH_SIZE: 32
+  NUM_WORKERS: 4
+######################################### MODEL #########################################
+MODEL:
+  VOCAB_SIZE: 10200 # include <BOS>/<EOS>
+  META_ARCHITECTURE: 'RnnAttEncoderDecoder'
+  ENCODER: 'Encoder'
+  ENCODER_DIM: 1024
+  DECODER: 'SALSTMDecoder'
+
+  SALSTM:
+    ATT_EMBED_SIZE: 512
+    ATT_EMBED_DROPOUT: 0.0
+
+####################################### losses ####################################### 
+LOSSES:
+  NAMES: ['CrossEntropy']

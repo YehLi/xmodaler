@@ -46,7 +46,7 @@ MODEL:
 ####################################### Optimizer #######################################
 SOLVER:
   NAME: 'Adam'
-  EPOCH: 120
+  EPOCH: 60
   CHECKPOINT_PERIOD: 1
   EVAL_PERIOD: 1
   BASE_LR: 0.00005

@@ -23,7 +23,7 @@ DATALOADER:
 ######################################### MODEL #########################################
 MODEL:
   MAX_SEQ_LEN: 38
-  WEIGHTS: '../pretrain/TDEN_VCR/TDEN_VCR.pth'
+  WEIGHTS: '../pretrain/TDEN_VCR/vcr_pretrained/TDEN_VCR_pretrained.pth'
 
 ######################################### BERT #########################################
   BERT:

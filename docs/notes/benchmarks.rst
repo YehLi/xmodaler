@@ -60,7 +60,7 @@ Visual Question Answering
    :widths: auto
 
    `Uniter <https://drive.google.com/file/d/1cjBAeYSuSEN_IlQCnqtIoalkATMSQs87/view?usp=sharing>`_, 70.1, 86.8, 53.7, 59.6
-   `TDEN <https://drive.google.com/file/d/1cjBAeYSuSEN_IlQCnqtIoalkATMSQs87/view?usp=sharing>`_,  72.5, 88.5, 54.7, 63.0
+   TDEN,  71.1, 87.4, 53.3, 61.2
 
 Caption-based image retrieval on Flickr30k
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -69,7 +69,7 @@ Caption-based image retrieval on Flickr30k
    :widths: auto
 
    `Uniter <https://drive.google.com/file/d/1hvoWMmHjSvxp3zqW10L7PoBQGbxM9MiF/view?usp=sharing>`_, 61.6, 87.7, 92.8
-   `TDEN <https://drive.google.com/file/d/1SqYscN6UCbifxhMJ-ScpiLgWepMSx7uq/view?usp=sharing>`_, 63.6, 88.2, 92.9
+   `TDEN <https://drive.google.com/file/d/1SqYscN6UCbifxhMJ-ScpiLgWepMSx7uq/view?usp=sharing>`_, 62.0, 86.6, 92.4 
 
 Visual commonsense reasoning
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,5 +78,5 @@ Visual commonsense reasoning
    :widths: auto
 
    `Uniter <https://drive.google.com/file/d/1eYTa6HlndaRkJa3LHFTpnRRwKJZniBhZ/view?usp=sharing>`_, 71.7, 73.1, 52.9
-   `TDEN <https://drive.google.com/file/d/1eYTa6HlndaRkJa3LHFTpnRRwKJZniBhZ/view?usp=sharing>`_, 75.2, 76.7, 58.1
+   TDEN, 75.2, 76.7, 58.1
 

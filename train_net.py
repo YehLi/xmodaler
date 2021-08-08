@@ -41,7 +41,14 @@ def main(args):
     trainer.resume_or_load(resume=args.resume)
     
     if args.eval_only:
-        res = trainer.test(trainer.cfg, trainer.model, trainer.test_data_loader, trainer.test_evaluator, epoch=-1)
+        res = None
+        if trainer.val_data_loader is not None:
+            res = trainer.test(trainer.cfg, trainer.model, trainer.val_data_loader, trainer.val_evaluator, epoch=-1)
+        if comm.is_main_process():
+            print(res)
+
+        if trainer.test_data_loader is not None:
+            res = trainer.test(trainer.cfg, trainer.model, trainer.test_data_loader, trainer.test_evaluator, epoch=-1)
         if comm.is_main_process():
             print(res)
         return res
