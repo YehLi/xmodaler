@@ -23,7 +23,7 @@ DATALOADER:
 ######################################### MODEL #########################################
 MODEL:
   MAX_SEQ_LEN: 38
-  WEIGHTS: '../pretrain/UNITER/UNITER_VCR.pth'
+  WEIGHTS: '../pretrain/UNITER/UNITER_VCR_pretrained.pth'
 
 ######################################### MM_PREDICTOR #########################################
   MM_PREDICTOR:

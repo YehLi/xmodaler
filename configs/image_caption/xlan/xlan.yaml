@@ -3,7 +3,7 @@ _BASE_: "../base_att_image_caption.yaml"
 ###################################### DATALOADER ######################################
 DATALOADER:
   TRAIN_BATCH_SIZE: 10
-  NUM_WORKERS: 0
+  NUM_WORKERS: 4
 
 ######################################### Scheduled sampling #########################################
 SCHEDULED_SAMPLING:
