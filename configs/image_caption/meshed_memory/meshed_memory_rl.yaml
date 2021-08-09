@@ -29,3 +29,9 @@ SOLVER:
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
   NAME: 'FixLR'
+
+####################################### scorer ####################################### 
+SCORER:
+  NAME: 'PTBTokenizedScorer'
+  GT_PATH: '../open_source_dataset/mscoco_dataset/coco_train_raw.pkl'
+  CIDER_CACHED: ''
