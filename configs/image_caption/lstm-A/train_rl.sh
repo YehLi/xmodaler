@@ -1,1 +1,1 @@
-CUDA_VISIBLE_DEVICES=0 python3 train_net.py --config-file configs/image_caption/lstm-A/lstm-A_rl.yaml --num-gpus 1 OUTPUT_DIR ./experiments/lstma-rl 
+CUDA_VISIBLE_DEVICES=0 python3 train_net.py --config-file configs/image_caption/lstm-A/lstm-A_rl.yaml --num-gpus 1 OUTPUT_DIR ./experiments/lstma-rl MODEL.LSTMA.DROPOUT 0.3 MODEL.TOKEN_EMBED.DROPOUT 0. DATALOADER.NUM_WORKERS 4

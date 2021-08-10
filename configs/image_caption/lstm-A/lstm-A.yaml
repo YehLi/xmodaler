@@ -1,4 +1,4 @@
-_BASE_: "../base_att_image_caption.yaml"
+_BASE_: "base_att_image_caption.yaml"
 
 DATALOADER:
   FEATS_FOLDER: ''

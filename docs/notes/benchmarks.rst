@@ -8,7 +8,7 @@ Image Captioning on MSCOCO (Cross-Entropy Loss)
    :header: Model, BLEU@1, BLEU@2, BLEU@3, BLEU@4, METEOR, ROUGE-L, CIDEr-D, SPICE
    :widths: auto
 
-   `LSTM-A3 <>`_, 75.3, 59.0,	45.4, 35.0, 26.7, 55.6, 107.7, 19.7
+   `LSTM-A3 <https://drive.google.com/file/d/13fJVIK7ZgQnNMWzIbFicETDx6AgLg0NH/view?usp=sharing>`_, 75.3, 59.0,	45.4, 35.0, 26.7, 55.6, 107.7, 19.7
    `Attention <https://drive.google.com/file/d/1aw8lPcDlf8C8UPsphwqbMAsq5-YSHIEf/view?usp=sharing>`_, 76.4, 60.6, 46.9, 36.1, 27.6, 56.6, 113.0, 20.4
    `Up-Down <https://drive.google.com/file/d/1giOJ5llaNjXz2JClN3Mqe93VIy1Fu5pq/view?usp=sharing>`_, 76.3, 60.3, 46.6, 36.0, 27.6, 56.6, 113.1, 20.7
    `GCN-LSTM <https://drive.google.com/file/d/1eLZqt2xS32lUOQibxEDclwANMtska4L9/view?usp=sharing>`_, 76.8, 61.1, 47.6, 36.9, 28.2, 57.2, 116.3, 21.2
@@ -24,7 +24,7 @@ Image Captioning on MSCOCO (CIDEr Score Optimization)
    :header: Model, BLEU@1, BLEU@2, BLEU@3, BLEU@4, METEOR, ROUGE-L, CIDEr-D, SPICE
    :widths: auto
 
-   `LSTM-A3 <>`_, 77.9, 61.5, 46.7, 35.0, 27.1, 56.3, 117.0, 20.5
+   `LSTM-A3 <https://drive.google.com/file/d/1KELHgYpBh5lsIiQ9yb9o127tea8_nbHo/view?usp=sharing>`_, 77.9, 61.5, 46.7, 35.0, 27.1, 56.3, 117.0, 20.5
    `Attention <https://drive.google.com/file/d/1m04qezTUJpdkBI3oIo_5Y9fIZG7_jZ2S/view?usp=sharing>`_, 79.4, 63.5, 48.9, 37.1, 27.9, 57.6, 123.1, 21.3
    `Up-Down <https://drive.google.com/file/d/1tHM06k413ANuAr7a5jCAtKeN_lQ-ieBk/view?usp=sharing>`_, 80.1, 64.3, 49.7, 37.7, 28.0, 58.0, 124.7, 21.5
    `GCN-LSTM <https://drive.google.com/file/d/1qwilTeK2WQCZEDXcJAmmteLZfLOEhg7P/view?usp=sharing>`_, 80.2, 64.7, 50.3, 38.5, 28.5, 58.4, 127.2, 22.1
@@ -52,8 +52,8 @@ Video Captioning on MSR-VTT
 
    `MP-LSTM <https://drive.google.com/file/d/1OBhtruTexuYV_MbiUL4obfUoNKZbEiUd/view?usp=sharing>`_, 73.6, 60.8, 49.0, 38.6, 26.0, 58.3, 41.1, 5.6
    `TA <https://drive.google.com/file/d/126nPL9lC6_Qa6_hMs32V1zSsJSDxpR9-/view?usp=sharing>`_, 74.3, 61.8, 50.3, 39.9, 26.4, 59.4, 42.9, 5.8
-   `Transformer <>`_, 75.4, 61.8, 48.9, 37.6, 26.4, 58.4, 42.6, 5.8
-   `TDConvED <>`_, 76.4, 62.3, 49.9, 38.9, 26.3, 59.0, 40.7, 5.7
+   `Transformer <https://drive.google.com/file/d/1u6mh13eKd93Y_OoSnxk_d9BI5yi_3Vd-/view?usp=sharing>`_, 75.4, 61.8, 48.9, 37.6, 26.4, 58.4, 42.6, 5.8
+   `TDConvED <https://drive.google.com/file/d/1A3OGvjCpXUI6p1vy1qbNTVGLy5a0b3Dc/view?usp=sharing>`_, 76.4, 62.3, 49.9, 38.9, 26.3, 59.0, 40.7, 5.7
 
 Visual Question Answering
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
