@@ -1,17 +1,17 @@
 ####################################### DATASETS #######################################
 DATASETS:
-  TRAIN: 'MSCoCoSampleByTxtDataset'
-  VAL: 'MSCoCoSampleByTxtDataset'
-  TEST: 'MSCoCoSampleByTxtDataset'
+  TRAIN: 'MSCoCoDataset'
+  VAL: 'MSCoCoDataset'
+  TEST: 'MSCoCoDataset'
 
 ###################################### DATALOADER ######################################
 DATALOADER:
-  TRAIN_BATCH_SIZE: 50 # one gpu
+  TRAIN_BATCH_SIZE: 10 # one gpu
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 4
   FEATS_FOLDER: '../open_source_dataset/mscoco_dataset/features/up_down'
   ANNO_FOLDER:  '../open_source_dataset/mscoco_dataset'
-  SEQ_PER_SAMPLE: 1
+  SEQ_PER_SAMPLE: 5
   MAX_FEAT_NUM: 50
 
 ######################################### Engine #########################################
@@ -27,7 +27,7 @@ MODEL:
   DECODER: 'MeshedDecoder'
   DECODER_DIM: 512
   PREDICTOR: 'BasePredictor'
-  PRED_DROPOUT: 0.0
+  PRED_DROPOUT: 0.5
   MAX_SEQ_LEN: 20
 
 #################################### Token embedding ####################################
@@ -35,18 +35,18 @@ MODEL:
     NAME: 'TokenBaseEmbedding'
     DIM: 512
     ACTIVATION: 'none'
-    USE_NORM: False
-    DROPOUT: 0.0
+    USE_NORM: True
+    DROPOUT: 0.1
     POSITION: 'SinusoidEncoding'
 
 #################################### Visual embedding ####################################
   VISUAL_EMBED:
-    NAME: 'MeshedMemoryVisualEmbedding'
+    NAME: 'VisualBaseEmbedding'
     IN_DIM: 2048
     OUT_DIM: 512
     ACTIVATION: 'relu'
     USE_NORM: True
-    DROPOUT: 0.1
+    DROPOUT: 0.5
 
 ####################################### MESHED_MEORY ############################################
   MESHEDMEORY:
@@ -67,7 +67,7 @@ MODEL:
 ####################################### Optimizer #######################################
 SOLVER:
   NAME: 'Adam'
-  EPOCH: 20
+  EPOCH: 30
   CHECKPOINT_PERIOD: 1
   EVAL_PERIOD: 1
   BASE_LR: 0.0005
@@ -80,7 +80,9 @@ SOLVER:
   NESTEROV: 0.0
   BETAS: [0.9, 0.98]
   EPS: 1.0e-8
-  GRAD_CLIP: -1.0
+  GRAD_CLIP: 0.1
+  GRAD_CLIP_TYPE: 'value'
+  NORM_TYPE: 2.0
 
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
@@ -91,7 +93,8 @@ LR_SCHEDULER:
 
 ####################################### losses ####################################### 
 LOSSES:
-  NAMES: ['CrossEntropy']
+  NAMES: ['LabelSmoothing']
+  LABELSMOOTHING: 0.1
 
 ####################################### scorer ####################################### 
 SCORER:
@@ -105,7 +108,7 @@ SCORER:
 ####################################### decode strategy ####################################### 
 DECODE_STRATEGY:
   NAME: 'BeamSearcher'
-  BEAM_SIZE: 5
+  BEAM_SIZE: 2
 
 ####################################### evaluation ####################################### 
 INFERENCE:
@@ -116,5 +119,3 @@ INFERENCE:
   VAL_ANNFILE: '../open_source_dataset/mscoco_dataset/captions_val5k.json'
   TEST_ANNFILE: '../open_source_dataset/mscoco_dataset/captions_test5k.json'
   GENERATION_MODE: True
-
-  
