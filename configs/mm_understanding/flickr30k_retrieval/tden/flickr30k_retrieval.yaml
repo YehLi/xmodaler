@@ -27,7 +27,7 @@ MODEL:
   ENCODER: 'TwoStreamBertEncoder'
   DECODER: ''
   PREDICTOR: 'MultiModalSimilarity'
-  WEIGHTS: '../pretrain/TDEN/TDEN.pth'
+  WEIGHTS: '../pretrain/TDEN_RETRIEVAL/TDEN_RETRIEVAL.pth'
 
 ######################################### BERT #########################################
   BERT:

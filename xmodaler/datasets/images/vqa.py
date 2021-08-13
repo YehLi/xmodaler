@@ -164,12 +164,24 @@ class VQADataset:
         dataset_dict = copy.deepcopy(dataset_dict)
         image_id = dataset_dict['image_id']
         question_id = dataset_dict["question_id"]
-        
-        image_path = os.path.join(self.feats_folder, image_id + ".npz")
+
+        prob = random.random()
+        if prob > 0.5 and self.stage == 'train':
+            image_path = os.path.join(self.feats_folder + '_mirror', image_id + ".npz")
+        else:
+            image_path = os.path.join(self.feats_folder, image_id + ".npz")
         features, image_locations = read_np_bbox(image_path, self.max_feat_num, self.use_global_v)
 
         question = np.array(dataset_dict["question"])
         u_tokens_type = np.array([0] * len(question))
+
+        #######################################################
+        if prob > 0.5 and self.stage == 'train':
+            for i in range(1, len(question)):
+                if question[i] == 2187:
+                    question[i] = 2157
+                elif question[i] == 2157:
+                    question[i] = 2187
 
         ret = {
             kfg.IDS: question_id,
@@ -183,6 +195,15 @@ class VQADataset:
             answer = dataset_dict["answer"]
             labels = answer["labels"]
             scores = answer["scores"]
+
+            #######################################################
+            if prob > 0.5 and self.stage == 'train':
+                for i in range(len(labels)):
+                    if labels[i] == self.ans2label['left']:
+                        labels[i] = self.ans2label['right']
+                    elif labels[i] == self.ans2label['right']:
+                        labels[i] = self.ans2label['left']
+            #######################################################
 
             target = np.zeros(self.num_labels)
             if len(labels) > 0:

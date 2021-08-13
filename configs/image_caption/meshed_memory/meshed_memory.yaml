@@ -108,7 +108,7 @@ SCORER:
 ####################################### decode strategy ####################################### 
 DECODE_STRATEGY:
   NAME: 'BeamSearcher'
-  BEAM_SIZE: 2
+  BEAM_SIZE: 3
 
 ####################################### evaluation ####################################### 
 INFERENCE:

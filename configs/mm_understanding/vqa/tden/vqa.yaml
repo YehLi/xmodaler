@@ -11,15 +11,15 @@ DATALOADER:
   TRAIN_BATCH_SIZE: 24
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 4
-  FEATS_FOLDER: '../open_source_dataset/VQA/features/up_down'
+  FEATS_FOLDER: '../open_source_dataset/VQA/features/up_down_fix100'
   ANNO_FOLDER: '../open_source_dataset/VQA'
   SEQ_PER_SAMPLE:  1
-  MAX_FEAT_NUM: 51
+  MAX_FEAT_NUM: 101
 
 ######################################### MODEL #########################################
 MODEL:
   MAX_SEQ_LEN: 23
-  WEIGHTS: '../pretrain/TDEN/TDEN.pth'
+  WEIGHTS: '../pretrain/TDEN_VQA/TDEN_VQA.pth'
 
 ######################################### BERT #########################################
   BERT:

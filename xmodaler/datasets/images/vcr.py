@@ -99,6 +99,7 @@ class VCRDataset:
                 tokens_q2 = self.retokenize_and_convert_to_ids(entry["question_a"], objects_replace_name)
 
             tokens_qr_arr = []
+            u_tokens_types_arr = []
             for answer in entry["answers"]:
                 tokens_r = self.retokenize_and_convert_to_ids(answer, objects_replace_name)
 
@@ -111,9 +112,14 @@ class VCRDataset:
                     self.truncate_seq_tri(tokens_q_copy, tokens_q2_copy, tokens_r , self.max_seq_len - 3)
                     tokens_q_copy = tokens_q_copy + tokens_q2_copy
 
+                u_tokens_types = [0] * (len(tokens_q_copy) + 2) + [1] * (len(tokens_r) + 1)
                 tokens_qr = self.tokenizer.add_special_tokens_sentences_pair(tokens_q_copy, tokens_r)
+                assert len(u_tokens_types) == len(tokens_qr)
+
+                u_tokens_types_arr.append(u_tokens_types)
                 tokens_qr_arr.append(tokens_qr)
             entry["question"] = tokens_qr_arr
+            entry["u_tokens_types"] = u_tokens_types_arr
 
     def retokenize_and_convert_to_ids(self, _tokens, objects_replace_name):
         parsed_tokens = []
@@ -265,7 +271,7 @@ class VCRDataset:
         mix_features = np.concatenate((features, gt_features), axis=0)
 
         questions = [np.array(question).astype(np.int64) for question in dataset_dict["question"]]
-        u_tokens_types = [np.array([0] * len(question)).astype(np.int64) for question in dataset_dict["question"]]
+        u_tokens_types = [np.array(u_tokens_type).astype(np.int64) for u_tokens_type in dataset_dict["u_tokens_types"]]
 
         ret = {
             kfg.IDS: str(dataset_dict["anno_id"]),
