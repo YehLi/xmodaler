@@ -11,44 +11,18 @@ ENGINE:
 ######################################### MODEL #########################################
 MODEL:
   WEIGHTS: '{path_to_xe_model}'
-  PRED_DROPOUT: 0.1
-
-#################################### Visual embedding ####################################
-  VISUAL_EMBED:
-    NAME: 'VisualBaseEmbedding'
-    IN_DIM: 2048
-    OUT_DIM: 512
-    ACTIVATION: 'relu'
-    USE_NORM: True
-    DROPOUT: 0.1
-
-####################################### MESHED_MEORY ############################################
-  MESHEDMEORY:
-    ENCODER:
-      DIM_MODEL: 512
-      NUM_LAYER: 3
-      NUM_ATT_HEAD: 8
-      NUM_ATT_MEMORY: 40
-      DIM_FEEDFORWARD: 2048
-      DROPOUT: 0.1
-    DECODER:
-      DIM_MODEL: 512
-      NUM_LAYER: 3
-      NUM_ATT_HEAD: 8
-      DIM_FEEDFORWARD: 2048
-      DROPOUT: 0.1
 
 ####################################### Optimizer #######################################
 SOLVER:
   NAME: 'Adam'
   EPOCH: 60
-  BASE_LR: 0.000005
+  BASE_LR: 0.00001
   BETAS: [0.9, 0.999]
 
 ####################################### lr scheduler #######################################
 LR_SCHEDULER:
   NAME: 'StepLR'
-  STEP_SIZE: 20
+  STEP_SIZE: 10
   GAMMA: 0.8
 
 

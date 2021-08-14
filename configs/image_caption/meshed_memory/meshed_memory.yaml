@@ -1,3 +1,5 @@
+SEED: 1234
+
 ####################################### DATASETS #######################################
 DATASETS:
   TRAIN: 'MSCoCoDataset'
@@ -6,7 +8,7 @@ DATASETS:
 
 ###################################### DATALOADER ######################################
 DATALOADER:
-  TRAIN_BATCH_SIZE: 10 # one gpu
+  TRAIN_BATCH_SIZE: 10
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 4
   FEATS_FOLDER: '../open_source_dataset/mscoco_dataset/features/up_down'
@@ -108,7 +110,7 @@ SCORER:
 ####################################### decode strategy ####################################### 
 DECODE_STRATEGY:
   NAME: 'BeamSearcher'
-  BEAM_SIZE: 3
+  BEAM_SIZE: 2
 
 ####################################### evaluation ####################################### 
 INFERENCE:
