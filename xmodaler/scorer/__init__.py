@@ -7,7 +7,5 @@ from .build import build_scorer
 
 from .base_scorer import BaseScorer
 from .bert_tokenized_scorer import BertTokenizedScorer
-from .ptb_scorer import PTBTokenizedScorer
 
 from .cider import Cider
-from .ptb_tokenizer import PTBTokenizer

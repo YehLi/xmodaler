@@ -13,9 +13,6 @@ import pickle
 from xmodaler.config import configurable
 from .build import SCORER_REGISTRY
 
-from .ptb_tokenizer import PTBTokenizer
-from xmodaler.functional import flat_list_of_lists
-
 __all__ = ['Cider']
 
 def precook(words, n=4):
@@ -71,19 +68,10 @@ class CiderScorer(object):
         self.crefs = []
         self.ctest = []
 
-        if len(cider_cached) > 0:
-            cider_cache = pickle.load(open(cider_cached, 'rb'), encoding='bytes')
-            self.document_frequency = cider_cache['document_frequency']
-            self.ref_len = cider_cache['ref_len']
-            self.cook_append(test, refs)
-        else:
-            for r in refs:
-                self.cook_append(test=None, refs=r)
-            self.document_frequency = defaultdict(float)
-            # compute idf
-            self.compute_doc_freq()
-            # compute log reference length
-            self.ref_len = np.log(float(len(self.crefs)))
+        cider_cache = pickle.load(open(cider_cached, 'rb'), encoding='bytes')
+        self.document_frequency = cider_cache['document_frequency']
+        self.ref_len = cider_cache['ref_len']
+        self.cook_append(test, refs)
         
     def clear(self):
         self.crefs = []
@@ -223,36 +211,21 @@ class Cider:
         *,
         n: int,
         sigma: float,
-        cider_cached: str,
-        gt_path: str
+        cider_cached: str
     ):
         # set cider to sum over 1 to 4-grams
         self._n = n
         # set the standard deviation parameter for gaussian penalty
         self._sigma = sigma
 
-        if len(cider_cached) > 0:
-            # load the pre-computed cider cache
-            self.cider_scorer = CiderScorer(n=self._n, sigma=self._sigma, cider_cached=cider_cached)
-        else:
-            # compute cider cache from gt sents
-            train_raw_sents = pickle.load(open(gt_path, 'rb'), encoding='bytes')
-            ref_caps_train = list(train_raw_sents.values())
-            ref_caps_train_ptb = PTBTokenizer.tokenize(ref_caps_train)
-            ref_caps_train_ptb_in_string = flat_list_of_lists(list(ref_caps_train_ptb.values()))
-            ref_caps_train_ptb_in_words = [[s.split()] for s in ref_caps_train_ptb_in_string] # pre-split in `precook` func: `words = s.split()`
-
-            self.cider_scorer = CiderScorer(n=self._n, sigma=self._sigma, refs=ref_caps_train_ptb_in_words)
+        self.cider_scorer = CiderScorer(n=self._n, sigma=self._sigma, cider_cached=cider_cached)
 
     @classmethod
     def from_config(cls, cfg):
-        assert len(cfg.SCORER.CIDER_CACHED) > 0 or len(cfg.SCORER.GT_PATH) > 0
-
         return {
             'n': 4,
             'sigma': 6.0,
-            'cider_cached': cfg.SCORER.CIDER_CACHED,
-            'gt_path': cfg.SCORER.GT_PATH
+            'cider_cached': cfg.SCORER.CIDER_CACHED
         }
 
     def compute_score(self, gts, res):
