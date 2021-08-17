@@ -62,7 +62,7 @@ Visual Question Answering
    :widths: auto
 
    `Uniter <https://drive.google.com/file/d/1cjBAeYSuSEN_IlQCnqtIoalkATMSQs87/view?usp=sharing>`_, 70.1, 86.8, 53.7, 59.6
-   `TDEN <https://drive.google.com/file/d/1r19eEWAd1jJ1VmSK-vYe-AeJRWj66dq5/view?usp=sharing>`_,  71.1, 87.4, 53.3, 61.2
+   `TDEN <https://drive.google.com/file/d/1hwcDUboyCXghETamS_APJL8eGKY9OgFD/view?usp=sharing>`_,  71.9, 88.3, 54.3, 62.0
 
 Caption-based image retrieval on Flickr30k
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
