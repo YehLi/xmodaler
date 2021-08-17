@@ -60,6 +60,7 @@ If you use X-modaler in your research, please use the following BibTeX entry.
 @misc{Xmodaler2021,
   author =       {Yehao Li, Yingwei Pan, Jingwen Chen, Ting Yao, and Tao Mei},
   title =        {X-modaler: A Versatile and High-performance Codebase for Cross-modal Analytics},
+  booktitle =    {Proceedings of the 29th ACM international conference on Multimedia},
   year =         {2021}
 }
 ```
