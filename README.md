@@ -38,7 +38,7 @@ python train_net.py --num-gpus 4 \
 A large set of baseline results and trained models are available [here](https://xmodaler.readthedocs.io/en/latest/notes/benchmarks.html).
 
 #### Image Captioning on MSCOCO (Cross-Entropy Loss)
-| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | <div style="width:180px">ROUGE-L</div> | <div style="width:170px">CIDEr-D</div> | SPICE |
+| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | `ROUGE-L` | `CIDEr-D` | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | LSTM-A3 ([GoogleDrive](https://drive.google.com/file/d/13fJVIK7ZgQnNMWzIbFicETDx6AgLg0NH/view?usp=sharing))| 75.3 | 59.0 | 45.4 | 35.0 | 26.7 | 55.6 | 107.7|  19.7 |
 | Attention ([GoogleDrive](https://drive.google.com/file/d/1aw8lPcDlf8C8UPsphwqbMAsq5-YSHIEf/view?usp=sharing)) | 76.4 | 60.6 | 46.9 | 36.1 | 27.6 | 56.6 | 113.0 | 20.4 |
