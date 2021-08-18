@@ -34,10 +34,10 @@ python train_net.py --num-gpus 4 \
  	--config-file configs/image_caption/updown_rl.yaml
 ```
 
-# Model Zoo and Baselines
+## Model Zoo and Baselines
 A large set of baseline results and trained models are available [here](https://xmodaler.readthedocs.io/en/latest/notes/benchmarks.html).
 
-### Image Captioning on MSCOCO (Cross-Entropy Loss)
+#### Image Captioning on MSCOCO (Cross-Entropy Loss)
 | Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | ROUGE-L | CIDEr-D | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | LSTM-A3 ([GoogleDrive](https://drive.google.com/file/d/13fJVIK7ZgQnNMWzIbFicETDx6AgLg0NH/view?usp=sharing))| 75.3 | 59.0 | 45.4 | 35.0 | 26.7 | 55.6 | 107.7|  19.7 |
@@ -49,7 +49,7 @@ A large set of baseline results and trained models are available [here](https://
 | X-LAN ([GoogleDrive](https://drive.google.com/file/d/1zgUWEDD7EiRyih8G_DyE6unshjKjeKjV/view?usp=sharing)) | 77.5 | 61.9 | 48.3 | 37.5 | 28.6 | 57.6 | 120.7 | 21.9 |
 | TDEN ([GoogleDrive](https://drive.google.com/file/d/19alfPj-gIudoL5CHsS4VwhfnU-FhTXW3/view?usp=sharing)) | 75.5 | 59.4 | 45.7 | 34.9 | 28.7 | 56.7 | 116.3 | 22.0 |
 
-### Image Captioning on MSCOCO (CIDEr Score Optimization)
+#### Image Captioning on MSCOCO (CIDEr Score Optimization)
 | Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | ROUGE-L | CIDEr-D | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | LSTM-A3 ([GoogleDrive](https://drive.google.com/file/d/1KELHgYpBh5lsIiQ9yb9o127tea8_nbHo/view?usp=sharing))| 77.9 | 61.5| 46.7| 35.0| 27.1| 56.3| 117.0| 20.5 |
@@ -61,7 +61,7 @@ A large set of baseline results and trained models are available [here](https://
 | X-LAN ([GoogleDrive](https://drive.google.com/file/d/13b6nhbnq4h8JKbS0oQB_F2tnRUiUt5g-/view?usp=sharing)) | 80.4| 65.2| 51.0| 39.2| 29.4| 59.0| 131.0| 23.2 |
 | TDEN ([GoogleDrive](https://drive.google.com/file/d/1GTbbwfbJHIu6uDmcLY-pedCiuWHyR7nK/view?usp=sharing)) | 81.3| 66.3| 52.0| 40.1| 29.6| 59.8| 132.6| 23.4 |
 
-### Video Captioning on MSVD
+#### Video Captioning on MSVD
 | Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | ROUGE-L | CIDEr-D | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | MP-LSTM ([GoogleDrive](https://drive.google.com/file/d/1NDjaCyBntQZI3ehQ8QyUMTMrb1e6Dgsp/view?usp=sharing))| 77.0 | 65.6 | 56.9 | 48.1 | 32.4 | 68.1 | 73.1 | 4.8 |
@@ -69,7 +69,7 @@ A large set of baseline results and trained models are available [here](https://
 | Transformer ([GoogleDrive](https://drive.google.com/file/d/1NlwZrAhGE9RPbWdypVz-Tkirt4u8E1t0/view?usp=sharing))| 79.0 | 67.6 | 58.5 | 49.4 | 33.3 | 68.7 | 80.3 | 4.9 |
 | TDConvED ([GoogleDrive](https://drive.google.com/file/d/1Th9FJe8o_4bMULuoCKqDHP_4Faa0RabZ/view?usp=sharing))| 81.6 | 70.4 | 61.3 | 51.7 | 34.1 | 70.4 | 77.8 | 5.0 |
 
-### Video Captioning on MSR-VTT
+#### Video Captioning on MSR-VTT
 | Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | ROUGE-L | CIDEr-D | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | MP-LSTM ([GoogleDrive](https://drive.google.com/file/d/1OBhtruTexuYV_MbiUL4obfUoNKZbEiUd/view?usp=sharing))| 73.6 | 60.8 | 49.0 | 38.6 | 26.0 | 58.3 | 41.1 | 5.6  |
@@ -77,19 +77,19 @@ A large set of baseline results and trained models are available [here](https://
 | Transformer ([GoogleDrive](https://drive.google.com/file/d/1OEYQb4521fYlr40uQRn0sQb4eMsrtoNR/view?usp=sharing)) | 75.4 | 62.3 | 50.0 | 39.2 | 26.5 | 58.7 | 44.0 | 5.9  |
 | TDConvED ([GoogleDrive](https://drive.google.com/file/d/1A3OGvjCpXUI6p1vy1qbNTVGLy5a0b3Dc/view?usp=sharing))| 76.4 | 62.3 | 49.9 | 38.9 | 26.3 | 59.0 | 40.7 | 5.7  |
 
-### Visual Question Answering
+#### Visual Question Answering
 | Model | Overall | Yes/No | Number | Other |
 | :---: | :---: | :---: | :---: | :---: |
 | Uniter ([GoogleDrive](https://drive.google.com/file/d/1cjBAeYSuSEN_IlQCnqtIoalkATMSQs87/view?usp=sharing)) | 70.1 | 86.8 | 53.7 | 59.6 |
 | TDEN ([GoogleDrive](https://drive.google.com/file/d/1hwcDUboyCXghETamS_APJL8eGKY9OgFD/view?usp=sharing)) | 71.9 | 88.3 | 54.3 | 62.0 |
 
-### Caption-based image retrieval on Flickr30k
+#### Caption-based image retrieval on Flickr30k
 | Model | R1 | R5 | R10 | 
 | :---: | :---: | :---: | :---: |
 | Uniter ([GoogleDrive](https://drive.google.com/file/d/1hvoWMmHjSvxp3zqW10L7PoBQGbxM9MiF/view?usp=sharing)) |61.6 | 87.7 |92.8|
 | TDEN ([GoogleDrive](https://drive.google.com/file/d/1SqYscN6UCbifxhMJ-ScpiLgWepMSx7uq/view?usp=sharing)) | 62.0 | 86.6 | 92.4 |
 
-### Visual commonsense reasoning
+#### Visual commonsense reasoning
 | Model | Q -> A | QA -> R | Q -> AR | 
 | :---: | :---: | :---: | :---: |
 | Uniter ([GoogleDrive](https://drive.google.com/file/d/1Edx9uorwDgI5nZRf9M3XJDRIIoRa5TmP/view?usp=sharing)) | 73.0 | 75.3 | 55.4 |
