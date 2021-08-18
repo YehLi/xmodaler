@@ -38,7 +38,7 @@ python train_net.py --num-gpus 4 \
 A large set of baseline results and trained models are available [here](https://xmodaler.readthedocs.io/en/latest/notes/benchmarks.html).
 
 #### Image Captioning on MSCOCO (Cross-Entropy Loss)
-| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | ROUGE-L | CIDEr-D | SPICE |
+| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | <div style="width:65px">ROUGE-L</div> | <div style="width:55px">CIDEr-D</div> | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | LSTM-A3 ([GoogleDrive](https://drive.google.com/file/d/13fJVIK7ZgQnNMWzIbFicETDx6AgLg0NH/view?usp=sharing))| 75.3 | 59.0 | 45.4 | 35.0 | 26.7 | 55.6 | 107.7|  19.7 |
 | Attention ([GoogleDrive](https://drive.google.com/file/d/1aw8lPcDlf8C8UPsphwqbMAsq5-YSHIEf/view?usp=sharing)) | 76.4 | 60.6 | 46.9 | 36.1 | 27.6 | 56.6 | 113.0 | 20.4 |
@@ -50,7 +50,7 @@ A large set of baseline results and trained models are available [here](https://
 | TDEN ([GoogleDrive](https://drive.google.com/file/d/19alfPj-gIudoL5CHsS4VwhfnU-FhTXW3/view?usp=sharing)) | 75.5 | 59.4 | 45.7 | 34.9 | 28.7 | 56.7 | 116.3 | 22.0 |
 
 #### Image Captioning on MSCOCO (CIDEr Score Optimization)
-| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | ROUGE-L | CIDEr-D | SPICE |
+| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | <div style="width:65px">ROUGE-L</div> | <div style="width:55px">CIDEr-D</div> | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | LSTM-A3 ([GoogleDrive](https://drive.google.com/file/d/1KELHgYpBh5lsIiQ9yb9o127tea8_nbHo/view?usp=sharing))| 77.9 | 61.5| 46.7| 35.0| 27.1| 56.3| 117.0| 20.5 |
 | Attention ([GoogleDrive](https://drive.google.com/file/d/1m04qezTUJpdkBI3oIo_5Y9fIZG7_jZ2S/view?usp=sharing)) | 79.4| 63.5| 48.9| 37.1| 27.9| 57.6| 123.1| 21.3 |
@@ -62,7 +62,7 @@ A large set of baseline results and trained models are available [here](https://
 | TDEN ([GoogleDrive](https://drive.google.com/file/d/1GTbbwfbJHIu6uDmcLY-pedCiuWHyR7nK/view?usp=sharing)) | 81.3| 66.3| 52.0| 40.1| 29.6| 59.8| 132.6| 23.4 |
 
 #### Video Captioning on MSVD
-| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | ROUGE-L | CIDEr-D | SPICE |
+| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | <div style="width:65px">ROUGE-L</div> | <div style="width:55px">CIDEr-D</div> | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | MP-LSTM ([GoogleDrive](https://drive.google.com/file/d/1NDjaCyBntQZI3ehQ8QyUMTMrb1e6Dgsp/view?usp=sharing))| 77.0 | 65.6 | 56.9 | 48.1 | 32.4 | 68.1 | 73.1 | 4.8 |
 | TA ([GoogleDrive](https://drive.google.com/file/d/1SqvugATqHU3Le1jtTQKnL3FADJ7kbJK0/view?usp=sharing))| 80.4 | 68.9 | 60.1 | 51.0 | 33.5 | 70.0 | 77.2 | 4.9 | 
@@ -70,7 +70,7 @@ A large set of baseline results and trained models are available [here](https://
 | TDConvED ([GoogleDrive](https://drive.google.com/file/d/1Th9FJe8o_4bMULuoCKqDHP_4Faa0RabZ/view?usp=sharing))| 81.6 | 70.4 | 61.3 | 51.7 | 34.1 | 70.4 | 77.8 | 5.0 |
 
 #### Video Captioning on MSR-VTT
-| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | ROUGE-L | CIDEr-D | SPICE |
+| Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | <div style="width:65px">ROUGE-L</div> | <div style="width:55px">CIDEr-D</div> | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | MP-LSTM ([GoogleDrive](https://drive.google.com/file/d/1OBhtruTexuYV_MbiUL4obfUoNKZbEiUd/view?usp=sharing))| 73.6 | 60.8 | 49.0 | 38.6 | 26.0 | 58.3 | 41.1 | 5.6  |
 | TA ([GoogleDrive](https://drive.google.com/file/d/126nPL9lC6_Qa6_hMs32V1zSsJSDxpR9-/view?usp=sharing))| 74.3 | 61.8 | 50.3 | 39.9 | 26.4 | 59.4 | 42.9 | 5.8  | 
