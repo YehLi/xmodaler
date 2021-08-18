@@ -52,7 +52,7 @@ Video Captioning on MSR-VTT
 
    `MP-LSTM <https://drive.google.com/file/d/1OBhtruTexuYV_MbiUL4obfUoNKZbEiUd/view?usp=sharing>`_, 73.6, 60.8, 49.0, 38.6, 26.0, 58.3, 41.1, 5.6
    `TA <https://drive.google.com/file/d/126nPL9lC6_Qa6_hMs32V1zSsJSDxpR9-/view?usp=sharing>`_, 74.3, 61.8, 50.3, 39.9, 26.4, 59.4, 42.9, 5.8
-   `Transformer <https://drive.google.com/file/d/1u6mh13eKd93Y_OoSnxk_d9BI5yi_3Vd-/view?usp=sharing>`_, 75.4, 61.8, 48.9, 37.6, 26.4, 58.4, 42.6, 5.8
+   `Transformer <https://drive.google.com/file/d/1OEYQb4521fYlr40uQRn0sQb4eMsrtoNR/view?usp=sharing>`_, 75.4, 62.3, 50.0, 39.2, 26.5, 58.7, 44.0, 5.9
    `TDConvED <https://drive.google.com/file/d/1A3OGvjCpXUI6p1vy1qbNTVGLy5a0b3Dc/view?usp=sharing>`_, 76.4, 62.3, 49.9, 38.9, 26.3, 59.0, 40.7, 5.7
 
 Visual Question Answering

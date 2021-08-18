@@ -6,7 +6,7 @@ DATASETS:
 
 ###################################### DATALOADER ######################################
 DATALOADER:
-  TRAIN_BATCH_SIZE: 8
+  TRAIN_BATCH_SIZE: 256
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 4
   FEATS_FOLDER: '../open_source_dataset/msrvtt_dataset/features/resnet152'
