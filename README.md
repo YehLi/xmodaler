@@ -39,7 +39,7 @@ A large set of baseline results and trained models are available [here](https://
 
 <table>
   <tr>
-    <td colspan="4" align="center"><b>Image Captioning</b></td>
+    <td colspan="4" align="center"><font size=3><b>Image Captioning</b></font></td>
   </tr>
   <tr>
     <td>Attention</td>
@@ -84,7 +84,7 @@ A large set of baseline results and trained models are available [here](https://
     <td>2020</td>
   </tr>
   <tr>
-    <td colspan="4" align="center"><b>Video Captioning</b></td>
+    <td colspan="4" align="center"><font size=3><b>Video Captioning</b></font></td>
   </tr>
   <tr>
     <td>MP-LSTM</td>
@@ -111,7 +111,7 @@ A large set of baseline results and trained models are available [here](https://
     <td>2019</td>
   </tr>
   <tr>
-    <td colspan="4" align="center"><b>Vision-Language Pretraining</b></td>
+    <td colspan="4" align="center"><font size=3><b>Vision-Language Pretraining</b></font></td>
   </tr>
   <tr>
     <td>Uniter</td>
