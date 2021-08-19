@@ -1,5 +1,5 @@
 # X-modaler
-[X-modaler](https://xmodaler.readthedocs.io/en/latest/) is a versatile and high-performance codebase for cross-modal analytics. This codebase unifies comprehensive high-quality modules in state-of-the-art vision-language techniques, which are organized in a standardized and user-friendly fashion.
+[X-modaler](https://xmodaler.readthedocs.io/en/latest/) is a versatile and high-performance codebase for cross-modal analytics. This codebase unifies comprehensive high-quality modules in state-of-the-art vision-language techniques, which are organized in a standardized and user-friendly fashion. The original paper can be found [here](https://arxiv.org/pdf/2108.08217.pdf).
 
 <p align="center">
   <img src="images/task.jpg" width="800"/>
