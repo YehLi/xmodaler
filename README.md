@@ -37,6 +37,99 @@ python train_net.py --num-gpus 4 \
 ## Model Zoo and Baselines
 A large set of baseline results and trained models are available [here](https://xmodaler.readthedocs.io/en/latest/notes/benchmarks.html).
 
+<table>
+  <tr>
+    <td colspan="4", style="text-align: center; font-weight:bold">Image Captioning</td>
+  </tr>
+  <tr>
+    <td>Attention</td>
+    <td> Show, attend and tell: Neural image caption generation with visual attention </td>
+    <td>ICML</td>
+    <td>2015</td>
+  </tr>
+  <tr>
+    <td>LSTM-A3</td>
+    <td> Boosting image captioning with attributes </td>
+    <td>ICCV</td>
+    <td>2017</td>
+  </tr>
+  <tr>
+    <td>Up-Down</td>
+    <td> Bottom-up and top-down attention for image captioning and visual question answering </td>
+    <td>CVPR</td>
+    <td>2018</td>
+  </tr>
+  <tr>
+    <td>GCN-LSTM</td>
+    <td> Exploring visual relationship for image captioning </td>
+    <td>ECCV</td>
+    <td>2018</td>
+  </tr>
+  <tr>
+    <td>Transformer</td>
+    <td> Conceptual captions: A cleaned, hypernymed, image alt-text dataset for automatic image captioning </td>
+    <td>ACL</td>
+    <td>2018</td>
+  </tr>
+  <tr>
+    <td>Meshed-Memory</td>
+    <td> Meshed-Memory Transformer for Image Captioning </td>
+    <td>CVPR</td>
+    <td>2020</td>
+  </tr>
+  <tr>
+    <td>X-LAN</td>
+    <td> X-Linear Attention Networks for Image Captioning </td>
+    <td>CVPR</td>
+    <td>2020</td>
+  </tr>
+  <tr>
+    <td colspan="4", style="text-align: center; font-weight:bold">Video Captioning</td>
+  </tr>
+  <tr>
+    <td>MP-LSTM</td>
+    <td> Translating Videos to Natural Language Using Deep Recurrent Neural Networks </td>
+    <td>NAACL HLT</td>
+    <td>2015</td>
+  </tr>
+  <tr>
+    <td>TA</td>
+    <td> Describing Videos by Exploiting Temporal Structure </td>
+    <td>ICCV</td>
+    <td>2015</td>
+  </tr>
+  <tr>
+    <td>Transformer</td>
+    <td> Conceptual captions: A cleaned, hypernymed, image alt-text dataset for automatic image captioning </td>
+    <td>ACL</td>
+    <td>2018</td>
+  </tr>
+  <tr>
+    <td>TDConvED</td>
+    <td> Temporal Deformable Convolutional Encoder-Decoder Networks for Video Captioning </td>
+    <td>AAAI</td>
+    <td>2019</td>
+  </tr>
+  <tr>
+    <td colspan="4", style="text-align: center; font-weight:bold">Vision-Language Pretraining</td>
+  </tr>
+  <tr>
+    <td>Uniter</td>
+    <td> UNITER: UNiversal Image-TExt Representation Learning </td>
+    <td>ECCV</td>
+    <td>2020</td>
+  </tr>
+  <tr>
+    <td>TDEN</td>
+    <td> Scheduled Sampling in Vision-Language Pretraining
+with Decoupled Encoder-Decoder Network </td>
+    <td>AAAI</td>
+    <td>2021</td>
+  </tr>
+</table>
+
+
+
 #### Image Captioning on MSCOCO (Cross-Entropy Loss)
 | Name | Model | BLEU@1 | BLEU@2 | BLEU@3 | BLEU@4 | METEOR | ROUGE-L | CIDEr-D | SPICE |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
