@@ -180,7 +180,7 @@ def save_split_json_file(imgs, output_dir):
 
     for split, data in split_data.items():
         if split == "train":
-	    continue
+            continue
         json.dump(data, open(os.path.join(output_dir, "captions_{}_cocostyle.json".format(split)), "w") )
         
 
