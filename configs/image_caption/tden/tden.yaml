@@ -86,7 +86,7 @@ SOLVER:
   
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
-  NAME: 'WarmupLinearSchedule'
+  NAME: 'WarmupLinear'
   WARMUP: 2 # EPOCH(10) * WARMUP_PROPORTION(0.2) = 2
 
 ####################################### losses ####################################### 

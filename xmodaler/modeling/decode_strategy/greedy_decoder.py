@@ -32,7 +32,7 @@ class GreedyDecoder(DecodeStrategy):
 
         sents = Variable(torch.zeros((batch_size, self.max_seq_len), dtype=torch.long).cuda())
         logprobs = Variable(torch.zeros(batch_size, self.max_seq_len).cuda())
-        wt = Variable(torch.zeros(batch_size, dtype=torch.long).cuda())
+        wt = Variable(torch.zeros(batch_size, dtype=torch.long).cuda()) + self.bos_token_id
         unfinished = wt.eq(wt)
 
         for t in range(self.max_seq_len):

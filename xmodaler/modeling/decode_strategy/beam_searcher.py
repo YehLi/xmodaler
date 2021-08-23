@@ -40,7 +40,7 @@ class BeamSearcher(DecodeStrategy):
         selected_words = None
         seq_logprob = torch.zeros((batch_size, 1, 1)).cuda()
         seq_mask = torch.ones((batch_size, beam_size, 1)).cuda()
-        wt = Variable(torch.zeros(batch_size, dtype=torch.long).cuda())
+        wt = Variable(torch.zeros(batch_size, dtype=torch.long).cuda()) + self.bos_token_id
 
         inputs = batched_inputs
         masks = model.get_extended_attention_mask(batched_inputs)
