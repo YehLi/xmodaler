@@ -2,7 +2,7 @@
 
 A dataset can be used by wrapping it into a torch Dataset. This document explains how to setup the builtin datasets so they can be used by X-modaler. The annotations for builtin datasets can be downloaded [here](https://drive.google.com/drive/folders/1vx9n7tAIt8su0y_3tsPJGvMPBMm8JLCZ).
 
-X-modaler has builtin support for a few datasets (e.g., MSCOCO or MSVD). The corresponding dataset wrappers are provided in `xmodaler/datasets`:
+X-modaler has builtin supports for a few datasets (e.g., MSCOCO or MSVD). The corresponding dataset wrappers are provided in `xmodaler/datasets`:
 ```
 xmodaler/datasets/
   images/
@@ -23,8 +23,8 @@ mscoco_dataset/
   captions_val5k.json
   captions_test5k.json
   # image files that are mentioned in the corresponding json
-features/
-  up_down/
+  features/
+    up_down/
       *.npz
 ```
 
@@ -39,9 +39,9 @@ msvd_dataset/
   captions_val.json
   captions_test.json
   # videos files that are mentioned in the corresponding json
-features/
-  resnet152/
-    *.npy
+  features/
+    resnet152/
+      *.npy
 ```
 
 ## Expected dataset structure for [MSR-VTT](http://ms-multimedia-challenge.com/2017/dataset):
@@ -55,10 +55,10 @@ msrvtt_dataset/
   captions_val.json
   captions_test.json
   # videos files that are mentioned in the corresponding json
-msrvtt_torch/
-  feature/
-    resnet152/
-      *.npy
+  msrvtt_torch/
+    feature/
+	  resnet152/
+	    *.npy
 ```
 
 When the dataset wrapper and data files are ready, you need to specify the corresponding paths to these data files in the config file. For example, 

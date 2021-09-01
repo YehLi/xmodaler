@@ -3,7 +3,7 @@
 If you are trying to do something completely new, you may wish to implement a model entirely from scratch. However, in many situations you may be interested in modifying or extending some components of an existing model. Therefore, we also provide mechanisms that let users override the behavior of certain internal components of standard models.
 
 ## Register New Components
-For common concepts that users often want to customize, such as “encoder/decoder”, “layers”, we provide a registration mechanism for users to inject custom implementation that will be immediately available to use in config files.
+For common concepts that users often want to customize, such as “encoder/decoder”, “layers”, we provide a registration mechanism for users to inject custom implementations that will be immediately available to use in config files.
 
 For example, to add a new encoder to `xmodaler/modeling/encoder`, import this code in your code:
 ```

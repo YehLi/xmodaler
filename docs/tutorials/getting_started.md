@@ -4,7 +4,7 @@ This document provides a brief intro of the usage of builtin command-line tools 
 
 ### Training & Evaluation in Command Line
 
-We provide a script in "train_net.py", that is made to train all the configs provided in X-modaler. You may want to use it as a reference to write your own training script.
+We provide a script in "train_net.py", which is made to train all the configs provided in X-modaler. You may want to use it as a reference to write your own training script.
 
 To train a model(e.g., UpDown) with "train_net.py", first setup the corresponding datasets following [datasets](using_builtin_datasets.md), then run:
 ```

@@ -7,6 +7,9 @@
 * pytorch_transformers
 * jsonlines
 * pycocotools
+* omegaconf
+* cloudpickle
+* tensorboard
 
 ## Download X-modaler
 After satisfying all the requirements, run:
