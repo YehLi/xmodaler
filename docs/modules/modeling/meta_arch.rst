@@ -23,7 +23,31 @@ xmodaler.modeling.meta_arch
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: xmodaler.modeling.meta_arch.BiTransformerEncoderDecoder
+.. autoclass:: xmodaler.modeling.meta_arch.TDENBiTransformer
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.meta_arch.TDENPretrain
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.meta_arch.TDENCaptioner
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.meta_arch.UniterPretrain
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.meta_arch.UniterForMMUnderstanding
    :members:
    :special-members: __init__
    :undoc-members:

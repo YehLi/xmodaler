@@ -106,3 +106,45 @@ xmodaler.modeling.layers
    :special-members: __init__
    :undoc-members:
    :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.layers.lowrank_bilinear_layers.LowRankBilinearAttention
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: xmodaler.modeling.layers.lowrank_bilinear_layers.LowRankBilinearLayer
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.layers.scattention.SCAttention
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.layers.tdconved_layers.TemporalDeformableLayer
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.layers.tdconved_layers.TemporalDeformableBlock
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.layers.tdconved_layers.ShiftedConvLayer
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: xmodaler.modeling.layers.tdconved_layers.SoftAttention
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:

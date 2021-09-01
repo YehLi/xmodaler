@@ -39,3 +39,31 @@ xmodaler.modeling.decoder
    :private-members:
    :undoc-members:
    :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.decoder.MeshedDecoder
+   :members:
+   :special-members: __init__
+   :private-members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.decoder.XLANDecoder
+   :members:
+   :special-members: __init__
+   :private-members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.decoder.TDConvEDDecoder
+   :members:
+   :special-members: __init__
+   :private-members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: xmodaler.modeling.decoder.AttributeDecoder
+   :members:
+   :special-members: __init__
+   :private-members:
+   :undoc-members:
+   :show-inheritance:
