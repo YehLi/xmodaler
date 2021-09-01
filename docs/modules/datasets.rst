@@ -16,7 +16,17 @@ xmodaler.datasets
     :undoc-members:
     :show-inheritance:
 	
+.. autoclass:: xmodaler.datasets.MSCoCoBertDataset
+    :members: from_config, load_data, __init__, __call__
+    :undoc-members:
+    :show-inheritance:
+	
 .. autoclass:: xmodaler.datasets.ConceptualCaptionsDataset
+    :members: from_config, load_data, __init__, __call__
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: xmodaler.datasets.ConceptualCaptionsDatasetForSingleStream
     :members: from_config, load_data, __init__, __call__
     :undoc-members:
     :show-inheritance:
@@ -26,7 +36,22 @@ xmodaler.datasets
     :undoc-members:
     :show-inheritance:
 	
+.. autoclass:: xmodaler.datasets.VCRDataset
+    :members: from_config, load_data, __init__, __call__
+    :undoc-members:
+    :show-inheritance:
+	
 .. autoclass:: xmodaler.datasets.Flickr30kDataset
+    :members: from_config, load_data, __init__, __call__
+    :undoc-members:
+    :show-inheritance:
+	
+.. autoclass:: xmodaler.datasets.Flickr30kDatasetForSingleStream
+    :members: from_config, load_data, __init__, __call__
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: xmodaler.datasets.Flickr30kDatasetForSingleStreamVal
     :members: from_config, load_data, __init__, __call__
     :undoc-members:
     :show-inheritance:

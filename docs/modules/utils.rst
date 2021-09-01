@@ -12,6 +12,10 @@ xmodaler.utils
 
 .. autofunction:: xmodaler.utils.comm.gather
 
+.. autofunction:: xmodaler.utils.comm.all_gather_list
+
+. autofunction:: xmodaler.utils.comm.any_broadcast
+
 .. autofunction:: xmodaler.utils.comm.get_local_rank
 
 .. autofunction:: xmodaler.utils.comm.get_local_size
@@ -31,6 +35,10 @@ xmodaler.utils
 .. autofunction:: xmodaler.utils.comm.unwrap_model
 
 .. autofunction:: xmodaler.utils.env.seed_all_rng
+
+.. autofunction:: xmodaler.utils.env.setup_environment
+
+.. autofunction:: xmodaler.utils.env.setup_custom_environment
 
 .. autofunction:: xmodaler.utils.events.get_event_storage
 
@@ -59,6 +67,12 @@ xmodaler.utils
    :show-inheritance:
 
 .. autoclass:: xmodaler.utils.file_io.PathHandler 
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: xmodaler.utils.file_io.PathManager 
    :members:
    :special-members: __init__
    :undoc-members:

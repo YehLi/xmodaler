@@ -13,6 +13,12 @@ xmodaler.losses
    :undoc-members:
    :show-inheritance:
    
+.. autoclass:: xmodaler.losses.Triplet
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:
+   
 .. autoclass:: xmodaler.losses.CrossEntropy
    :members:
    :special-members: __init__

@@ -44,3 +44,9 @@ xmodaler.optim
    :special-members: __init__
    :undoc-members:
    :show-inheritance:
+   
+.. autoclass:: xmodaler.optim.BertAdam
+   :members:
+   :special-members: __init__
+   :undoc-members:
+   :show-inheritance:

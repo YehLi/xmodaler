@@ -18,6 +18,14 @@ xmodaler.evaluation
    :undoc-members:
    :show-inheritance:
    
+.. autoclass:: xmodaler.evaluation.VCREvaler
+   :members:
+   :special-members: __init__
+   :inherited-members:
+   :private-members:
+   :undoc-members:
+   :show-inheritance:
+   
 .. autoclass:: xmodaler.evaluation.RetrievalEvaler
    :members:
    :special-members: __init__

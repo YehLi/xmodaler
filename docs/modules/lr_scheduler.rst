@@ -19,7 +19,7 @@ xmodaler.lr_scheduler
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: xmodaler.lr_scheduler.WarmupConstantSchedule
+.. autoclass:: xmodaler.lr_scheduler.WarmupConstant
    :members:
    :special-members: __init__
    :inherited-members:
@@ -27,7 +27,7 @@ xmodaler.lr_scheduler
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: xmodaler.lr_scheduler.WarmupLinearSchedule
+.. autoclass:: xmodaler.lr_scheduler.WarmupLinear
    :members:
    :special-members: __init__
    :inherited-members:
@@ -35,7 +35,7 @@ xmodaler.lr_scheduler
    :undoc-members:
    :show-inheritance:
    
-.. autoclass:: xmodaler.lr_scheduler.WarmupCosineSchedule
+.. autoclass:: xmodaler.lr_scheduler.WarmupCosine
    :members:
    :special-members: __init__
    :inherited-members:
@@ -43,7 +43,7 @@ xmodaler.lr_scheduler
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: xmodaler.lr_scheduler.WarmupCosineWithHardRestartsSchedule
+.. autoclass:: xmodaler.lr_scheduler.WarmupCosineWithHardRestarts
    :members:
    :special-members: __init__
    :inherited-members:
