@@ -19,3 +19,4 @@ torchvision
 pycocoevalcap
 omegaconf
 cloudpickle
+json_lines
