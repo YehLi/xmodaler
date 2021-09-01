@@ -18,3 +18,4 @@ pycocotools
 torchvision
 pycocoevalcap
 omegaconf
+cloudpickle
