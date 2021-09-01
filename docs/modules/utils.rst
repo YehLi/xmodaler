@@ -12,7 +12,7 @@ xmodaler.utils
 
 .. autofunction:: xmodaler.utils.comm.gather
 
-.. autofunction:: xmodaler.utils.comm.all_gather_list
+.. autofunction:: xmodaler.utils.distributed.all_gather_list
 
 . autofunction:: xmodaler.utils.comm.any_broadcast
 
