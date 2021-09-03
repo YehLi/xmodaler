@@ -402,11 +402,13 @@ class DefaultTrainer(TrainerBase):
     def state_dict(self):
         ret = super().state_dict()
         ret["optimizer"] = self.optimizer.state_dict()
+        ret["scheduler"] = self.scheduler.state_dict()
         return ret
 
     def load_state_dict(self, state_dict):
         super().load_state_dict(state_dict)
         self.optimizer.load_state_dict(state_dict["optimizer"])
+        self.scheduler.load_state_dict(state_dict["scheduler"])
 
     def _write_metrics(
         self,
