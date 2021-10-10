@@ -1,7 +1,7 @@
 # Copyright 2021 JD.com, Inc., JD AI
 """
-@author: Yehao Li
-@contact: yehaoli.sysu@gmail.com
+@author: Yehao Li, Jianjie Luo
+@contact: yehaoli.sysu@gmail.com, jianjieluo.sysu@gmail.com
 """
 import torch
 from torch import nn
@@ -30,7 +30,7 @@ class GreedyDecoder(DecodeStrategy):
         inputs.update(encoder_out_v)
         inputs = model.decoder.preprocess(inputs)
 
-        sents = Variable(torch.zeros((batch_size, self.max_seq_len), dtype=torch.long).cuda())
+        sents = Variable(torch.zeros((batch_size, self.max_seq_len), dtype=torch.long).cuda()) + self.eos_token_id
         logprobs = Variable(torch.zeros(batch_size, self.max_seq_len).cuda())
         wt = Variable(torch.zeros(batch_size, dtype=torch.long).cuda()) + self.bos_token_id
         unfinished = wt.eq(wt)
@@ -58,8 +58,8 @@ class GreedyDecoder(DecodeStrategy):
                 logP_t, wt = torch.max(logprobs_t, 1)
 
             wt = wt.view(-1).long()
-            unfinished = unfinished * (wt > 0)
-            wt = wt * unfinished.type_as(wt)
+            unfinished = unfinished * (wt != self.eos_token_id)
+            wt = unfinished.type_as(wt) * wt + (1 - unfinished.type_as(wt)) * self.eos_token_id
             sents[:,t] = wt
             logprobs[:,t] = logP_t.view(-1)
 

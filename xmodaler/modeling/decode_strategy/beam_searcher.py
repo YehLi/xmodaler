@@ -58,8 +58,8 @@ class BeamSearcher(DecodeStrategy):
             cur_beam_size = 1 if t == 0 else beam_size
 
             inputs.update({ kfg.G_TOKENS_IDS: wt, kfg.TIME_STEP: t })
-            vt_out = model.token_embed(inputs)
-            inputs.update(vt_out)
+            te_out = model.token_embed(inputs)
+            inputs.update(te_out)
 
             encoder_out_t = model.encoder(inputs, mode='t')
             inputs.update(encoder_out_t)
@@ -74,7 +74,7 @@ class BeamSearcher(DecodeStrategy):
 
             # Mask sequence if it reaches EOS
             if t > 0:
-                mask = (selected_words.view(batch_size, cur_beam_size) != 0).float().unsqueeze(-1)
+                mask = (selected_words.view(batch_size, cur_beam_size) != self.eos_token_id).float().unsqueeze(-1)
                 seq_mask = seq_mask * mask
                 word_logprob = word_logprob * seq_mask.expand_as(word_logprob)
                 old_seq_logprob = seq_logprob.expand_as(candidate_logprob).contiguous()

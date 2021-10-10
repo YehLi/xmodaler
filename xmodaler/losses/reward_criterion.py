@@ -27,7 +27,7 @@ class RewardCriterion(nn.Module):
         logP = outputs_dict[kfg.G_LOGP]
         rewards = outputs_dict[kfg.REWARDS]
 
-        mask = (seq > 0) & (seq != self.eos_id)
+        mask = (torch.cumsum((seq == self.eos_id), dim=-1) == 0)
         mask = torch.cat([mask.new(mask.size(0), 1).fill_(1), mask[:, :-1]], 1)
         rewards = rewards.view(-1, 1).expand_as(logP)
         logP = torch.masked_select(logP, mask)
