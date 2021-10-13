@@ -1,5 +1,5 @@
 # X-modaler
-[X-modaler](https://xmodaler.readthedocs.io/en/latest/) is a versatile and high-performance codebase for cross-modal analytics. This codebase unifies comprehensive high-quality modules in state-of-the-art vision-language techniques, which are organized in a standardized and user-friendly fashion. It provides the easy implementations of state-of-the-art models for image captioning, video captioning, and vision-language pre-training, in a standardized and user-friendly manner. Moreover, X-modaler can be simply extended to support other vision-language tasks, e.g., visual question answering, visual commonsense reasoning, and cross-modal retrieval.
+[X-modaler](https://xmodaler.readthedocs.io/en/latest/) is a versatile and high-performance codebase for cross-modal analytics (e.g., image captioning, video captioning, vision-language pre-training, visual question answering, visual commonsense reasoning, and cross-modal retrieval). This codebase unifies comprehensive high-quality modules in state-of-the-art vision-language techniques, which are organized in a standardized and user-friendly fashion.
 
 The original paper can be found [here](https://arxiv.org/pdf/2108.08217.pdf).
 
