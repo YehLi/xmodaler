@@ -101,6 +101,6 @@ class VCRTrainer(DefaultTrainer):
             self.optimizer.zero_grad()
             losses.backward()
 
-            self._write_metrics(loss_dict, data_time)
+            self._write_metrics(losses_dict, data_time)
             self.optimizer.step()
         

@@ -60,6 +60,6 @@ class RLTrainer(DefaultTrainer):
         losses.backward()
 
         bs_rewards.pop(kfg.REWARDS)
-        loss_dict.update(bs_rewards)
-        self._write_metrics(loss_dict, data_time)
+        losses_dict.update(bs_rewards)
+        self._write_metrics(losses_dict, data_time)
         self.optimizer.step()

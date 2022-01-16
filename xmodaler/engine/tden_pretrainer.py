@@ -62,7 +62,7 @@ class TDENPretrainer(DefaultTrainer):
         self.optimizer.zero_grad()
         losses.backward()
 
-        self._write_metrics(loss_dict, data_time)
+        self._write_metrics(losses_dict, data_time)
 
         """
         If you need gradient clipping/scaling or other processing, you can
@@ -102,7 +102,7 @@ class TDENPretrainer(DefaultTrainer):
         self.optimizer.zero_grad()
         losses.backward()
 
-        self._write_metrics(loss_dict, data_time)
+        self._write_metrics(losses_dict, data_time)
 
         """
         If you need gradient clipping/scaling or other processing, you can
