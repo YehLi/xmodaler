@@ -14,7 +14,7 @@ from .images.mscoco import MSCoCoDataset, MSCoCoSampleByTxtDataset
 from .images.mscoco_bert import MSCoCoBertDataset
 from .images.mscoco_cosnet import MSCoCoCOSNetDataset
 from .images.mscoco_feat import MSCoCoFeatDataset
-from .images.mscoco_raw import MSCoCoRawDataset
+#from .images.mscoco_raw import MSCoCoRawDataset
 from .images.conceptual_captions import ConceptualCaptionsDataset, ConceptualCaptionsDatasetForSingleStream
 from .images.vqa import VQADataset
 from .images.vcr import VCRDataset
