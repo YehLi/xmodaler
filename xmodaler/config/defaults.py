@@ -57,6 +57,12 @@ _C.DATALOADER.INF_BATCH_SIZE = 200 # for single stream retrieval only, chunk siz
 
 _C.DATALOADER.USE_GLOBAL_V = True
 
+_C.DATALOADER.SAMPLE_PROB = 0.2
+
+_C.DATALOADER.SAMPLE_IDS = []
+
+_C.DATALOADER.FILE_PATHS = []
+
 # -----------------------------------------------------------------------------
 # Engine
 # -----------------------------------------------------------------------------
@@ -108,6 +114,14 @@ _C.MODEL.WEIGHTS = ''
 
 _C.MODEL.ITM_NEG_PROB = 0.5
 
+_C.MODEL.USE_EMA = False
+
+_C.MODEL.EMA_DECAY = 0.9999
+
+_C.MODEL.ENSEMBLE_WEIGHTS = ['']
+
+_C.MODEL.MODEL_WEIGHTS = [1.0, 1.0]
+
 # ----------------------------------------------------------------------------
 # Token embedding
 # ----------------------------------------------------------------------------
@@ -141,6 +155,8 @@ _C.MODEL.VISUAL_EMBED.NAME = ''
 _C.MODEL.VISUAL_EMBED.IN_DIM = 2048
 
 _C.MODEL.VISUAL_EMBED.OUT_DIM = 1024
+
+_C.MODEL.VISUAL_EMBED.G_IN_DIM = 512
 
 _C.MODEL.VISUAL_EMBED.ACTIVATION = 'none'
 

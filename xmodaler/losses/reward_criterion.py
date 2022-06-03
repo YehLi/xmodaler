@@ -22,6 +22,10 @@ class RewardCriterion(nn.Module):
             'eos_id': cfg.SCORER.EOS_ID
         }
 
+    @classmethod
+    def add_config(cls, cfg):
+        pass
+
     def forward(self, outputs_dict):
         seq = outputs_dict[kfg.G_SENTS_IDS]
         logP = outputs_dict[kfg.G_LOGP]

@@ -181,4 +181,7 @@ def build_optimizer(cfg: CfgNode, model: torch.nn.Module) -> torch.optim.Optimiz
 
     optimizer = SOLVER_REGISTRY.get(cfg.SOLVER.NAME)
     return maybe_add_gradient_clipping(cfg, optimizer)(cfg, params)
-    
+
+def build_optimizer_params(cfg: CfgNode, params) -> torch.optim.Optimizer:
+    optimizer = SOLVER_REGISTRY.get(cfg.SOLVER.NAME)
+    return maybe_add_gradient_clipping(cfg, optimizer)(cfg, params)

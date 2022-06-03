@@ -41,6 +41,7 @@ from xmodaler.utils.env import TORCH_VERSION, seed_all_rng
 from xmodaler.utils.events import CommonMetricPrinter, JSONWriter, TensorboardXWriter, get_event_storage
 from xmodaler.utils.file_io import PathManager
 from xmodaler.utils.logger import setup_logger
+from xmodaler.engine.ema import ModelEma
 
 from . import hooks
 from .train_loop import TrainerBase
@@ -276,6 +277,10 @@ class DefaultTrainer(TrainerBase):
             )
         self.model = model
         self.model.train()
+        if cfg.MODEL.USE_EMA:
+            self.ema = ModelEma(model, cfg.MODEL.EMA_DECAY)
+        else:
+            self.ema = None
 
         self.checkpointer = XmodalerCheckpointer(
             # Assume you want to save checkpoints together with logs/statistics
@@ -291,6 +296,8 @@ class DefaultTrainer(TrainerBase):
 
     def resume_or_load(self, resume=True):
         self.checkpointer.resume_or_load(self.cfg.MODEL.WEIGHTS, resume=resume)
+        if self.cfg.MODEL.USE_EMA:
+            self.ema = ModelEma(self.model, self.cfg.MODEL.EMA_DECAY)
         if resume and self.checkpointer.has_checkpoint():
             # The checkpoint stores the training iteration that just finished, thus we start
             # at the next iteration
@@ -324,8 +331,22 @@ class DefaultTrainer(TrainerBase):
             eval_results = self.test(self.cfg, self.model, self.test_data_loader, self.test_evaluator, epoch)
             return eval_results
 
+        def test_ema_and_save_results(epoch):
+            logger = logging.getLogger(__name__)
+            logger.info("Test EMA")
+
+            eval_results = self.test(self.cfg, self.ema.module, self.test_data_loader, self.test_evaluator, epoch)
+            return eval_results
+
         def val_and_save_results(epoch):
             eval_results = self.test(self.cfg, self.model, self.val_data_loader, self.val_evaluator, epoch)
+            return eval_results
+
+        def val_ema_and_save_results(epoch):
+            logger = logging.getLogger(__name__)
+            logger.info("VAL EMA")
+
+            eval_results = self.test(self.cfg, self.ema.module, self.val_data_loader, self.val_evaluator, epoch)
             return eval_results
 
         # Do evaluation after checkpointer, because then if it fails,
@@ -340,6 +361,16 @@ class DefaultTrainer(TrainerBase):
                     stage = 'val',
                     multi_gpu_eval=(cfg.ENGINE.NAME.startswith("SingleStreamRetrieval"))
                 ))
+            if self.ema is not None:
+                ret.append(
+                    hooks.EvalHook(
+                        eval_period = cfg.SOLVER.EVAL_PERIOD, 
+                        eval_start = cfg.INFERENCE.VAL_EVAL_START,
+                        eval_function = val_ema_and_save_results, 
+                        iters_per_epoch = self.iters_per_epoch,
+                        stage = 'val',
+                        multi_gpu_eval=(cfg.ENGINE.NAME.startswith("SingleStreamRetrieval"))
+                    ))
 
         if self.test_data_loader is not None:
             ret.append(
@@ -351,6 +382,16 @@ class DefaultTrainer(TrainerBase):
                     stage = 'test',
                     multi_gpu_eval=(cfg.ENGINE.NAME.startswith("SingleStreamRetrieval"))
                 ))
+            if self.ema is not None:
+                ret.append(
+                    hooks.EvalHook(
+                        eval_period = cfg.SOLVER.EVAL_PERIOD, 
+                        eval_start = cfg.INFERENCE.TEST_EVAL_START,
+                        eval_function = test_ema_and_save_results, 
+                        iters_per_epoch = self.iters_per_epoch,
+                        stage = 'test',
+                        multi_gpu_eval=(cfg.ENGINE.NAME.startswith("SingleStreamRetrieval"))
+                    ))
 
         if comm.is_main_process():
             # Here the default print/log frequency of each writer is used.
@@ -403,12 +444,16 @@ class DefaultTrainer(TrainerBase):
         ret = super().state_dict()
         ret["optimizer"] = self.optimizer.state_dict()
         ret["scheduler"] = self.scheduler.state_dict()
+        if self.ema is not None:
+            ret["ema"] = self.ema.state_dict()
         return ret
 
     def load_state_dict(self, state_dict):
         super().load_state_dict(state_dict)
-        self.optimizer.load_state_dict(state_dict["optimizer"])
-        self.scheduler.load_state_dict(state_dict["scheduler"])
+        if "optimizer" in state_dict:
+            self.optimizer.load_state_dict(state_dict["optimizer"])
+        if "scheduler" in state_dict:
+            self.scheduler.load_state_dict(state_dict["scheduler"])
 
     def _write_metrics(
         self,
@@ -495,6 +540,8 @@ class DefaultTrainer(TrainerBase):
         try:
             data = next(self._train_data_loader_iter)
         except StopIteration:
+            if comm.get_world_size() > 1:
+                self.train_data_loader.sampler.set_epoch(self.iter//self.iters_per_epoch)
             self._train_data_loader_iter = iter(self.train_data_loader)
             data = next(self._train_data_loader_iter)
 
@@ -511,7 +558,9 @@ class DefaultTrainer(TrainerBase):
         for loss in self.losses:
             loss_dict = loss(outputs_dict)
             losses_dict.update(loss_dict)
-        losses = sum(losses_dict.values())
+
+        losses = [losses_dict[k] for k in losses_dict if 'acc' not in k]
+        losses = sum(losses)
 
         """
         If you need to accumulate gradients or do something similar, you can
@@ -528,3 +577,5 @@ class DefaultTrainer(TrainerBase):
         suboptimal as explained in https://arxiv.org/abs/2006.15704 Sec 3.2.4
         """
         self.optimizer.step()
+        if self.ema is not None:
+            self.ema.update(self.model)

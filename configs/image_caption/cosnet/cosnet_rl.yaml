@@ -1,0 +1,44 @@
+_BASE_: "cosnet.yaml"
+
+###################################### DATALOADER ######################################
+DATALOADER:
+  TRAIN_BATCH_SIZE: 16
+
+######################################### Engine #########################################
+ENGINE:
+  NAME: 'RLMeanTrainer'
+
+######################################### MODEL #########################################
+MODEL:
+  WEIGHTS: '../models/cosnet/xe/cosnet_xe.pth'
+  USE_EMA: True
+  EMA_DECAY: 0.9999
+
+  BERT:
+    HIDDEN_DROPOUT_PROB: 0.1
+    INTERMEDIATE_DROP: 0.1
+    FFN_DROPOUT_PROB: 0.1
+    ATTENTION_PROBS_DROPOUT_PROB: 0.1
+    LAYER_DROP: 0.0
+
+  COSNET:
+    FILTER_WEIGHT: 0.1
+    RECONSTRUCT_WEIGHT: 0.01
+
+####################################### losses ####################################### 
+LOSSES:
+  NAMES: ['LabelSmoothing', 'SemComphderLoss']
+  LABELSMOOTHING: 0.1
+
+####################################### Optimizer #######################################
+SOLVER:
+  NAME: 'Adam'
+  EPOCH: 60
+  BASE_LR: 0.00001
+
+####################################### lr scheduler ####################################### 
+LR_SCHEDULER:
+  #NAME: 'FixLR'
+  NAME: 'StepLR'
+  STEP_SIZE: 15
+  GAMMA: 0.8

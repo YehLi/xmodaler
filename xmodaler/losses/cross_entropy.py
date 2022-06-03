@@ -20,6 +20,10 @@ class CrossEntropy(nn.Module):
     def from_config(cls, cfg):
         return {}
 
+    @classmethod
+    def add_config(cls, cfg):
+        pass
+
     def forward(self, outputs_dict):
         ret  = {}
         if kfg.G_LOGITS in outputs_dict:

@@ -13,5 +13,6 @@ from .decouple_bert_decoder import DecoupleBertDecoder
 from .lowrank_bilinear_decoder import XLANDecoder
 from .tdconved_decoder import TDConvEDDecoder
 from .attribute_decoder import AttributeDecoder
+from .cosnet_decoder import COSNetDecoder
 
 __all__ = list(globals().keys())

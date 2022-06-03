@@ -29,6 +29,10 @@ class LabelSmoothing(nn.Module):
             "label_smoothing": cfg.LOSSES.LABELSMOOTHING
         }
 
+    @classmethod
+    def add_config(cls, cfg):
+        pass
+
     def Forward(self, logits, targets):
         logP = F.log_softmax(logits.view(-1, logits.shape[-1]), dim=-1) 
         targets = targets.view(-1)
@@ -51,11 +55,11 @@ class LabelSmoothing(nn.Module):
             logits = outputs_dict[kfg.G_LOGITS]
             targets = outputs_dict[kfg.G_TARGET_IDS]
             loss = self.Forward(logits, targets)
-            ret.update({ 'LabelSmoothing(G)': loss })
+            ret.update({ 'LabelSmoothing(G) loss': loss })
 
         if kfg.U_LOGITS in outputs_dict:
             logits = outputs_dict[kfg.U_LOGITS]
             targets = outputs_dict[kfg.U_TARGET_IDS]
             loss = self.Forward(logits, targets)
-            ret.update({ 'LabelSmoothing(U)': loss })
+            ret.update({ 'LabelSmoothing(U) loss': loss })
         return ret

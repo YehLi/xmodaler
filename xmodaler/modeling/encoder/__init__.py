@@ -8,10 +8,12 @@ from .encoder import Encoder
 from .updown_encoder import UpDownEncoder
 from .gcn_encoder import GCNEncoder
 from .transformer_encoder import TransformerEncoder
+from .gtransformer_encoder import GTransformerEncoder
 from .memory_augmented_encoder import MemoryAugmentedEncoder
 from .two_stream_bert_encoder import TwoStreamBertEncoder
 from .single_stream_bert_encoder import SingleStreamBertEncoder
 from .lowrank_bilinear_encoder import LowRankBilinearEncoder
 from .tdconved_encoder import TDConvEDEncoder
+from .cosnet_encoder import COSNetEncoder
 
 __all__ = list(globals().keys())

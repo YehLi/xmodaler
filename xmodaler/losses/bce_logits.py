@@ -20,6 +20,10 @@ class BCEWithLogits(nn.Module):
     def from_config(cls, cfg):
         return {}
 
+    @classmethod
+    def add_config(cls, cfg):
+        pass
+
     def forward(self, outputs_dict):
         ret  = {}
         targets = outputs_dict[kfg.U_TARGET_IDS]

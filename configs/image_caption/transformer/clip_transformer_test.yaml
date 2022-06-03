@@ -1,21 +1,23 @@
-OUTPUT_DIR: './cosnet_output'
+# python3 train_net.py --num-gpus 1 --config-file ./configs/image_caption/transformer/clip_transformer_test.yaml --eval-only
+
+OUTPUT_DIR: './output'
 
 ####################################### DATASETS #######################################
 DATASETS:
-  TRAIN: 'MSCoCoCOSNetDataset'
-  VAL: 'MSCoCoCOSNetDataset'
-  TEST: 'MSCoCoCOSNetDataset'
+  TRAIN: 'MSCoCoFeatDataset'
+  TEST: 'MSCoCoFeatDataset'
 
 ###################################### DATALOADER ######################################
 DATALOADER:
-  TRAIN_BATCH_SIZE: 8
-  TEST_BATCH_SIZE: 32
-  NUM_WORKERS: 6
-  FEATS_FOLDER: '../open_source_dataset/mscoco_dataset/features/CLIP_RN101_49'
-  ANNO_FOLDER:  '../open_source_dataset/mscoco_dataset'
-  SEQ_PER_SAMPLE:  5
+  TRAIN_BATCH_SIZE: 1
+  TEST_BATCH_SIZE: 1
+  NUM_WORKERS: 0
   MAX_FEAT_NUM: 50
-  SAMPLE_PROB: 0.2
+  SAMPLE_IDS: ['334521', '458103']
+  FILE_PATHS: [
+    '../open_source_dataset/mscoco_dataset/features/CLIP_RN101_49/334521.npz',
+    '../open_source_dataset/mscoco_dataset/features/CLIP_RN101_49/458103.npz',
+  ]
 
 ######################################### Engine #########################################
 ENGINE:
@@ -32,15 +34,14 @@ SCHEDULED_SAMPLING:
 MODEL:
   VOCAB_SIZE: 10200 # include <BOS>/<EOS>
   META_ARCHITECTURE: 'TransformerEncoderDecoder'
-  ENCODER: 'COSNetEncoder'
+  ENCODER: 'GTransformerEncoder'
   ENCODER_DIM: 512
-  DECODER: 'COSNetDecoder'
+  DECODER: 'TransformerDecoder'
   DECODER_DIM: 512
   PREDICTOR: 'BasePredictor'
   PRED_DROPOUT: 0.5
   MAX_SEQ_LEN: 20
-  USE_EMA: False
-  EMA_DECAY: 0.9999
+  WEIGHTS: '../models/clip_transformer/xe/clip_transformer_xe.pth'
 
 #################################### Token embedding ####################################
   TOKEN_EMBED:
@@ -64,7 +65,7 @@ MODEL:
 ####################################### BERT ############################################
   BERT:
     HIDDEN_SIZE: 512
-    HIDDEN_DROPOUT_PROB: 0.1
+    HIDDEN_DROPOUT_PROB: 0.2
     HIDDEN_ACT: "relu"
     NUM_ATTENTION_HEADS: 8
     INTERMEDIATE_SIZE: 2048
@@ -74,15 +75,7 @@ MODEL:
     NUM_HIDDEN_LAYERS: 6
     NUM_GENERATION_LAYERS: 6
     LAYER_DROP: 0.0
-
-  COSNET:
-    NUM_CLASSES: 906
-    NUM_SEMCOMPHDER_LAYERS: 3
-    SLOT_SIZE: 6
-    MAX_POS: 26
-    FILTER_WEIGHT: 1.0
-    RECONSTRUCT_WEIGHT: 0.1
-    
+ 
 ####################################### Optimizer #######################################
 SOLVER:
   NAME: 'Adam'
@@ -103,18 +96,18 @@ SOLVER:
   GRAD_CLIP_TYPE: 'value'
   NORM_TYPE: 2.0
   WRITE_PERIOD: 20
+
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
   NAME: 'NoamLR'
   MODEL_SIZE: 512
   FACTOR: 1.0
-  WARMUP: 20000
+  WARMUP: 10000
 
 ####################################### losses ####################################### 
 LOSSES:
-  NAMES: ['LabelSmoothing', 'SemComphderLoss']
+  NAMES: ['LabelSmoothing']
   LABELSMOOTHING: 0.1
-
 ####################################### scorer ####################################### 
 SCORER:
   NAME: 'BaseScorer'
@@ -131,7 +124,7 @@ DECODE_STRATEGY:
 
 ####################################### evaluation ####################################### 
 INFERENCE:
-  NAME: 'COCOEvaler'
+  NAME: 'COCOPrinter'
   VOCAB: '../open_source_dataset/mscoco_dataset/vocabulary.txt'
   ID_KEY: 'image_id'
   VALUE: 'caption'

@@ -177,6 +177,23 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
             itm_neg_labels = torch.stack(itm_neg_labels, dim=0)
             ret.update({ kfg.ITM_NEG_LABEL: itm_neg_labels })
 
+        ####################################### COSNet #######################################
+        if kfg.SEMANTICS_IDS in batched_inputs[0]:
+            semantics_ids = [x[kfg.SEMANTICS_IDS] for x in batched_inputs]
+            semantics_ids, semantic_mask = pad_tensor(semantics_ids, padding_value=0, use_mask=True)
+            ret.update( { kfg.SEMANTICS_IDS: semantics_ids, kfg.SEMANTICS_MASK: semantic_mask} )
+
+        if kfg.SEMANTICS_LABELS in batched_inputs[0]:
+            semantics_labels = [x[kfg.SEMANTICS_LABELS] for x in batched_inputs]
+            semantics_labels = pad_tensor(semantics_labels, padding_value=-1, use_mask=False)
+            ret.update( { kfg.SEMANTICS_LABELS: semantics_labels } )
+
+        if kfg.SEMANTICS_MISS_LABELS in batched_inputs[0]:
+            semantics_miss_labels = [x[kfg.SEMANTICS_MISS_LABELS] for x in batched_inputs]
+            semantics_miss_labels = pad_tensor(semantics_miss_labels, padding_value=-1, use_mask=False)
+            ret.update({ kfg.SEMANTICS_MISS_LABELS: semantics_miss_labels })
+        ######################################################################################
+
         if kfg.SEQ_PER_SAMPLE in batched_inputs[0]:
             batch_size, max_feats_num, feats_dim = vfeats.size()[0:3]
             repeat_num = batched_inputs[0][kfg.SEQ_PER_SAMPLE].item()
@@ -206,7 +223,7 @@ class BaseEncoderDecoder(nn.Module, metaclass=ABCMeta):
 
             if kfg.GLOBAL_FEATS in batched_inputs[0]:
                 gv_feat_dim = gv_feats.size(-1)
-                gv_feats = gv_feats.unsqueeze(1).expand(batch_size, repeat_num, gv_feat_dim)
+                gv_feats = gv_feats.view(batch_size, -1, gv_feat_dim).expand(batch_size, repeat_num, gv_feat_dim)
                 gv_feats = gv_feats.reshape(-1, gv_feat_dim)
                 ret.update({ kfg.GLOBAL_FEATS: gv_feats })
 

@@ -25,7 +25,10 @@ def pad_tensor(tensor, padding_value, use_mask):
 
 def dict_to_cuda(input_dict):
     for key in input_dict:
-        input_dict[key] = input_dict[key].cuda()
+        if isinstance(input_dict[key], list):
+            input_dict[key] = [ val.cuda() for val in input_dict[key]]
+        else:
+            input_dict[key] = input_dict[key].cuda()
 
 def dict_as_tensor(input_dict):
     for key in input_dict:

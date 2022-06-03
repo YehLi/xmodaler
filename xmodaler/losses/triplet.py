@@ -25,6 +25,10 @@ class Triplet(nn.Module):
             "margin": cfg.LOSSES.MARGIN
         }
 
+    @classmethod
+    def add_config(cls, cfg):
+        pass
+
     def forward(self, outputs_dict):
         vil_logit = outputs_dict[kfg.U_LOGITS]
         vil_logit = vil_logit.view(-1, outputs_dict[kfg.SAMPLE_PER_SAMPLE])

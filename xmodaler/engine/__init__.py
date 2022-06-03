@@ -12,6 +12,8 @@ from .hooks import *
 from .defaults import *
 from .rl_trainer import RLTrainer
 from .rl_beam_trainer import RLBeamTrainer
+from .rl_mean_trainer import RLMeanTrainer
+from .ensembler import Ensemble
 from .vcr_trainer import VCRTrainer
 from .retrieval_trainer import RetrievalTrainer
 from .single_stream_retrieval_trainer import SingleStreamRetrievalTrainer, SingleStreamRetrievalTrainerHardNegatives

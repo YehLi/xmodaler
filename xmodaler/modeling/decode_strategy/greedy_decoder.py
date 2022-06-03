@@ -66,8 +66,10 @@ class GreedyDecoder(DecodeStrategy):
             if unfinished.sum() == 0:
                 break
 
-        return {
+        ret = inputs
+        ret.update({
             kfg.IDS: batched_inputs[kfg.IDS],
             kfg.G_SENTS_IDS: sents,
             kfg.G_LOGP: logprobs
-        }
+        })
+        return ret

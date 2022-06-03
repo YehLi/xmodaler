@@ -66,3 +66,5 @@ class RLBeamTrainer(DefaultTrainer):
         losses_dict.update(rewards)
         self._write_metrics(losses_dict, data_time)
         self.optimizer.step()
+        if self.ema is not None:
+            self.ema.update(self.model)

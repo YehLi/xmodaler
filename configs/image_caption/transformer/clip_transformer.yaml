@@ -1,4 +1,4 @@
-OUTPUT_DIR: './cosnet_output'
+OUTPUT_DIR: './output'
 
 ####################################### DATASETS #######################################
 DATASETS:
@@ -32,15 +32,13 @@ SCHEDULED_SAMPLING:
 MODEL:
   VOCAB_SIZE: 10200 # include <BOS>/<EOS>
   META_ARCHITECTURE: 'TransformerEncoderDecoder'
-  ENCODER: 'COSNetEncoder'
+  ENCODER: 'GTransformerEncoder'
   ENCODER_DIM: 512
-  DECODER: 'COSNetDecoder'
+  DECODER: 'TransformerDecoder'
   DECODER_DIM: 512
   PREDICTOR: 'BasePredictor'
   PRED_DROPOUT: 0.5
   MAX_SEQ_LEN: 20
-  USE_EMA: False
-  EMA_DECAY: 0.9999
 
 #################################### Token embedding ####################################
   TOKEN_EMBED:
@@ -64,7 +62,7 @@ MODEL:
 ####################################### BERT ############################################
   BERT:
     HIDDEN_SIZE: 512
-    HIDDEN_DROPOUT_PROB: 0.1
+    HIDDEN_DROPOUT_PROB: 0.2
     HIDDEN_ACT: "relu"
     NUM_ATTENTION_HEADS: 8
     INTERMEDIATE_SIZE: 2048
@@ -74,15 +72,7 @@ MODEL:
     NUM_HIDDEN_LAYERS: 6
     NUM_GENERATION_LAYERS: 6
     LAYER_DROP: 0.0
-
-  COSNET:
-    NUM_CLASSES: 906
-    NUM_SEMCOMPHDER_LAYERS: 3
-    SLOT_SIZE: 6
-    MAX_POS: 26
-    FILTER_WEIGHT: 1.0
-    RECONSTRUCT_WEIGHT: 0.1
-    
+ 
 ####################################### Optimizer #######################################
 SOLVER:
   NAME: 'Adam'
@@ -103,18 +93,18 @@ SOLVER:
   GRAD_CLIP_TYPE: 'value'
   NORM_TYPE: 2.0
   WRITE_PERIOD: 20
+
 ####################################### lr scheduler ####################################### 
 LR_SCHEDULER:
   NAME: 'NoamLR'
   MODEL_SIZE: 512
   FACTOR: 1.0
-  WARMUP: 20000
+  WARMUP: 10000
 
 ####################################### losses ####################################### 
 LOSSES:
-  NAMES: ['LabelSmoothing', 'SemComphderLoss']
+  NAMES: ['LabelSmoothing']
   LABELSMOOTHING: 0.1
-
 ####################################### scorer ####################################### 
 SCORER:
   NAME: 'BaseScorer'

@@ -28,6 +28,10 @@ class PretrainLosses(nn.Module):
             "max_violation": cfg.LOSSES.MAX_VIOLATION
         }
 
+    @classmethod
+    def add_config(cls, cfg):
+        pass
+
     def select_logits_targets_by_mask(self, tensor, target, mask):
         tensor = tensor[mask, :]
         target = target[mask]

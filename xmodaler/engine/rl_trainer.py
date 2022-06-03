@@ -31,6 +31,9 @@ class RLTrainer(DefaultTrainer):
         try:
             data = next(self._train_data_loader_iter)
         except StopIteration:
+            if comm.get_world_size() > 1:
+                self.train_data_loader.sampler.set_epoch(self.iter//self.iters_per_epoch)
+
             self._train_data_loader_iter = iter(self.train_data_loader)
             data = next(self._train_data_loader_iter)
         data_time = time.perf_counter() - start
@@ -54,7 +57,9 @@ class RLTrainer(DefaultTrainer):
         for loss in self.losses:
             loss_dict = loss(outputs_dict)
             losses_dict.update(loss_dict)
-        losses = sum(losses_dict.values())
+        
+        losses = [losses_dict[k] for k in losses_dict if 'acc' not in k]
+        losses = sum(losses)
 
         self.optimizer.zero_grad()
         losses.backward()
@@ -63,3 +68,5 @@ class RLTrainer(DefaultTrainer):
         losses_dict.update(bs_rewards)
         self._write_metrics(losses_dict, data_time)
         self.optimizer.step()
+        if self.ema is not None:
+            self.ema.update(self.model)
