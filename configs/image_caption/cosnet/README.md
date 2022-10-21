@@ -13,11 +13,11 @@ Please cite with the following BibTeX:
 ```
 
 ## Data preparation
-1. Download the cosnet [Baidu](https://pan.baidu.com/s/1x3BJzemXcIvKo1padRq_cg)/[GoogleDriver](https://drive.google.com/drive/folders/1iMuMRZubQK61aJcPFkLJdHdUVF2-mY2S?usp=sharing) folder and put it into open_source_dataset/mscoco_dataset
+1. Download the cosnet [Baidu](https://pan.baidu.com/s/1x3BJzemXcIvKo1padRq_cg)/[GoogleDriver](https://drive.google.com/drive/folders/1zgC2ddIt5aMxo07DoIiJgMTqNhGlZKXp?usp=sharing) folder and put it into open_source_dataset/mscoco_dataset
 
-2. Download the CLIP_RN101_49 [Baidu](https://pan.baidu.com/s/1S-YVjumU7fK6atzhrE_1yg)/[GoogleDriver](https://drive.google.com/drive/folders/1vx9n7tAIt8su0y_3tsPJGvMPBMm8JLCZ?usp=sharing) folder and put it into open_source_dataset/mscoco_dataset/features
+2. Download the CLIP_RN101_49 [Baidu](https://pan.baidu.com/s/1S-YVjumU7fK6atzhrE_1yg)/[GoogleDriver](https://drive.google.com/drive/folders/12WbB3VkJh0NB9b8xlflY3PxTM3BwHtnF?usp=sharing) folder and put it into open_source_dataset/mscoco_dataset/features
 
-3. Models and results can be downloaded here [Baidu](https://pan.baidu.com/s/1FESU3-pgTRYvsLo9hBfzqg)/[GoogleDriver](https://drive.google.com/drive/folders/1_MyCArojK6Bg8PGPLlS6NHVFQ4iIbxzc?usp=sharing)
+3. Models and results can be downloaded here [Baidu](https://pan.baidu.com/s/1FESU3-pgTRYvsLo9hBfzqg)/[GoogleDriver](https://drive.google.com/drive/folders/1CjuCLm-MEhOLY7E7sD2kbTm2jxCxIYVc?usp=sharing)
 
 Access code for Baidu is **cosn**
 
