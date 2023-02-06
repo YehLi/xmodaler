@@ -19,6 +19,8 @@ Please cite with the following BibTeX:
 
 3. Models and results can be downloaded here [Baidu](https://pan.baidu.com/s/1FESU3-pgTRYvsLo9hBfzqg)/[GoogleDriver](https://drive.google.com/drive/folders/1CjuCLm-MEhOLY7E7sD2kbTm2jxCxIYVc?usp=sharing)
 
+4. Feature extraction: https://github.com/jianjieluo/OpenAI-CLIP-Feature
+
 Access code for Baidu is **cosn**
 
 ## Training
