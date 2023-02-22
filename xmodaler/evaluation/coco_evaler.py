@@ -10,6 +10,7 @@ import json
 from json import encoder
 from xmodaler.config import kfg
 from xmodaler.config import configurable
+from xmodaler.utils import comm
 from .build import EVALUATION_REGISTRY
 
 sys.path.append(kfg.COCO_PATH)
@@ -26,7 +27,7 @@ class COCOEvaler(object):
 
         if output_dir is not None:
             self.output_dir = os.path.join(output_dir, 'results')
-            if not os.path.exists(self.output_dir):
+            if not os.path.exists(self.output_dir) and comm.is_main_process():
                 os.mkdir(self.output_dir)
         else:
             self.output_dir = None
