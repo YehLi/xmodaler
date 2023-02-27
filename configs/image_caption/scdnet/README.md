@@ -1,4 +1,4 @@
-# Semantic-Conditional Diffusion Networks for Image Captioning
+# Semantic-Conditional Diffusion Networks for Image Captioning [CVPR2023]
 
 **For compatibility reasons, the reimplemented code and more detailed information are released in an official independent [repository](https://github.com/jianjieluo/SCD-Net) currently. Code of SCD-Net will be merged into this official X-modaler repository in the future.**
 
