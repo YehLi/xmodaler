@@ -3,3 +3,38 @@
 __pycache__
 output/*
 docs/_build
+
+# Testing related
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+pytest_cache/
+
+# Claude settings
+.claude/*
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE files
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Poetry
+poetry.lock

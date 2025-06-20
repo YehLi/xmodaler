@@ -1,0 +1,87 @@
+[tool.poetry]
+name = "xmodaler"
+version = "0.1.0"
+description = "X-modaler: A Versatile and High-performance Codebase for Cross-modal Analytics"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "xmodaler"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+torch = ">=1.8.0"
+fvcore = "*"
+pycocotools = "*"
+omegaconf = "*"
+cloudpickle = "*"
+torchvision = "*"
+tensorboard = "*"
+jsonlines = "*"
+json-lines = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.11.1"
+
+[tool.poetry.scripts]
+test = "pytest:main"
+tests = "pytest:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=xmodaler",
+    "--cov-branch",
+    "--cov-report=html:htmlcov",
+    "--cov-report=xml:coverage.xml",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-fail-under=0",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "unit: Mark test as a unit test",
+    "integration: Mark test as an integration test",
+    "slow: Mark test as a slow test",
+]
+
+[tool.coverage.run]
+source = ["xmodaler"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__init__.py",
+    "*/setup.py",
+    "*/conf.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+precision = 2
+show_missing = true
+skip_covered = false
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.xml]
+output = "coverage.xml"
